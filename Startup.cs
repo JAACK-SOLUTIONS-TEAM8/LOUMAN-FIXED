@@ -37,7 +37,6 @@ namespace Louman
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                
             }
 
             app.UseHttpsRedirection();
