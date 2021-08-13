@@ -10,7 +10,7 @@ namespace Louman.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            return Ok();
         }
     }
 }
