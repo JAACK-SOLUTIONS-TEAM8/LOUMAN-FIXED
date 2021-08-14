@@ -75,11 +75,66 @@ namespace Louman.Repositories
                 });
 
             }
-           
+            else
+            {
+
+                var user = (from u in _dbContext.Users where u.UserId == employee.UserId && u.isDeleted == false select u).SingleOrDefault();
+                if (user != null)
+                {
+                    user.UserName = employee.UserName;
+                    user.CellNumber = employee.CellNumber;
+                    user.Email = employee.Email;
+                    user.Password = employee.Password;
+                    user.Surname = employee.Surname;
+                    user.UserTypeId = employee.UserTypeId;
+                    user.Initials = employee.Initials;
+                    user.IdNumber = employee.IdNumber;
+                    user.AddressId = employee.AddressId;
+
+                    _dbContext.Update(user);
+                    _dbContext.SaveChanges();
+
+                    var emp = (from e in _dbContext.Employees where e.EmployeeId == employee.EmployeeId select e).SingleOrDefault();
+
+                    emp.CommencementDate = employee.CommenceDate.HasValue ? employee.CommenceDate.Value : null;
+                    emp.TerminationDate = employee.TerminationDate.HasValue ? employee.TerminationDate.Value : null;
+                    emp.TerminationReason = employee.TerminationReason ?? null;
+                    emp.Image = employee.Image;
+                    emp.Document = employee.Document;
+
+
+                    _dbContext.Update(emp);
+                    await _dbContext.SaveChangesAsync();
+
+                    return await Task.FromResult(new EmployeeDto
+                    {
+                        EmployeeId = emp.EmployeeId,
+                        UserId = user.UserId,
+                        AddressId = user.AddressId,
+                        CellNumber = user.CellNumber,
+                        Email = user.Email,
+                        IdNumber = user.IdNumber,
+                        Initials = user.Initials,
+                        Password = user.Password,
+                        Surname = user.Surname,
+                        UserName = user.UserName,
+                        UserTypeId = user.UserTypeId,
+                        CommenceDate = employee.CommenceDate,
+                        TerminationDate = employee.TerminationDate,
+                        TerminationReason = employee.TerminationReason,
+                        Image = employee.Image,
+                        Document = employee.Document
+
+                    });
+                }
+            }
+            return await Task.FromResult(new EmployeeDto());
+
         }
+    }
 
         
 
 
     }
-}
+
