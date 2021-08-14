@@ -41,7 +41,16 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("{id}")]
+        public IActionResult GetAdminById([FromRoute] int id)
+        {
+            var reponse = _adminRepository.GetById(id);
+            if (reponse != null)
+                return Ok(new { Admin = reponse, statusCode = StatusCodes.Status200OK });
+            else
+                return Ok(new { Admin = reponse, statusCode = StatusCodes.Status400BadRequest });
 
+        }
 
     }
 }
