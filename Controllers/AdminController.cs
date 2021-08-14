@@ -51,6 +51,16 @@ namespace Louman.Controllers
                 return Ok(new { Admin = reponse, statusCode = StatusCodes.Status400BadRequest });
 
         }
+        [HttpGet("Search")]
+        public IActionResult SearchByName([FromQuery] string name)
+        {
+            var reponse = _adminRepository.SearchByName(name);
+            if (reponse != null)
+                return Ok(new { Admins = reponse, statusCode = StatusCodes.Status200OK });
+            else
+                return Ok(new { Admins = reponse, statusCode = StatusCodes.Status400BadRequest });
+
+        }
 
     }
 }
