@@ -99,9 +99,21 @@ namespace Louman.Repositories
             return new AdminDto();
             
         }
+        public bool Delete(int adminUserId)
+        {
+            var user = _dbContext.Users.Find(adminUserId);
+            if (user != null)
+            {
+                user.isDeleted = true;
+                _dbContext.Users.Update(user);
+                _dbContext.SaveChanges();
+                return true;
+            }
+            return false;
+        }
 
-      
 
-        
+
+
     }
 }
