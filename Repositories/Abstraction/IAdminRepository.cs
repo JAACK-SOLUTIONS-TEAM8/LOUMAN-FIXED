@@ -11,6 +11,6 @@ namespace Louman.Repositories.Abstraction
     {
         
         AdminDto Add(UpsertAdminDto admin);
-        
+        bool Delete(int Id);
     }
 }
