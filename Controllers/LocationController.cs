@@ -29,7 +29,17 @@ namespace Louman.Controllers
             return NotFound(new { Locations = locations, StatusCode = StatusCodes.Status200OK });
         }
 
-        
+        [HttpPost("Add")]
+        public async Task<IActionResult> AddLocation(LocationDto newLocation)
+        {
+            var location = await _locationRepository.AddAsync(newLocation);
+            if (location != null)
+                return Ok(new { Location = location, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Location = location, StatusCode = StatusCodes.Status404NotFound });
+        }
+
+
+
 
     }
 }
