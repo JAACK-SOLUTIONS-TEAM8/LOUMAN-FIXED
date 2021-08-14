@@ -30,7 +30,18 @@ namespace Louman.Controllers
                 return Ok(new { Admin = reponse, statusCode = StatusCodes.Status400BadRequest });
 
         }
+        [HttpGet("All")]
+        public IActionResult GetAllAdmins()
+        {
+            var reponse = _adminRepository.GetAll();
+            if (reponse != null)
+                return Ok(new { Admins = reponse, statusCode = StatusCodes.Status200OK });
+            else
+                return Ok(new { Admins = reponse, statusCode = StatusCodes.Status400BadRequest });
 
-        
+        }
+
+
+
     }
 }
