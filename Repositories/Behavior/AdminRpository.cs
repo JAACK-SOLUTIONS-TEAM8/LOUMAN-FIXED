@@ -111,7 +111,29 @@ namespace Louman.Repositories
             }
             return false;
         }
+        public List<AdminDto> GetAll()
+        {
+            return (from u in _dbContext.Users
+                    join a in _dbContext.Admins on u.UserId equals a.UserId
+                    where u.isDeleted == false
+                    orderby u.UserName
+                    select new AdminDto
+                    {
+                        UserId = a.UserId,
+                        AdminId = a.AdminId,
+                        AddressId = u.AddressId,
+                        CellNumber = u.CellNumber,
+                        Email = u.Email,
+                        IdNumber = u.IdNumber,
+                        Initials = u.Initials,
+                        Password = u.Password,
+                        Surname = u.Surname,
+                        UserName = u.UserName,
+                        UserTypeId = u.UserTypeId
 
+                    }).ToList();
+
+        }
 
 
 
