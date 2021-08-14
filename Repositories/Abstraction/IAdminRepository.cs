@@ -13,5 +13,6 @@ namespace Louman.Repositories.Abstraction
         AdminDto Add(UpsertAdminDto admin);
         bool Delete(int Id);
         List<AdminDto> GetAll();
+        AdminDto GetById(int id);
     }
 }
