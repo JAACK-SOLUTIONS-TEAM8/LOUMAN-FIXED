@@ -14,5 +14,6 @@ namespace Louman.Repositories.Abstraction
         bool Delete(int Id);
         List<AdminDto> GetAll();
         AdminDto GetById(int id);
+        List<AdminDto> SearchByName(string name);
     }
 }
