@@ -131,6 +131,20 @@ namespace Louman.Repositories
             return await Task.FromResult(new EmployeeDto());
 
         }
+        public async Task<bool> DeleteAsync(int employeeUserId)  //delete employee
+        {
+            var user = _dbContext.Users.Find(employeeUserId);
+            if (user != null)
+            {
+                user.isDeleted = true;
+                _dbContext.Users.Update(user);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
+
     }
 
         
