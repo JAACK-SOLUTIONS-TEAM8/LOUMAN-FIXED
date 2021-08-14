@@ -38,6 +38,16 @@ namespace Louman.Controllers
             return NotFound(new { Location = location, StatusCode = StatusCodes.Status404NotFound });
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById([FromRoute] int id)
+        {
+            var location = await _locationRepository.GetByIdAsync(id);
+            if (location != null)
+                return Ok(new { Location = location, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Location = location, StatusCode = StatusCodes.Status404NotFound });
+        }
+
+
 
 
 
