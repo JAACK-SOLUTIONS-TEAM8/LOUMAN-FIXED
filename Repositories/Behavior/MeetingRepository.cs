@@ -68,7 +68,22 @@ namespace Louman.Repositories.Behavior
 
                           }).ToListAsync();
         }
+        public async Task<List<SlotDto>> SearchAdminSlotsByDate(int adminUserId, string date)
+        {
+            return await (from s in _dbContext.Slots
+                          join u in _dbContext.Users on s.AdminUserId equals u.UserId
+                          where s.isDeleted == false && (string.IsNullOrEmpty(date) || (s.Date.Date == Convert.ToDateTime(date).Date) && s.AdminUserId == adminUserId)
+                          select new SlotDto
+                          {
+                              Date = s.Date,
+                              SlotId = s.SlotId,
+                              isBooked = s.isBooked,
+                              AdminUserId = u.UserId,
+                              EndTime = s.StartTime.ToString("F"),
+                              StartTime = s.EndTime.ToString("F")
 
+                          }).ToListAsync();
+        }
 
 
     }
