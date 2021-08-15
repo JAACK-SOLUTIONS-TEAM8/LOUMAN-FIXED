@@ -84,6 +84,26 @@ namespace Louman.Repositories.Behavior
 
                           }).ToListAsync();
         }
+        public async Task<List<BookedSlotDto>> GetAllBookedSlotByAdminId(int adminUserId)
+        {
+            return await (from bs in _dbContext.BookedSlots
+                          join s in _dbContext.Slots on bs.SlotId equals s.SlotId
+                          join au in _dbContext.Users on bs.AdminUserId equals au.UserId
+                          join cu in _dbContext.Users on bs.ClientUserId equals cu.UserId
+                          where s.isDeleted == false && bs.AdminUserId == adminUserId && s.isBooked == true && bs.isDeleted == false
+                          select new BookedSlotDto
+                          {
+                              AdminUserId = bs.AdminUserId,
+                              AdminName = $"{au.Initials} {au.Surname}",
+                              BookedSlotId = bs.BookedSlotId,
+                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              ClientUserId = bs.ClientUserId,
+                              Date = s.Date,
+                              StartTime = s.StartTime,
+                              EndTime = s.EndTime,
+                              SlotId = s.SlotId
+                          }).ToListAsync();
+        }
 
         public async Task<BookedSlotDto> BookSlot(int slotId, int clientUserId)
         {
