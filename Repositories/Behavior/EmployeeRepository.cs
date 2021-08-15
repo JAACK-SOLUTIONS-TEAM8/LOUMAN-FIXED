@@ -226,6 +226,39 @@ namespace Louman.Repositories
                           }).ToListAsync();
         }
 
+        public async Task<List<EmployeeAttendance>> GetEmployeeMonthlyAttendanceReport(string dateInfo)  //emp attendance report
+        {
+            var date = DateTime.Parse(dateInfo);
+
+            var employees = await (from e in _dbContext.Employees
+                                   join u in _dbContext.Users on e.UserId equals u.UserId
+                                   join et in _dbContext.EmployeeTeams on e.EmployeeId equals et.EmployeeId
+                                   join t in _dbContext.Teams on et.TeamId equals t.TeamId
+                                   where u.isDeleted == false
+                                   select new
+                                   {
+                                       Initials = u.Initials,
+                                       Surname = u.Surname,
+                                       EmployeeId = e.EmployeeId,
+                                       UserName = u.UserName,
+                                       UserId = u.UserId,
+                                       TeamId = et.TeamId,
+                                       TeamName = t.TeamName
+                                   }).ToListAsync();
+            var attendance = await (from a in _dbContext.AttendanceEntities
+                                    join ah in _dbContext.AttendanceHistoryEntities on a.AttendanceHistoryId equals ah.AttendanceHistoryId
+                                    where ah.Date.Date.Month == date.Date.Month && ah.Date.Date.Year == date.Date.Year
+                                    select new
+                                    {
+                                        EmployeeId = a.EmployeeId,
+                                        Present = a.Present,
+                                        Absent = a.Absent,
+                                    }).ToListAsync();
+
+            
+
+        }
+
     }
 
         
