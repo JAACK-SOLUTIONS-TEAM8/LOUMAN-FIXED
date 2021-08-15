@@ -199,6 +199,33 @@ namespace Louman.Repositories
                           }).SingleOrDefaultAsync();
         }
 
+        public async Task<List<EmployeeDto>> SearchByNameAsync(string name)  //search employee name
+        {
+            return await (from u in _dbContext.Users
+                          join e in _dbContext.Employees on u.UserId equals e.UserId
+                          where u.isDeleted == false && (string.IsNullOrEmpty(name) || u.UserName.StartsWith(name))
+                          orderby u.UserName
+                          select new EmployeeDto
+                          {
+                              UserId = e.UserId,
+                              EmployeeId = e.EmployeeId,
+                              AddressId = u.AddressId,
+                              CellNumber = u.CellNumber,
+                              Email = u.Email,
+                              IdNumber = u.IdNumber,
+                              Initials = u.Initials,
+                              Password = u.Password,
+                              Surname = u.Surname,
+                              UserName = u.UserName,
+                              UserTypeId = u.UserTypeId,
+                              CommenceDate = e.CommencementDate,
+                              TerminationDate = e.TerminationDate,
+                              TerminationReason = e.TerminationReason,
+                              Image = e.Image,
+                              Document = e.Document
+                          }).ToListAsync();
+        }
+
     }
 
         
