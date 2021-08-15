@@ -47,6 +47,16 @@ namespace Louman.Controllers
             return NotFound(new { Location = location, StatusCode = StatusCodes.Status404NotFound });
         }
 
+        [HttpGet("Delete/{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            var response = await _locationRepository.DeleteAsync(id);
+            if (response != false)
+                return Ok(new { Response = true, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Response = false, StatusCode = StatusCodes.Status404NotFound });
+        }
+
+
 
 
 
