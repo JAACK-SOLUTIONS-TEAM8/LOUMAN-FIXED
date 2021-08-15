@@ -61,6 +61,15 @@ namespace Louman.Controllers
                 return Ok(new { Admins = reponse, statusCode = StatusCodes.Status400BadRequest });
 
         }
+        [HttpGet("Delete/{id}")]
+        public IActionResult DeleteAdmin([FromRoute] int id)
+        {
+            var reponse = _adminRepository.Delete(id);
+            if (reponse != false)
+                return Ok(new { Admin = reponse, statusCode = StatusCodes.Status200OK });
+            else
+                return Ok(new { Admin = reponse, statusCode = StatusCodes.Status204NoContent });
 
+        }
     }
 }
