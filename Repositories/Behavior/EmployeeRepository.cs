@@ -255,11 +255,32 @@ namespace Louman.Repositories
                                         Absent = a.Absent,
                                     }).ToListAsync();
 
-            
+            List<EmployeeAttendance> attendanceHistory = new List<EmployeeAttendance>();
 
+            foreach (var employee in employees)
+            {
+                int daysCount = 0;
+                foreach (var att in attendance)
+                {
+                    if (att.Present == true && att.EmployeeId == employee.EmployeeId)
+                    {
+                        daysCount += 1;
+                    }
+                }
+                attendanceHistory.Add(new EmployeeAttendance
+                {
+                    initial = employee.Initials,
+                    surname = employee.Surname,
+                    Attendance = daysCount,
+                    TeamName = employee.TeamName
+                });
+            }
+            return await Task.FromResult(attendanceHistory);
         }
 
     }
+
+    
 
         
 
