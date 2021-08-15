@@ -56,6 +56,15 @@ namespace Louman.Controllers
             return NotFound(new { Response = false, StatusCode = StatusCodes.Status404NotFound });
         }
 
+        [HttpGet("Search")]
+        public async Task<IActionResult> SearchByName([FromQuery] string location)
+        {
+            var response = await _locationRepository.SearchByNameAsync(location);
+            if (response != null)
+                return Ok(new { Locations = response, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Locations = response, StatusCode = StatusCodes.Status404NotFound });
+        }
+
 
 
 
