@@ -12,6 +12,8 @@ namespace Louman.Repositories.Abstraction
         
         Task<List<SlotDto>> GetAllSlots();
         Task<bool> DeleteSlot(int slotId);
+        Task<List<SlotDto>> SearchSlotByDate(string date);
+
 
     }
 }
