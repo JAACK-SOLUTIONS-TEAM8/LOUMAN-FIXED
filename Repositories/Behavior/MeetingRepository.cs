@@ -40,7 +40,19 @@ namespace Louman.Repositories.Behavior
                          }).ToListAsync();
         }
 
- 
+        public async Task<bool> DeleteSlot(int slotId)
+        {
+            var existingSlot = _dbContext.Slots.Find(slotId);
+            if (existingSlot != null)
+            {
+                existingSlot.isDeleted = true;
+                _dbContext.Slots.Update(existingSlot);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
 
     }
 }
