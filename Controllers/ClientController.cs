@@ -38,6 +38,15 @@ namespace Louman.Controllers
             return Ok(new { Client = clients, StatusCode = StatusCodes.Status400BadRequest });
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById([FromRoute] int id)
+        {
+            var clients = await _clientRepository.GetByIdAsync(id);
+            if (clients != null)
+                return Ok(new { Client = clients, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Client = clients, StatusCode = StatusCodes.Status400BadRequest });
+        }
+
 
     }
 }
