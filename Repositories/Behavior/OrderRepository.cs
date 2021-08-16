@@ -96,10 +96,24 @@ namespace Louman.Repositories
                           }).SingleOrDefaultAsync();
 
         }
+        public async Task<GetOrderDto> AddOrder(OrderDto order)
+        {
+            var newOrderEntity = new OrderEntity
+            {
+                ClientUserId = order.ClientUserId,
+                DeliveryTypeId = order.DeliveryTypeId,
+                PaymentType = order.PaymentType,
+                OrderStatus = "Pending",
+                PickupDate = DateTime.Parse(order.PickupDate),
+                PickupTime = DateTime.Parse(order.PickupTime),
+                CreatedDate = DateTime.Now,
+                isDeleted = false
+            };
+            _dbContext.Orders.Add(newOrderEntity);
+            await _dbContext.SaveChangesAsync();
 
 
 
-
-    }
+        }
 }
 
