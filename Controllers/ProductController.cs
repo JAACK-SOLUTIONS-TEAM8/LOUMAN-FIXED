@@ -33,14 +33,23 @@ namespace Louman.Controllers
 
         }
 
-       
+        [HttpPost("ProductSize/Add")]
+        public async Task<IActionResult> AddNewProductSize(ProductSizeDto productSize)
+        {
+            var newProductSize = await _productReposiroty.AddProductSize(productSize);
+            if (newProductSize != null)
+                return Ok(new { ProductSize = newProductSize, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { ProductSize = newProductSize, StatusCode = StatusCodes.Status404NotFound });
+
+        }
 
 
 
 
-        
 
-      
+
+
+
 
     }
 }
