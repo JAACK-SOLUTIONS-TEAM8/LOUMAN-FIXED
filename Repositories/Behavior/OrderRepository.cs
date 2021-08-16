@@ -112,6 +112,19 @@ namespace Louman.Repositories
             _dbContext.Orders.Add(newOrderEntity);
             await _dbContext.SaveChangesAsync();
 
+            foreach (var product in order.Products)
+            {
+                var orderLineEntity = new OrderLineEntity
+                {
+                    OrderId = newOrderEntity.OrderId,
+                    Quantity = product.Quantity,
+                    ProductId = product.Product.ProductId,
+                };
+                await _dbContext.OrderLines.AddAsync(orderLineEntity);
+                await _dbContext.SaveChangesAsync();
+
+            }
+
 
 
         }
