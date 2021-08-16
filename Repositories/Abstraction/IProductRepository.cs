@@ -12,6 +12,7 @@ namespace Louman.Repositories.Abstraction
 
         Task<ProductDto> AddProduct(ProductDto product);
         Task<ProductSizeDto> AddProductSize(ProductSizeDto productSize);
+        Task<bool> DeleteProductSize(int productSizeId);
 
 
     }
