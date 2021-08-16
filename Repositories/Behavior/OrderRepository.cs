@@ -124,6 +124,32 @@ namespace Louman.Repositories
                 await _dbContext.SaveChangesAsync();
 
             }
+            var billEntity = new OrderBillEntity
+            {
+                OrderId = newOrderEntity.OrderId,
+                Total = order.Total,
+                Discount = order.Discount
+            };
+            await _dbContext.OrderBills.AddAsync(billEntity);
+            await _dbContext.SaveChangesAsync();
+
+            var cardDetail = _dbContext.CardDetails.Where(card => card.ClientUserId == order.ClientUserId).SingleOrDefault();
+
+
+            if (cardDetail == null)
+            {
+                var cardEntity = new CardDetailEntity
+                {
+                    HolderName = order.CardDetail.HolderName,
+                    CardNumber = order.CardDetail.CardNumber,
+                    ClientUserId = order.ClientUserId,
+                    isDeleted = false,
+                    SecurityNumber = order.CardDetail.SecurityNumber
+                };
+                await _dbContext.CardDetails.AddAsync(cardEntity);
+                await _dbContext.SaveChangesAsync();
+
+            }
 
 
 
