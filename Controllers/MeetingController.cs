@@ -39,6 +39,16 @@ namespace Louman.Controllers
             return NotFound(new { response = false, StatusCode = StatusCodes.Status404NotFound });
         }
 
+        [HttpGet("Slot/Search")]
+        public async Task<IActionResult> SearchSlotByDateName([FromQuery] string date)
+        {
+            var reponse = await _meetingRepository.SearchSlotByDate(date);
+            if (reponse != null)
+                return Ok(new { Slots = reponse, statusCode = StatusCodes.Status200OK });
+            else
+                return Ok(new { Slots = reponse, statusCode = StatusCodes.Status400BadRequest });
+
+        }
 
     }
 }
