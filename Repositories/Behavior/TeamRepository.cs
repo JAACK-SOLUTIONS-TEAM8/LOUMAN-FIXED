@@ -235,6 +235,23 @@ namespace Louman.Repositories.Behavior
 
             }
         }
+        public async Task<bool> MarkAttendance(List<AttendanceDto> attendances) 
+        {
+            foreach (var attendance in attendances)
+            {
+                var attendanceEntity = await (from a in _dbContext.AttendanceEntities
+                                              where a.AttendanceId == attendance.AttendanceId && a.EmployeeId == attendance.EmployeeId
+                                              select a).SingleAsync();
+                attendanceEntity.Absent = attendance.Absent;
+                attendanceEntity.Present = attendance.Present;
+                attendanceEntity.Reason = attendance.Reason;
+
+                _dbContext.AttendanceEntities.Update(attendanceEntity);
+                await _dbContext.SaveChangesAsync();
+            }
+
+            return true;
+        }
     }
 
     
