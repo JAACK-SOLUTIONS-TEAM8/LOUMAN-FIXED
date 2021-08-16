@@ -282,6 +282,32 @@ namespace Louman.Repositories.Behavior
 
             return await Task.FromResult(team);
         }
+
+        public async Task<List<EmployeeDto>> GetTeamEmployees(int teamId)  
+        {
+            return await (from u in _dbContext.Users
+                          join e in _dbContext.Employees on u.UserId equals e.UserId
+                          join et in _dbContext.EmployeeTeams on e.EmployeeId equals et.EmployeeId
+                          where et.TeamId == teamId && u.isDeleted == false
+                          orderby u.UserName
+                          select new EmployeeDto
+                          {
+                              UserId = e.UserId,
+                              EmployeeId = e.EmployeeId,
+                              AddressId = u.AddressId,
+                              CellNumber = u.CellNumber,
+                              Email = u.Email,
+                              IdNumber = u.IdNumber,
+                              Initials = u.Initials,
+                              Password = u.Password,
+                              Surname = u.Surname,
+                              UserName = u.UserName,
+                              UserTypeId = u.UserTypeId,
+                              CommenceDate = e.CommencementDate,
+                              TerminationDate = e.TerminationDate,
+                              TerminationReason = e.TerminationReason
+                          }).ToListAsync();
+        }
     }
 
     
