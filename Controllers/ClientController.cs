@@ -29,6 +29,15 @@ namespace Louman.Controllers
             return Ok(new { clients = clients, statusCode = StatusCodes.Status404NotFound });
         }
 
-       
+        [HttpPost("Add")]
+        public async Task<IActionResult> Add([FromBody] ClientDto client)
+        {
+            var clients = await _clientRepository.Add(client);
+            if (clients != null)
+                return Ok(new { Client = clients, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Client = clients, StatusCode = StatusCodes.Status400BadRequest });
+        }
+
+
     }
 }
