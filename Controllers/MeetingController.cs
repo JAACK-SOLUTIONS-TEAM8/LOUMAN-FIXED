@@ -50,5 +50,16 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("AdminSlots/Search")]
+        public async Task<IActionResult> SearchSlotByDateName([FromQuery] int adminUserId, string date)
+        {
+            var reponse = await _meetingRepository.SearchAdminSlotsByDate(adminUserId, date);
+            if (reponse != null)
+                return Ok(new { Slots = reponse, statusCode = StatusCodes.Status200OK });
+            else
+                return Ok(new { Slots = reponse, statusCode = StatusCodes.Status400BadRequest });
+
+        }
+
     }
 }
