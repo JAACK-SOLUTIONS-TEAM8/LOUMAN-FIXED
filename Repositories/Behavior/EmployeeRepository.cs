@@ -278,12 +278,49 @@ namespace Louman.Repositories
             return await Task.FromResult(attendanceHistory);
         }
 
+        public async Task<List<RegistrationDetail>> GetEmployeeSixMonthRegistrationReport()
+        {
+
+            var mons = new Dictionary<int, int>();
+            for (int i = 0; i < 6; i++)
+            {
+                if ((DateTime.Now.Date.Month - i) >= 0)
+                    mons.Add(DateTime.Now.Date.Month - i, DateTime.Now.Date.Year);
+                else
+                    mons.Add(12 - i, DateTime.Now.Date.Year - 1);
+
+            }
+            var months = await _dbContext.Months.Where(month => mons.Keys.Contains(month.MonthId)).ToListAsync();
+
+            List<RegistrationDetail> registeredEmployee = new List<RegistrationDetail>();
+
+            foreach (var month in mons)
+            {
+                var emp = await (from e in _dbContext.Employees
+                                 join u in _dbContext.Users on e.UserId equals u.UserId
+                                 where (e.CommencementDate.Value.Date.Month == month.Key && e.CommencementDate.Value.Date.Year == month.Value)
+                                 select new RegisteredEmployeeDto
+                                 {
+                                     Initials = u.Initials,
+                                     Surname = u.Surname,
+                                     Email = u.Email,
+                                     IdNumber = u.IdNumber
+                                 }).ToListAsync();
+                registeredEmployee.Add(new RegistrationDetail { Employees = emp ?? new List<RegisteredEmployeeDto>(), MonthId = month.Key, MonthName = months.Where(m => m.MonthId == month.Key).SingleOrDefault().MonthName, Year = month.Value.ToString() });
+
+            }
+
+
+            return await Task.FromResult(registeredEmployee);
+        }
+
+
     }
 
-    
-
-        
 
 
-    }
+
+
+
+}
 
