@@ -252,6 +252,36 @@ namespace Louman.Repositories.Behavior
 
             return true;
         }
+        public async Task<TeamDto> GetByIdAsync(int teamId)  
+        {
+            var team = await (from t in _dbContext.Teams
+                              join l in _dbContext.Locations on t.LocationId equals l.LocationId
+                              where t.isDeleted == false && t.TeamId == teamId
+                              orderby t.TeamName
+                              select new TeamDto
+                              {
+                                  TeamId = t.TeamId,
+                                  TeamName = t.TeamName,
+                                  TeamDescription = t.TeamDescription,
+                                  LocationId = t.LocationId,
+                                  MaxEmployees = t.MaxEmployees,
+                                  StartTime = t.StartTime.ToString("F"),
+                                  EndTime = t.EndTime.ToString("F"),
+                                  locationArea = l.LocationArea
+                              }).SingleOrDefaultAsync();
+
+            var teamDays = await (from td in _dbContext.TeamDays
+                                  join d in _dbContext.Days on td.DayId equals d.DayId
+                                  where td.TeamId == team.TeamId
+                                  select new DayDto
+                                  {
+                                      DayId = td.DayId,
+                                      DayName = d.DayName
+                                  }).ToListAsync();
+            team.TeamDays = teamDays;
+
+            return await Task.FromResult(team);
+        }
     }
 
     
