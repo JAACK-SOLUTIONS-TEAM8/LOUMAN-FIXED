@@ -14,6 +14,7 @@ namespace Louman.Repositories.Abstraction
         Task<List<EmployeeDto>> SearchByNameAsync(string name);
         Task<bool> DeleteAsync(int employeeUserId);
         Task<List<EmployeeAttendance>> GetEmployeeMonthlyAttendanceReport(string dateInfo);
+        Task<List<RegistrationDetail>> GetEmployeeSixMonthRegistrationReport();
 
 
 
