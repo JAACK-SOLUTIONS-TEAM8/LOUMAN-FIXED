@@ -126,7 +126,124 @@ namespace Louman.Repositories
             return null;
 
         }
+        public async Task<List<ClientDto>> GetAllAsync()
+        {
+            return await (from u in _dbContext.Users
+                          join c in _dbContext.Clients on u.UserId equals c.UserId
+                          join a in _dbContext.Addresses on u.AddressId equals a.AddressId
+                          where u.isDeleted == false
+                          orderby u.UserName
+                          select new ClientDto
+                          {
+                              UserId = c.UserId,
+                              ClientId = c.ClientId,
+                              AddressId = u.AddressId,
+                              CellNumber = u.CellNumber,
+                              Email = u.Email,
+                              IdNumber = u.IdNumber,
+                              Initials = u.Initials,
+                              Password = u.Password,
+                              Surname = u.Surname,
+                              UserName = u.UserName,
+                              UserTypeId = u.UserTypeId,
+                              CityCode = a.CityCode,
+                              CityName = a.CityName,
+                              StreetName = a.StreetName,
+                              StreetNumber = a.StreetNumber
+                          }).ToListAsync();
+        }
 
-       
+        public async Task<ClientDto> GetByIdAsync(int clientId)
+        {
+            return await (from u in _dbContext.Users
+                          join c in _dbContext.Clients on u.UserId equals c.UserId
+                          join a in _dbContext.Addresses on u.AddressId equals a.AddressId
+                          where u.isDeleted == false && c.ClientId == clientId
+                          orderby u.UserName
+                          select new ClientDto
+                          {
+                              UserId = c.UserId,
+                              ClientId = c.ClientId,
+                              AddressId = u.AddressId,
+                              CellNumber = u.CellNumber,
+                              Email = u.Email,
+                              IdNumber = u.IdNumber,
+                              Initials = u.Initials,
+                              Password = u.Password,
+                              Surname = u.Surname,
+                              UserName = u.UserName,
+                              UserTypeId = u.UserTypeId,
+                              CityCode = a.CityCode,
+                              CityName = a.CityName,
+                              StreetName = a.StreetName,
+                              StreetNumber = a.StreetNumber
+                          }).SingleOrDefaultAsync();
+        }
+
+        public async Task<ClientDto> GetByUserIdAsync(int clientUserId)
+        {
+            return await (from u in _dbContext.Users
+                          join c in _dbContext.Clients on u.UserId equals c.UserId
+                          join a in _dbContext.Addresses on u.AddressId equals a.AddressId
+                          where u.isDeleted == false && c.UserId == clientUserId
+                          orderby u.UserName
+                          select new ClientDto
+                          {
+                              UserId = c.UserId,
+                              ClientId = c.ClientId,
+                              AddressId = u.AddressId,
+                              CellNumber = u.CellNumber,
+                              Email = u.Email,
+                              IdNumber = u.IdNumber,
+                              Initials = u.Initials,
+                              Password = u.Password,
+                              Surname = u.Surname,
+                              UserName = u.UserName,
+                              UserTypeId = u.UserTypeId,
+                              CityCode = a.CityCode,
+                              CityName = a.CityName,
+                              StreetName = a.StreetName,
+                              StreetNumber = a.StreetNumber
+                          }).SingleOrDefaultAsync();
+        }
+        public async Task<List<ClientDto>> SearchByNameAsync(string name)
+        {
+            return await (from u in _dbContext.Users
+                          join c in _dbContext.Clients on u.UserId equals c.UserId
+                          join a in _dbContext.Addresses on u.AddressId equals a.AddressId
+                          where u.isDeleted == false && (string.IsNullOrEmpty(name) || u.UserName.StartsWith(name))
+                          orderby u.UserName
+                          select new ClientDto
+                          {
+                              UserId = c.UserId,
+                              ClientId = c.ClientId,
+                              AddressId = u.AddressId,
+                              CellNumber = u.CellNumber,
+                              Email = u.Email,
+                              IdNumber = u.IdNumber,
+                              Initials = u.Initials,
+                              Password = u.Password,
+                              Surname = u.Surname,
+                              UserName = u.UserName,
+                              UserTypeId = u.UserTypeId,
+                              CityCode = a.CityCode,
+                              CityName = a.CityName,
+                              StreetName = a.StreetName,
+                              StreetNumber = a.StreetNumber
+                          }).ToListAsync();
+        }
+
+        public async Task<bool> DeleteAsync(int clientUserId)
+        {
+            var user = await _dbContext.Users.FindAsync(clientUserId);
+            if (user != null)
+            {
+                user.isDeleted = true;
+                _dbContext.Users.Update(user);
+                _dbContext.SaveChanges();
+                return await Task.FromResult(true);
+            }
+            return await Task.FromResult(false);
+        }
     }
 }
