@@ -116,7 +116,7 @@ namespace Louman.Repositories.Behavior
             return new TeamDto();
         }
 
-        public async Task<List<TeamDto>> GetAllAsync()   
+        public async Task<List<TeamDto>> GetAllAsync()
         {
 
             var teams = await (from t in _dbContext.Teams
@@ -154,8 +154,64 @@ namespace Louman.Repositories.Behavior
 
             return await Task.FromResult(teams);
         }
-    }
-        
+        public async Task<List<AttendanceDto>> GetAttendanceData(int teamId)
+        {
+            var todayRecord = await (from ah in _dbContext.AttendanceHistoryEntities
+                                     where ah.TeamId == teamId && ah.Date.Date == DateTime.Now.Date
+                                     select ah).SingleOrDefaultAsync();
 
+            if (todayRecord == null)
+            {
+                var attendanceHistoryEntity = new AttendanceHistoryEntity
+                {
+                    Date = DateTime.Now,
+                    TeamId = teamId
+                };
+                await _dbContext.AttendanceHistoryEntities.AddAsync(attendanceHistoryEntity);
+                await _dbContext.SaveChangesAsync();
+
+                var teamMembers = await (from et in _dbContext.EmployeeTeams
+                                         where et.TeamId == teamId
+                                         select et).ToListAsync();
+
+                foreach (var member in teamMembers)
+                {
+                    var attendanceEntity = new AttendanceEntity
+                    {
+                        AttendanceHistoryId = attendanceHistoryEntity.AttendanceHistoryId,
+                        EmployeeId = member.EmployeeId,
+                        Absent = false,
+                        Present = false,
+                        Reason = ""
+                    };
+
+                    await _dbContext.AttendanceEntities.AddAsync(attendanceEntity);
+                    await _dbContext.SaveChangesAsync();
+                }
+
+                var attendanceRecord = await (from a in _dbContext.AttendanceEntities
+                                              join ah in _dbContext.AttendanceHistoryEntities on a.AttendanceHistoryId equals ah.AttendanceHistoryId
+                                              join e in _dbContext.Employees on a.EmployeeId equals e.EmployeeId
+                                              join u in _dbContext.Users on e.UserId equals u.UserId
+                                              where u.isDeleted == false && ah.TeamId == teamId
+                                              select new AttendanceDto
+                                              {
+                                                  AttendanceId = a.AttendanceId,
+                                                  AttendanceHistoryId = ah.AttendanceHistoryId,
+                                                  Absent = a.Absent,
+                                                  Present = a.Present,
+                                                  Date = ah.Date,
+                                                  EmployeeId = a.EmployeeId,
+                                                  Initials = u.Initials,
+                                                  Surname = u.Surname,
+                                                  Reason = a.Reason,
+                                                  TeamId = teamId
+                                              }).ToListAsync();
+                return attendanceRecord;
+
+            }
+        }
+
+    }
         
 }
