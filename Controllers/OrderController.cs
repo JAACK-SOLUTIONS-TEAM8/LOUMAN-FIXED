@@ -30,5 +30,16 @@ namespace Louman.Controllers
             return Ok(new { DeliveryTypes = enquiryTypes, StatusCode = StatusCodes.Status404NotFound });
 
         }
+        [HttpGet("DeliveryType/{id}")]
+        public async Task<IActionResult> GetDeliveryTypeById([FromRoute] int id)
+        {
+            var enquiryType = await _orderRepository.GetDeliveryTypeById(id);
+            if (enquiryType != null)
+                return Ok(new { DeliveryType = enquiryType, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { DeliveryType = enquiryType, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
+
     }
 }
