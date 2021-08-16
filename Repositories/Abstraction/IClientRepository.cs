@@ -9,7 +9,7 @@ namespace Louman.Repositories.Abstraction
     public interface IClientRepository
     {
         Task<ClientDto> Add(ClientDto client);
-        
+        Task<List<ClientDto>> GetAllAsync();
 
     }
 }
