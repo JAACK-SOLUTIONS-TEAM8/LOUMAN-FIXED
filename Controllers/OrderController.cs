@@ -39,6 +39,15 @@ namespace Louman.Controllers
             return Ok(new { DeliveryType = enquiryType, StatusCode = StatusCodes.Status404NotFound });
 
         }
+        [HttpPost("DeliveryType/Add")]
+        public async Task<IActionResult> AddDeliveryType([FromBody] DeliveryTypeDto deliveryType)
+        {
+            var enquiry = await _orderRepository.AddDeliveryType(deliveryType);
+            if (enquiry != null)
+                return Ok(new { DeliveryType = enquiry, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { DeliveryType = enquiry, StatusCode = StatusCodes.Status400BadRequest });
+
+        }
 
 
     }
