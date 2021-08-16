@@ -278,7 +278,7 @@ namespace Louman.Repositories
             return await Task.FromResult(attendanceHistory);
         }
 
-        public async Task<List<RegistrationDetail>> GetEmployeeSixMonthRegistrationReport()
+        public async Task<List<RegistrationDetail>> GetEmployeeSixMonthRegistrationReport() // six month registration report
         {
 
             var mons = new Dictionary<int, int>();
