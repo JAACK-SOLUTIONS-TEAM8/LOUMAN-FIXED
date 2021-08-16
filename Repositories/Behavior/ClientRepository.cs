@@ -232,5 +232,18 @@ namespace Louman.Repositories
                               StreetNumber = a.StreetNumber
                           }).ToListAsync();
         }
+
+        public async Task<bool> DeleteAsync(int clientUserId)
+        {
+            var user = await _dbContext.Users.FindAsync(clientUserId);
+            if (user != null)
+            {
+                user.isDeleted = true;
+                _dbContext.Users.Update(user);
+                _dbContext.SaveChanges();
+                return await Task.FromResult(true);
+            }
+            return await Task.FromResult(false);
+        }
     }
 }
