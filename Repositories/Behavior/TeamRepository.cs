@@ -64,8 +64,60 @@ namespace Louman.Repositories.Behavior
                 };
 
             }
-        }
-        
+            else
+            {
+
+                var existingTeam = await (from t in _dbContext.Teams where t.TeamId == team.TeamId && t.isDeleted == false select t).SingleOrDefaultAsync();
+                var location = await _dbContext.Locations.FindAsync(team.LocationId);
+                if (existingTeam != null)
+                {
+                    existingTeam.TeamName = team.TeamName;
+                    existingTeam.TeamDescription = team.TeamDescription;
+                    existingTeam.LocationId = team.LocationId;
+                    existingTeam.MaxEmployees = team.MaxEmployees;
+                    existingTeam.StartTime = DateTime.Parse(team.StartTime);
+                    existingTeam.EndTime = DateTime.Parse(team.EndTime);
+                    _dbContext.Update(existingTeam);
+                    await _dbContext.SaveChangesAsync();
+
+                    var teamDays = await (from d in _dbContext.TeamDays where d.TeamId == team.TeamId select d).ToListAsync();
+
+                    foreach (var day in teamDays)
+                    {
+                        _dbContext.Remove(day);
+                        await _dbContext.SaveChangesAsync();
+                    }
+                    foreach (var day in team.TeamDays)
+                    {
+                        var teamDaysEntity = new TeamDaysEntity
+                        {
+                            DayId = day.DayId,
+                            TeamId = team.TeamId
+                        };
+                        await _dbContext.TeamDays.AddAsync(teamDaysEntity);
+                        await _dbContext.SaveChangesAsync();
+
+                    }
+                    return new TeamDto
+                    {
+                        TeamId = existingTeam.TeamId,
+                        TeamName = existingTeam.TeamName,
+                        TeamDescription = existingTeam.TeamDescription,
+                        LocationId = existingTeam.LocationId,
+                        MaxEmployees = existingTeam.MaxEmployees,
+                        StartTime = existingTeam.StartTime.TimeOfDay.ToString(),
+                        EndTime = existingTeam.EndTime.TimeOfDay.ToString(),
+                        locationArea = location.LocationArea,
+                        NumberOfEmployees = existingTeam.NumberOfEmployees,
+                        TeamDays = team.TeamDays
+                    };
+                }
+            }
+            return new TeamDto();
 
         }
+    }
+        
+
+        
 }
