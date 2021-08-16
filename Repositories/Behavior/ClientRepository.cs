@@ -206,5 +206,31 @@ namespace Louman.Repositories
                               StreetNumber = a.StreetNumber
                           }).SingleOrDefaultAsync();
         }
+        public async Task<List<ClientDto>> SearchByNameAsync(string name)
+        {
+            return await (from u in _dbContext.Users
+                          join c in _dbContext.Clients on u.UserId equals c.UserId
+                          join a in _dbContext.Addresses on u.AddressId equals a.AddressId
+                          where u.isDeleted == false && (string.IsNullOrEmpty(name) || u.UserName.StartsWith(name))
+                          orderby u.UserName
+                          select new ClientDto
+                          {
+                              UserId = c.UserId,
+                              ClientId = c.ClientId,
+                              AddressId = u.AddressId,
+                              CellNumber = u.CellNumber,
+                              Email = u.Email,
+                              IdNumber = u.IdNumber,
+                              Initials = u.Initials,
+                              Password = u.Password,
+                              Surname = u.Surname,
+                              UserName = u.UserName,
+                              UserTypeId = u.UserTypeId,
+                              CityCode = a.CityCode,
+                              CityName = a.CityName,
+                              StreetName = a.StreetName,
+                              StreetNumber = a.StreetNumber
+                          }).ToListAsync();
+        }
     }
 }
