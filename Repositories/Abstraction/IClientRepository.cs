@@ -13,6 +13,8 @@ namespace Louman.Repositories.Abstraction
         Task<ClientDto> GetByIdAsync(int clientId);
         Task<ClientDto> GetByUserIdAsync(int clientUserId);
         Task<List<ClientDto>> SearchByNameAsync(string name);
+        Task<bool> DeleteAsync(int clientId);
+
 
     }
 }
