@@ -61,8 +61,21 @@ namespace Louman.Repositories
             return new DeliveryTypeDto();
 
         }
+        public async Task<bool> DeleteDeliveryType(int deliveryTypeId)
+        {
+            var deliveryType = _dbContext.DeliveryTypes.Find(deliveryTypeId);
+            if (deliveryType != null)
+            {
+                deliveryType.isDeleted = true;
+                _dbContext.DeliveryTypes.Update(deliveryType);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
 
-       
+
+
     }
 }
 
