@@ -129,6 +129,19 @@ namespace Louman.Repositories
 
         }
 
+        public async Task<bool> DeleteProductSize(int productSizeId)
+        {
+            var enquirySize = _dbContext.ProductSizes.Find(productSizeId);
+            if (enquirySize != null)
+            {
+                enquirySize.isDeleted = true;
+                _dbContext.ProductSizes.Update(enquirySize);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
 
 
 
