@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Louman.Repositories
 {
-    public class ClientRepository : IClientRepository
+    public class ClientRepository : IClientRepository //mistake
     {
         private readonly AppDbContext _dbContext;
 
