@@ -73,9 +73,20 @@ namespace Louman.Repositories
             }
             return false;
         }
+        public async Task<List<DeliveryTypeDto>> GetAllDeliveryTypes()
+        {
+            return await (from d in _dbContext.DeliveryTypes
+                          where d.isDeleted == false
+                          orderby d.Description
+                          select new DeliveryTypeDto
+                          {
+                              Description = d.Description,
+                              DeliveryTypeId = d.DeliveryTypeId
+                          }).ToListAsync();
+        }
 
 
 
+        }
     }
-}
 
