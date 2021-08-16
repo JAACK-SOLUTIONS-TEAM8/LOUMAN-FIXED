@@ -12,5 +12,7 @@ namespace Louman.Repositories.Abstraction
         Task<TeamDto> AddAsync(TeamDto team);
         
 
+
+
     }
 }
