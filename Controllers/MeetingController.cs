@@ -30,8 +30,15 @@ namespace Louman.Controllers
             return NotFound(new { Slots=slots,StatusCode=StatusCodes.Status404NotFound});
 
         }
+        [HttpGet("Slot/Delete/{id}")]
+        public async Task<IActionResult> DeleteSlot([FromRoute] int id)
+        {
+            var isDeleted = await _meetingRepository.DeleteSlot(id);
+            if (isDeleted != false)
+                return Ok(new { response = true, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { response = false, StatusCode = StatusCodes.Status404NotFound });
+        }
 
-       
 
     }
 }
