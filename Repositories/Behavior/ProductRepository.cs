@@ -87,9 +87,50 @@ namespace Louman.Repositories
             return new ProductDto();
 
         }
-        
-      
 
-        
+        public async Task<ProductSizeDto> AddProductSize(ProductSizeDto productSize)
+        {
+            if (productSize.ProductSizeId == 0)
+            {
+                var newProductSize = new ProductSizeEntity
+                {
+                    ProductSizeDescription = productSize.ProductSizeDescription,
+                    isDeleted = false
+                };
+                _dbContext.ProductSizes.Add(newProductSize);
+                await _dbContext.SaveChangesAsync();
+
+
+                return await Task.FromResult(new ProductSizeDto
+                {
+                    ProductSizeId = newProductSize.ProductSizeId,
+                    ProductSizeDescription = productSize.ProductSizeDescription
+                });
+
+            }
+            else
+            {
+
+                var existingProductSize = await (from ps in _dbContext.ProductSizes where ps.ProductSizeId == productSize.ProductSizeId && ps.isDeleted == false select ps).SingleOrDefaultAsync();
+                if (existingProductSize != null)
+                {
+                    existingProductSize.ProductSizeDescription = productSize.ProductSizeDescription;
+                    _dbContext.Update(existingProductSize);
+                    await _dbContext.SaveChangesAsync();
+
+                    return await Task.FromResult(new ProductSizeDto
+                    {
+                        ProductSizeDescription = productSize.ProductSizeDescription,
+                        ProductSizeId = productSize.ProductSizeId
+                    });
+                }
+            }
+            return new ProductSizeDto();
+
+        }
+
+
+
+
     }
 }
