@@ -61,5 +61,17 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("AdminSlots/BookedSlots/{id}")]
+        public async Task<IActionResult> GetAllBookedSlotsByAdmin([FromRoute] int id)
+        {
+            var slots = await _meetingRepository.GetAllBookedSlotByAdminId(id);
+            if (slots != null)
+                return Ok(new { Slots = slots, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Slots = slots, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
+
+
     }
 }
