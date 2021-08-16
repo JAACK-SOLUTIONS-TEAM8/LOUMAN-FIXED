@@ -43,6 +43,16 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("ProductSize/Delete/{id}")]
+        public async Task<IActionResult> DeleteProductSize([FromRoute] int id)
+        {
+            var response = await _productReposiroty.DeleteProductSize(id);
+            if (response != false)
+                return Ok(new { Response = true, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Response = false, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
 
 
 
