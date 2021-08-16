@@ -151,6 +151,40 @@ namespace Louman.Repositories
 
             }
 
+              else
+            {
+                cardDetail.CardNumber = order.CardDetail.CardNumber;
+                cardDetail.HolderName = order.CardDetail.HolderName;
+                cardDetail.SecurityNumber = order.CardDetail.SecurityNumber;
+                _dbContext.CardDetails.Update(cardDetail);
+                await _dbContext.SaveChangesAsync();
+
+            }
+
+
+            return await Task.FromResult(
+                    (from o in _dbContext.Orders
+                     join u in _dbContext.Users on o.ClientUserId equals u.UserId
+                     join dt in _dbContext.DeliveryTypes on o.DeliveryTypeId equals dt.DeliveryTypeId 
+                     where o.ClientUserId == order.ClientUserId && o.OrderId == newOrderEntity.OrderId select           
+                new GetOrderDto
+                {
+                    OrderId = newOrderEntity.OrderId,
+                    BillId = billEntity.BillId,
+                    ClientUserId = order.ClientUserId,
+                    OrderStatus = newOrderEntity.OrderStatus,
+                    Total = order.Total,
+                    Discount = order.Discount,
+                    DeliveryType =dt.Description,
+                    CreatedDate=newOrderEntity.CreatedDate,
+                    PaymentType=o.PaymentType,
+                    PickupDate= o.PickupDate.Value.ToString("F"),
+                    PickupTime=o.PickupTime.Value.ToString("F"),
+                    ClientName = $"{u.Initials} {u.Surname}"
+                }).SingleOrDefault());
+
+            }
+
 
 
         }
