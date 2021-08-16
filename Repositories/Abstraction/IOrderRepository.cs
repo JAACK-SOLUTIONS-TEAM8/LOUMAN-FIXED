@@ -10,6 +10,7 @@ namespace Louman.Repositories.Abstraction
     public interface IOrderRepository
     {
         Task<DeliveryTypeDto> AddDeliveryType(DeliveryTypeDto deliveryType);
+        Task<List<DeliveryTypeDto>> GetAllDeliveryTypes();
         Task<bool> DeleteDeliveryType(int deliveryTypeId);
     }
 }
