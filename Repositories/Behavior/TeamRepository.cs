@@ -308,6 +308,36 @@ namespace Louman.Repositories.Behavior
                               TerminationReason = e.TerminationReason
                           }).ToListAsync();
         }
+
+        public async Task<bool> RemoveAsync(int teamId)  //remove team
+        {
+            var team = _dbContext.Teams.Find(teamId);
+            if (team != null)
+            {
+                team.isDeleted = true;
+                _dbContext.Teams.Update(team);
+                await _dbContext.SaveChangesAsync();
+
+                var teamDays = await (from td in _dbContext.TeamDays
+                                      join d in _dbContext.Days on td.DayId equals d.DayId
+                                      where td.TeamId == team.TeamId
+                                      select new DayDto
+                                      {
+                                          DayId = td.DayId,
+                                          DayName = d.DayName
+                                      }).ToListAsync();
+
+                foreach (var day in teamDays)
+                {
+                    _dbContext.Remove(day);
+                    await _dbContext.SaveChangesAsync();
+                }
+
+                return true;
+            }
+
+            return false;
+        }
     }
 
     
