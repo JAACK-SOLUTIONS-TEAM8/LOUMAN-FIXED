@@ -10,7 +10,8 @@ namespace Louman.Repositories.Abstraction
     public interface ITeamRepository
     {
         Task<TeamDto> AddAsync(TeamDto team);
-        
+        Task<List<TeamDto>> GetAllAsync();
+
 
 
 
