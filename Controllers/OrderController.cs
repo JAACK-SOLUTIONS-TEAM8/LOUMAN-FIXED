@@ -48,6 +48,15 @@ namespace Louman.Controllers
             return Ok(new { DeliveryType = enquiry, StatusCode = StatusCodes.Status400BadRequest });
 
         }
+        [HttpGet("DeliveryType/Delete/{id}")]
+        public async Task<IActionResult> DelteDeliveryType([FromRoute] int id)
+        {
+            var response = await _orderRepository.DeleteDeliveryType(id);
+            if (response != false)
+                return Ok(new { DeliveryTypes = response, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { DeliveryTypes = response, StatusCode = StatusCodes.Status400BadRequest });
+
+        }
 
 
     }
