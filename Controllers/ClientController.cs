@@ -65,5 +65,14 @@ namespace Louman.Controllers
             return Ok(new { Client = clients, StatusCode = StatusCodes.Status400BadRequest });
         }
 
+        [HttpGet("Delete/{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            var clients = await _clientRepository.DeleteAsync(id);
+            if (clients != false)
+                return Ok(new { Client = clients, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Client = clients, StatusCode = StatusCodes.Status400BadRequest });
+        }
+
     }
 }
