@@ -166,6 +166,48 @@ namespace Louman.Repositories
                           }).ToListAsync();
         }
 
+        public async Task<ProductTypeDto> AddProductType(ProductTypeDto productType)
+        {
+            if (productType.ProductTypeId == 0)
+            {
+                var newProductType = new ProductTypeEntity
+                {
+                    ProductTypeName = productType.ProductTypeName,
+                    isDeleted = false
+                };
+                await _dbContext.ProductTypes.AddAsync(newProductType);
+                await _dbContext.SaveChangesAsync();
+
+
+                return await Task.FromResult(new ProductTypeDto
+                {
+                    ProductTypeId = newProductType.ProductTypeId,
+                    ProductTypeName = productType.ProductTypeName
+                });
+
+            }
+            else
+            {
+
+                var existingProductType = await (from pt in _dbContext.ProductTypes where pt.ProductTypeId == productType.ProductTypeId && pt.isDeleted == false select pt).SingleOrDefaultAsync();
+                if (existingProductType != null)
+                {
+                    existingProductType.ProductTypeName = productType.ProductTypeName;
+                    _dbContext.Update(existingProductType);
+                    await _dbContext.SaveChangesAsync();
+
+                    return await Task.FromResult(new ProductTypeDto
+                    {
+                        ProductTypeName = productType.ProductTypeName,
+                        ProductTypeId = productType.ProductTypeId
+                    });
+                }
+            }
+            return new ProductTypeDto();
+
+        }
+
+
 
 
     }
