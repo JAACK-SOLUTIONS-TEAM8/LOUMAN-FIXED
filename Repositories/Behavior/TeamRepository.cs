@@ -403,8 +403,55 @@ namespace Louman.Repositories.Behavior
             }
             return true;
         }
+
+        public async Task<List<TeamEmployeeDto>> AddTeamEmployee(TeamEmployeeDto employee)
+        {
+            var existingTeam = await _dbContext.Teams.FindAsync(employee.TeamId);
+            if (existingTeam.NumberOfEmployees < existingTeam.MaxEmployees)
+            {
+
+                var employeeTeamEntity = new EmployeeTeamEntity
+                {
+                    EmployeeId = employee.EmployeeId,
+                    TeamId = employee.TeamId
+                };
+
+                await _dbContext.EmployeeTeams.AddAsync(employeeTeamEntity);
+                await _dbContext.SaveChangesAsync();
+
+                existingTeam.NumberOfEmployees += 1;
+                _dbContext.Teams.Update(existingTeam);
+                await _dbContext.SaveChangesAsync();
+            }
+
+            return await (from u in _dbContext.Users
+                          join e in _dbContext.Employees on u.UserId equals e.UserId
+                          join et in _dbContext.EmployeeTeams on e.EmployeeId equals et.EmployeeId
+                          where u.isDeleted == false && et.TeamId == employee.TeamId
+                          orderby u.UserName
+                          select new TeamEmployeeDto
+                          {
+                              UserId = e.UserId,
+                              EmployeeId = e.EmployeeId,
+                              AddressId = u.AddressId,
+                              CellNumber = u.CellNumber,
+                              Email = u.Email,
+                              IdNumber = u.IdNumber,
+                              Initials = u.Initials,
+                              Password = u.Password,
+                              Surname = u.Surname,
+                              UserName = u.UserName,
+                              UserTypeId = u.UserTypeId,
+                              CommenceDate = e.CommencementDate,
+                              TerminationDate = e.TerminationDate,
+                              TerminationReason = e.TerminationReason,
+                              TeamId = employee.TeamId
+
+                          }).ToListAsync();
+        }
+
     }
 
-    
-        
+
+
 }

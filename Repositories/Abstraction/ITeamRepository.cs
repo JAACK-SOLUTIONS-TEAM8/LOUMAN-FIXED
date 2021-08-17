@@ -19,6 +19,7 @@ namespace Louman.Repositories.Abstraction
         Task<List<TeamDto>> SearchByName(string name);
         Task<List<DayDto>> GetWeekDays();
         Task<bool> RemoveEmployeeFromTeam(int teamId, int employeeId);
+        Task<List<TeamEmployeeDto>> AddTeamEmployee(TeamEmployeeDto employee);
 
 
 

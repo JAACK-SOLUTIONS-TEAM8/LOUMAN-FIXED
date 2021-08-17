@@ -109,5 +109,15 @@ namespace Louman.Controllers
             return NotFound(new { Teams = teams, StatusCode = StatusCodes.Status404NotFound });
 
         }
+
+        [HttpPost("Employee/Add")]
+        public async Task<IActionResult> AddTeamEmployee(TeamEmployeeDto employee)
+        {
+            var employees = await _teamRepository.AddTeamEmployee(employee);
+            if (employees != null)
+                return Ok(new { Employees = employees, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Employees = employees, StatusCode = StatusCodes.Status404NotFound });
+
+        }
     }
 }
