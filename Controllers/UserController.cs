@@ -31,7 +31,17 @@ namespace Louman.Controllers
 
         }
 
-     
+        [HttpGet("UserTypes/All")]
+        public async Task<IActionResult> GetAllUserTypes()
+        {
+            var userTypes = await _userRepository.GetAllUserTypes();
+            if (userTypes != null)
+                return Ok(new { UserTypes = userTypes, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { UserTypes = userTypes, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
+
 
     }
 }
