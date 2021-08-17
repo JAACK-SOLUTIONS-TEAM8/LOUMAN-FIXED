@@ -142,6 +142,29 @@ namespace Louman.Repositories
             return false;
         }
 
+        public async Task<List<GetStockProductDto>> GetAllProduct()
+        {
+            return await (from p in _dbContext.Products
+                          join pt in _dbContext.ProductTypes on p.ProductTypeId equals pt.ProductTypeId
+                          join ps in _dbContext.ProductSizes on p.ProductSizeId equals ps.ProductSizeId
+                          join s in _dbContext.Stocks on p.ProductId equals s.ProductId
+                          where p.isDeleted == false
+                          orderby p.ProductName
+                          select new GetStockProductDto
+                          {
+                              ProductName = p.ProductName,
+                              Price = p.Price,
+                              ProductSizeId = p.ProductSizeId,
+                              ProductTypeId = p.ProductTypeId,
+                              ProductId = p.ProductId,
+                              ProductSizeDescription = ps.ProductSizeDescription,
+                              ProductTypeName = pt.ProductTypeName,
+                              ProductQuantity = s.ProductQuantity,
+                              ProductImage = p.ProductImage,
+                              StockId = s.StockId
+
+                          }).ToListAsync();
+        }
 
 
 
