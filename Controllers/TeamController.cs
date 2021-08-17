@@ -99,5 +99,15 @@ namespace Louman.Controllers
             return NotFound(new { Team = false, StatusCode = StatusCodes.Status404NotFound });
 
         }
+
+        [HttpGet("Search")]
+        public async Task<IActionResult> SearchTeam([FromQuery] string name)
+        {
+            var teams = await _teamRepository.SearchByName(name);
+            if (teams != null)
+                return Ok(new { Teams = teams, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Teams = teams, StatusCode = StatusCodes.Status404NotFound });
+
+        }
     }
 }
