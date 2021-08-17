@@ -49,6 +49,25 @@ namespace Louman.Controllers
         }
 
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById([FromRoute] int id)
+        {
+            var employee = await _employeeRepository.GetByIdAsync(id);
+            if (employee != null)
+                return Ok(new { employee = employee, statusCode = StatusCodes.Status200OK });
+            return Ok(new { employee = employee, statusCode = StatusCodes.Status400BadRequest });
+        }
+
+        [HttpGet("emp")]
+        public async Task<IActionResult> GetById([FromQuery] string name)
+        {
+            var emp = await _employeeRepository.SearchByNameAsync(name);
+            if (emp != null)
+                return Ok(new { clients = emp, statusCode = StatusCodes.Status200OK });
+            return Ok(new { clients = emp, statusCode = StatusCodes.Status400BadRequest });
+        }
+
+       
 
     }
 }
