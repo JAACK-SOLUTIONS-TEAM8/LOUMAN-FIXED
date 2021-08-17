@@ -186,7 +186,32 @@ namespace Louman.Repositories
             }
 
 
-
+        public async Task<List<GetOrderDto>> GetAllClientOrders()
+        {
+            return
+                   await (from o in _dbContext.Orders
+                          join dt in _dbContext.DeliveryTypes on o.DeliveryTypeId equals dt.DeliveryTypeId
+                          join b in _dbContext.OrderBills on o.OrderId equals b.OrderId
+                          join u in _dbContext.Users on o.ClientUserId equals u.UserId
+                          select new GetOrderDto
+                          {
+                              OrderId = o.OrderId,
+                              BillId = b.BillId,
+                              ClientUserId = o.ClientUserId,
+                              OrderStatus = o.OrderStatus,
+                              Total = b.Total.Value,
+                              Discount = b.Discount.Value,
+                              DeliveryType = dt.Description,
+                              CreatedDate = o.CreatedDate,
+                              PaymentType = o.PaymentType,
+                              ClientName = $"{u.Initials} {u.Surname}",
+                              PickupDate = o.PickupDate.Value.ToString("F"),
+                              PickupTime = o.PickupTime.Value.ToString("F")
+                          }).ToListAsync();
         }
+
+
+
+    }
 }
 
