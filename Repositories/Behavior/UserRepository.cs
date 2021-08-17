@@ -83,5 +83,18 @@ namespace Louman.Repositories
                               UserTypeDescription = ut.UserTypeDescription
                           }).SingleOrDefaultAsync();
         }
+
+        public async Task<bool> DeleteUserType(int userTypeId)
+        {
+            var userType = _dbContext.UserTypes.Find(userTypeId);
+            if (userType != null)
+            {
+                userType.isDeleted = true;
+                _dbContext.UserTypes.Update(userType);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
     }
 }
