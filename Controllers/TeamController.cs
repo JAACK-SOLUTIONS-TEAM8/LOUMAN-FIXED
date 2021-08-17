@@ -49,6 +49,7 @@ namespace Louman.Controllers
                 return Ok(new { Teams = teams, StatusCode = StatusCodes.Status200OK });
             return NotFound(new { Teams = teams, StatusCode = StatusCodes.Status404NotFound });
 
+<<<<<<< HEAD
         }
 
         [HttpGet("AttendanceData/{id}")]
@@ -59,6 +60,8 @@ namespace Louman.Controllers
                 return Ok(new { Attendance = attendance, StatusCode = StatusCodes.Status200OK });
             return NotFound(new { Attendance = attendance, StatusCode = StatusCodes.Status404NotFound });
 
+=======
+>>>>>>> dcbcf55c2e818512290ff46f35cdc4ef0c08d7f3
         }
 
     }
