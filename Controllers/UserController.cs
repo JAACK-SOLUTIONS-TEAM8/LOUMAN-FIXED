@@ -41,6 +41,16 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("UserTypes/{id}")]
+        public async Task<IActionResult> GetProdutTypeById([FromRoute] int id)
+        {
+            var userType = await _userRepository.GetUserTypeById(id);
+            if (userType != null)
+                return Ok(new { UserType = userType, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { UserType = userType, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
 
 
     }
