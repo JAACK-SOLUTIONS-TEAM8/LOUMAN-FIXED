@@ -30,7 +30,16 @@ namespace Louman.Controllers
             return Ok(new { Employee = emp, statusCode = StatusCodes.Status400BadRequest });
         }
 
-        
+        [HttpGet("Delete/{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            var isDeleted = await _employeeRepository.DeleteAsync(id);
+            if (isDeleted != false)
+                return Ok(new { Employee = isDeleted, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Employee = isDeleted, StatusCode = StatusCodes.Status400BadRequest });
+        }
+
+
 
     }
 }
