@@ -70,6 +70,15 @@ namespace Louman.Controllers
             return NotFound(new { Attendance = isMarked, StatusCode = StatusCodes.Status404NotFound });
 
         }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetTeamsById([FromRoute] int id)
+        {
+            var team = await _teamRepository.GetByIdAsync(id);
+            if (team != null)
+                return Ok(new { Team = team, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Team = team, StatusCode = StatusCodes.Status404NotFound });
+
+        }
 
     }
 }
