@@ -210,6 +210,31 @@ namespace Louman.Repositories
                           }).ToListAsync();
         }
 
+        public async Task<ClientOrderDto> GetAllClientOrderById(int orderId)
+        {
+            var products = await (from ol in _dbContext.OrderLines
+                                  join o in _dbContext.Orders on ol.OrderId equals o.OrderId
+                                  join s in _dbContext.Stocks on ol.ProductId equals s.ProductId
+                                  join p in _dbContext.Products on ol.ProductId equals p.ProductId
+                                  join ps in _dbContext.ProductSizes on p.ProductSizeId equals ps.ProductSizeId
+                                  join pt in _dbContext.ProductTypes on p.ProductTypeId equals pt.ProductTypeId
+                                  where ol.OrderId == orderId
+                                  select
+      new GetStockProductDto
+      {
+          ProductId = p.ProductId,
+          Price = p.Price,
+          ProductName = p.ProductName,
+          ProductQuantity = s.ProductQuantity,
+          ProductSizeDescription = ps.ProductSizeDescription,
+          ProductSizeId = ps.ProductSizeId,
+          ProductTypeId = pt.ProductTypeId,
+          ProductTypeName = pt.ProductTypeName,
+          StockId = s.StockId,
+
+      }).ToListAsync();
+
+           
 
 
     }
