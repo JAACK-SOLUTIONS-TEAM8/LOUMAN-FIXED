@@ -51,6 +51,16 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("Delete")]
+        public async Task<IActionResult> DeleteUserType([FromRoute] int id)
+        {
+            var response = await _userRepository.DeleteUserType(id);
+            if (response != true)
+                return Ok(new { Response = true, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Response = false, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
 
 
     }
