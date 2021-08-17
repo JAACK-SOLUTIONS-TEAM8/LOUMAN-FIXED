@@ -54,6 +54,15 @@ namespace Louman.Controllers
         }
 
 
+        [HttpGet("All")]
+        public async Task<IActionResult> GetAll()
+        {
+            var products = await _productReposiroty.GetAllProduct();
+            if (products != null)
+                return Ok(new { Products = products, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Products = products, StatusCode = StatusCodes.Status404NotFound });
+        }
+
 
 
 
