@@ -89,5 +89,15 @@ namespace Louman.Controllers
             return NotFound(new { Employees = employees, StatusCode = StatusCodes.Status404NotFound });
 
         }
+
+        [HttpGet("Delete/{id}")]
+        public async Task<IActionResult> DeleteTeam([FromRoute] int id)
+        {
+            var response = await _teamRepository.RemoveAsync(id);
+            if (response != false)
+                return Ok(new { Team = true, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Team = false, StatusCode = StatusCodes.Status404NotFound });
+
+        }
     }
 }
