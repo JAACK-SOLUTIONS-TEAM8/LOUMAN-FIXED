@@ -80,5 +80,14 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("Employee/{id}")]
+        public async Task<IActionResult> GetTeamEmployee(int id)
+        {
+            var employees = await _teamRepository.GetTeamEmployees(id);
+            if (employees != null)
+                return Ok(new { Employees = employees, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Employees = employees, StatusCode = StatusCodes.Status404NotFound });
+
+        }
     }
 }
