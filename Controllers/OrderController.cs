@@ -68,6 +68,15 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("All")]
+        public async Task<IActionResult> GetClientOrders()
+        {
+            var orders = await _orderRepository.GetAllClientOrders();
+            if (orders != null)
+                return Ok(new { Orders = orders, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Orders = orders, StatusCode = StatusCodes.Status400BadRequest });
+
+        }
 
 
     }
