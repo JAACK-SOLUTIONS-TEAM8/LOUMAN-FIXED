@@ -72,6 +72,15 @@ namespace Louman.Controllers
             return NotFound(new { ProductType = newProductType, StatusCode = StatusCodes.Status404NotFound });
 
         }
+        [HttpGet("ProductType/All")]
+        public async Task<IActionResult> GetAllProdutTypes()
+        {
+            var productTypes = await _productReposiroty.GetAllProductTypes();
+            if (productTypes != null)
+                return Ok(new { ProductTypes = productTypes, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { ProductTypes = productTypes, StatusCode = StatusCodes.Status404NotFound });
+
+        }
 
 
 
