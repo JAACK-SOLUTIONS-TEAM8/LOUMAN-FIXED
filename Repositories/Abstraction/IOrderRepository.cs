@@ -15,6 +15,7 @@ namespace Louman.Repositories.Abstraction
         Task<bool> DeleteDeliveryType(int deliveryTypeId);
         Task<GetOrderDto> AddOrder(OrderDto order);
         Task<List<GetOrderDto>> GetAllClientOrders();
+        Task<ClientOrderDto> GetAllClientOrderById(int orderId);
 
     }
 }
