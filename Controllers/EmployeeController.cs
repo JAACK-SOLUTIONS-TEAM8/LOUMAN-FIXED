@@ -39,6 +39,15 @@ namespace Louman.Controllers
             return Ok(new { Employee = isDeleted, StatusCode = StatusCodes.Status400BadRequest });
         }
 
+        [HttpGet("All")]
+        public async Task<IActionResult> GetAll()
+        {
+            var employees = await _employeeRepository.GetAllAsync();
+            if (employees != null)
+                return Ok(new { Employees = employees, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Employees = employees, StatusCode = StatusCodes.Status404NotFound });
+        }
+
 
 
     }
