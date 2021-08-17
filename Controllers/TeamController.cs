@@ -120,7 +120,7 @@ namespace Louman.Controllers
 
         }
 
-        [HttpGet("Employee/Remove")] //dont know what is wrong?
+        [HttpGet("Employee/Remove")] 
         public async Task<IActionResult> RemoveEmployeeFromTeam([FromQuery] int teamId, int employeeId)
         {
             var employees = await _teamRepository.RemoveEmployeeFromTeam(teamId, employeeId);
