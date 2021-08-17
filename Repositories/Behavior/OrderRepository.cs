@@ -278,7 +278,7 @@ namespace Louman.Repositories
                               CardDetail = new CardDetailDto { CardNumber = cd.CardNumber, HolderName = cd.HolderName, SecurityNumber = cd.SecurityNumber }
                           }).SingleOrDefaultAsync();
         }
-
+        //
 
 
     }
