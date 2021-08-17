@@ -77,6 +77,15 @@ namespace Louman.Controllers
                 return Ok(new { Employees = reponse, StatusCode = StatusCodes.Status400BadRequest });
 
         }
+        [HttpGet("EmployeeMonthlyAttendanceHistory")]
+        public async Task<IActionResult> GetEmployeeMonthlyAttendanceHistory([FromQuery] string dateInfo)
+        {
+            var history = await _employeeRepository.GetEmployeeMonthlyAttendanceReport(dateInfo);
+            if (history != null)
+                return Ok(new { History = history, StatusCode = StatusCodes.Status200OK });
+            else
+                return Ok(new { History = history, StatusCode = StatusCodes.Status400BadRequest });
 
+        }
     }
 }
