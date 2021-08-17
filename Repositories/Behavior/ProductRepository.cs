@@ -206,6 +206,17 @@ namespace Louman.Repositories
             return new ProductTypeDto();
 
         }
+        public async Task<List<ProductTypeDto>> GetAllProductTypes()
+        {
+            return await (from pt in _dbContext.ProductTypes
+                          where pt.isDeleted == false
+                          orderby pt.ProductTypeName
+                          select new ProductTypeDto
+                          {
+                              ProductTypeId = pt.ProductTypeId,
+                              ProductTypeName = pt.ProductTypeName
+                          }).ToListAsync();
+        }
 
 
 
