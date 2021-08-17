@@ -96,5 +96,21 @@ namespace Louman.Repositories
             }
             return false;
         }
+
+        public async Task<List<AuditDto>> GetAuditDetail()
+        {
+            return await (from at in _dbContext.Audits
+                          join u in _dbContext.Users on at.UserId equals u.UserId
+                          orderby at.Date descending
+                          select new AuditDto
+                          {
+                              AuditId = at.AuditId,
+                              Date = at.Date,
+                              Operation = at.Operation,
+                              UserId = at.UserId,
+                              UserName = $"{u.Initials} {u.Surname}",
+                          }).ToListAsync();
+        }
+
     }
 }
