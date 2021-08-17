@@ -17,6 +17,7 @@ namespace Louman.Repositories.Abstraction
         Task<List<EmployeeDto>> GetTeamEmployees(int teamId);
         Task<bool> RemoveAsync(int teamId);
         Task<List<TeamDto>> SearchByName(string name);
+        Task<List<DayDto>> GetWeekDays();
 
 
 
