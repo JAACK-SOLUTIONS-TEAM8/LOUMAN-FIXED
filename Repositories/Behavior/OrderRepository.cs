@@ -233,8 +233,52 @@ namespace Louman.Repositories
           StockId = s.StockId,
 
       }).ToListAsync();
+            
+            List<ProductInfo> productInfo = new List<ProductInfo>();
 
-           
+            foreach (var product in products)
+            {
+                var quantity = await (from ol in _dbContext.OrderLines
+                                      join o in _dbContext.Orders on ol.OrderId equals o.OrderId
+                                      where ol.ProductId == product.ProductId && ol.OrderId == orderId
+                                      select ol.Quantity).SingleOrDefaultAsync();
+                productInfo.Add(new ProductInfo { Product = product, Quantity = quantity.Value });
+            }
+
+            return
+                   await (from o in _dbContext.Orders
+                          join dt in _dbContext.DeliveryTypes on o.DeliveryTypeId equals dt.DeliveryTypeId
+                          join b in _dbContext.OrderBills on o.OrderId equals b.OrderId
+                          join u in _dbContext.Users on o.ClientUserId equals u.UserId
+                          join cd in _dbContext.CardDetails on o.ClientUserId equals cd.ClientUserId
+                          join a in _dbContext.Addresses on u.AddressId equals a.AddressId
+                          where o.OrderId == orderId
+                          select new ClientOrderDto
+                          {
+                              OrderId = o.OrderId,
+                              BillId = b.BillId,
+                              ClientUserId = o.ClientUserId,
+                              IdNumber = u.IdNumber,
+                              OrderStatus = o.OrderStatus,
+                              Total = b.Total.Value,
+                              Discount = b.Discount.Value,
+                              DeliveryType = dt.Description,
+                              CreatedDate = o.CreatedDate,
+                              PaymentType = o.PaymentType,
+                              ClientName = $"{u.Initials} {u.Surname}",
+                              DeliveryTypeId = o.DeliveryTypeId,
+                              Products = productInfo,
+                              Email = u.Email,
+                              CityCode = a.CityCode,
+                              CityName = a.CityName,
+                              StreetName = a.StreetName,
+                              StreetNumber = a.StreetNumber,
+                              PickupDate = o.PickupDate.Value.ToString("F"),
+                              PickupTime = o.PickupTime.Value.ToString("F"),
+                              CardDetail = new CardDetailDto { CardNumber = cd.CardNumber, HolderName = cd.HolderName, SecurityNumber = cd.SecurityNumber }
+                          }).SingleOrDefaultAsync();
+        }
+
 
 
     }
