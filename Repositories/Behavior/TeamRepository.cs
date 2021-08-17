@@ -338,8 +338,120 @@ namespace Louman.Repositories.Behavior
 
             return false;
         }
+
+        public async Task<List<TeamDto>> SearchByName(string name)  //search team
+        {
+            var teams = await (from t in _dbContext.Teams
+                               join l in _dbContext.Locations on t.LocationId equals l.LocationId
+                               where t.isDeleted == false && t.TeamName.StartsWith(name)
+                               orderby t.TeamName
+                               select new TeamDto
+                               {
+                                   TeamId = t.TeamId,
+                                   TeamName = t.TeamName,
+                                   TeamDescription = t.TeamDescription,
+                                   LocationId = t.LocationId,
+                                   MaxEmployees = t.MaxEmployees,
+                                   StartTime = t.StartTime.ToString("F"),
+                                   EndTime = t.EndTime.ToString("F"),
+                                   locationArea = l.LocationArea
+                               }).ToListAsync();
+
+            foreach (var team in teams)
+            {
+
+                var teamDays = await (from td in _dbContext.TeamDays
+                                      join d in _dbContext.Days on td.DayId equals d.DayId
+                                      where td.TeamId == team.TeamId
+                                      select new DayDto
+                                      {
+                                          DayId = td.DayId,
+                                          DayName = d.DayName
+                                      }).ToListAsync();
+                team.TeamDays = teamDays;
+
+            }
+
+            return await Task.FromResult(teams);
+
+        }
+
+        public async Task<List<DayDto>> GetWeekDays()
+        {
+            return await (from d in _dbContext.Days select 
+                         new DayDto 
+                         { 
+                             DayId=d.DayId,
+                             DayName=d.DayName
+                         }).ToListAsync();
+
+        }
+
+        public async Task<bool> RemoveEmployeeFromTeam(int teamId, int employeeId)
+        {
+            var employee = await (from et in _dbContext.EmployeeTeams where (et.TeamId == teamId && et.EmployeeId == employeeId) select et).SingleOrDefaultAsync();
+
+            _dbContext.Remove(employee);
+            await _dbContext.SaveChangesAsync();
+
+            var existingTeam = await _dbContext.Teams.FindAsync(employee.TeamId);
+            if (existingTeam.NumberOfEmployees > 0)
+            {
+                existingTeam.NumberOfEmployees -= 1;
+                _dbContext.Teams.Update(existingTeam);
+                await _dbContext.SaveChangesAsync();
+            }
+            return true;
+        }
+
+        public async Task<List<TeamEmployeeDto>> AddTeamEmployee(TeamEmployeeDto employee)
+        {
+            var existingTeam = await _dbContext.Teams.FindAsync(employee.TeamId);
+            if (existingTeam.NumberOfEmployees < existingTeam.MaxEmployees)
+            {
+
+                var employeeTeamEntity = new EmployeeTeamEntity
+                {
+                    EmployeeId = employee.EmployeeId,
+                    TeamId = employee.TeamId
+                };
+
+                await _dbContext.EmployeeTeams.AddAsync(employeeTeamEntity);
+                await _dbContext.SaveChangesAsync();
+
+                existingTeam.NumberOfEmployees += 1;
+                _dbContext.Teams.Update(existingTeam);
+                await _dbContext.SaveChangesAsync();
+            }
+
+            return await (from u in _dbContext.Users
+                          join e in _dbContext.Employees on u.UserId equals e.UserId
+                          join et in _dbContext.EmployeeTeams on e.EmployeeId equals et.EmployeeId
+                          where u.isDeleted == false && et.TeamId == employee.TeamId
+                          orderby u.UserName
+                          select new TeamEmployeeDto
+                          {
+                              UserId = e.UserId,
+                              EmployeeId = e.EmployeeId,
+                              AddressId = u.AddressId,
+                              CellNumber = u.CellNumber,
+                              Email = u.Email,
+                              IdNumber = u.IdNumber,
+                              Initials = u.Initials,
+                              Password = u.Password,
+                              Surname = u.Surname,
+                              UserName = u.UserName,
+                              UserTypeId = u.UserTypeId,
+                              CommenceDate = e.CommencementDate,
+                              TerminationDate = e.TerminationDate,
+                              TerminationReason = e.TerminationReason,
+                              TeamId = employee.TeamId
+
+                          }).ToListAsync();
+        }
+
     }
 
-    
-        
+
+
 }
