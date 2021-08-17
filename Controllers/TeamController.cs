@@ -51,5 +51,15 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("AttendanceData/{id}")]
+        public async Task<IActionResult> GetAttendanceRecord(int id)
+        {
+            var attendance = await _teamRepository.GetAttendanceData(id);
+            if (attendance != null)
+                return Ok(new { Attendance = attendance, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Attendance = attendance, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
     }
 }
