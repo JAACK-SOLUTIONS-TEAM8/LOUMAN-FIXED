@@ -72,6 +72,16 @@ namespace Louman.Repositories
                           }).ToListAsync();
         }
 
-
+        public async Task<UserTypeDto> GetUserTypeById(int userTypeId)
+        {
+            return await (from ut in _dbContext.UserTypes
+                          where ut.isDeleted == false && ut.UserTypeId == userTypeId
+                          orderby ut.UserTypeDescription
+                          select new UserTypeDto
+                          {
+                              UserTypeId = ut.UserTypeId,
+                              UserTypeDescription = ut.UserTypeDescription
+                          }).SingleOrDefaultAsync();
+        }
     }
 }
