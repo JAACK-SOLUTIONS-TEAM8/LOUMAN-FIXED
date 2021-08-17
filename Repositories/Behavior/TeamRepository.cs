@@ -375,6 +375,17 @@ namespace Louman.Repositories.Behavior
             return await Task.FromResult(teams);
 
         }
+
+        public async Task<List<DayDto>> GetWeekDays()
+        {
+            return await (from d in _dbContext.Days select 
+                         new DayDto 
+                         { 
+                             DayId=d.DayId,
+                             DayName=d.DayName
+                         }).ToListAsync();
+
+        }
     }
 
     
