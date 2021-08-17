@@ -31,6 +31,16 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("WeekDays")]
+        public async Task<IActionResult> GetWeekDays()
+        {
+            var days = await _teamRepository.GetWeekDays();
+            if (days != null)
+                return Ok(new { Days = days, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Days = days, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
 
     }
 }
