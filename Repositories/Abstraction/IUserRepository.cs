@@ -10,7 +10,7 @@ namespace Louman.Repositories.Abstraction
     public interface IUserRepository
     {
         Task<UserTypeDto> AddUserType(UserTypeDto userType);
-       
+        Task<List<UserTypeDto>> GetAllUserTypes();
 
     }
 }
