@@ -78,6 +78,16 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("All/{id}")]
+        public async Task<IActionResult> GetClientOrdersById([FromRoute] int id)
+        {
+            var order = await _orderRepository.GetAllClientOrderById(id);
+            if (order != null)
+                return Ok(new { Order = order, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Order = order, StatusCode = StatusCodes.Status400BadRequest });
+
+        }
+
 
     }
 }
