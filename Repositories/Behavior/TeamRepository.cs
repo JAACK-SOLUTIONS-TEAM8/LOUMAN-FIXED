@@ -386,6 +386,23 @@ namespace Louman.Repositories.Behavior
                          }).ToListAsync();
 
         }
+
+        public async Task<bool> RemoveEmployeeFromTeam(int teamId, int employeeId)
+        {
+            var employee = await (from et in _dbContext.EmployeeTeams where (et.TeamId == teamId && et.EmployeeId == employeeId) select et).SingleOrDefaultAsync();
+
+            _dbContext.Remove(employee);
+            await _dbContext.SaveChangesAsync();
+
+            var existingTeam = await _dbContext.Teams.FindAsync(employee.TeamId);
+            if (existingTeam.NumberOfEmployees > 0)
+            {
+                existingTeam.NumberOfEmployees -= 1;
+                _dbContext.Teams.Update(existingTeam);
+                await _dbContext.SaveChangesAsync();
+            }
+            return true;
+        }
     }
 
     
