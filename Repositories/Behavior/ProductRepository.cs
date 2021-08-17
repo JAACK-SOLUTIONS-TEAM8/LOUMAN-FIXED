@@ -228,6 +228,19 @@ namespace Louman.Repositories
                               ProductTypeName = pt.ProductTypeName
                           }).SingleOrDefaultAsync();
         }
+        public async Task<bool> DeleteProductType(int productTypeId)
+        {
+            var productType = _dbContext.ProductTypes.Find(productTypeId);
+            if (productType != null)
+            {
+                productType.isDeleted = true;
+                _dbContext.ProductTypes.Update(productType);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
 
 
 
