@@ -58,6 +58,17 @@ namespace Louman.Controllers
 
         }
 
+        [HttpPost("Add")]
+        public async Task<IActionResult> AddOrder([FromBody] OrderDto newOrdre)
+        {
+            var order = await _orderRepository.AddOrder(newOrdre);
+            if (order != null)
+                return Ok(new { Order = order, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Order = order, StatusCode = StatusCodes.Status400BadRequest });
+
+        }
+
+
 
     }
 }
