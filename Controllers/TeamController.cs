@@ -61,7 +61,15 @@ namespace Louman.Controllers
             return NotFound(new { Attendance = attendance, StatusCode = StatusCodes.Status404NotFound });
 
         }
+        [HttpPost("MarkAttendance")]
+        public async Task<IActionResult> MarkAttendance(List<AttendanceDto> attendance)
+        {
+            var isMarked = await _teamRepository.MarkAttendance(attendance);
+            if (isMarked != false)
+                return Ok(new { Attendance = isMarked, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Attendance = isMarked, StatusCode = StatusCodes.Status404NotFound });
 
+        }
 
     }
 }
