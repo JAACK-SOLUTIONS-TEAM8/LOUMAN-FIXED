@@ -41,6 +41,15 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("All")]
+        public async Task<IActionResult> GetAllTeams()
+        {
+            var teams = await _teamRepository.GetAllAsync();
+            if (teams != null)
+                return Ok(new { Teams = teams, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Teams = teams, StatusCode = StatusCodes.Status404NotFound });
+
+        }
 
     }
 }
