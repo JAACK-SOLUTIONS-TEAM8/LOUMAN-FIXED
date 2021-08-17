@@ -90,6 +90,15 @@ namespace Louman.Controllers
             return NotFound(new { ProductType = productType, StatusCode = StatusCodes.Status404NotFound });
 
         }
+        [HttpGet("ProductType/Delete/{id}")]
+        public async Task<IActionResult> DeleteProductType([FromRoute] int id)
+        {
+            var response = await _productReposiroty.DeleteProductType(id);
+            if (response != false)
+                return Ok(new { Response = true, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Response = false, StatusCode = StatusCodes.Status404NotFound });
+
+        }
 
 
 
