@@ -161,5 +161,69 @@ namespace Louman.Repositories.Behavior
 
         }
 
+      
+
+        public async Task<List<BookedSlotDto>> GetAllBookedSlotByClientId(int clientUserId)
+        {
+            return await (from bs in _dbContext.BookedSlots
+                          join s in _dbContext.Slots on bs.SlotId equals s.SlotId
+                          join au in _dbContext.Users on bs.AdminUserId equals au.UserId
+                          join cu in _dbContext.Users on bs.ClientUserId equals cu.UserId
+                          where s.isDeleted == false && bs.ClientUserId == clientUserId && s.isBooked == true && bs.isDeleted == false
+                          select new BookedSlotDto
+                          {
+                              AdminUserId = bs.AdminUserId,
+                              AdminName = $"{au.Initials} {au.Surname}",
+                              BookedSlotId = bs.BookedSlotId,
+                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              ClientUserId = bs.ClientUserId,
+                              Date = s.Date,
+                              StartTime = s.StartTime,
+                              EndTime = s.EndTime,
+                              SlotId = s.SlotId
+                          }).ToListAsync();
+        }
+
+        public async Task<bool> DeleteBookedSlot(int clientId, int slotId)
+        {
+            var bookingTime = await (
+                                    from bs in _dbContext.BookedSlots
+                                    join s in _dbContext.Slots on bs.SlotId equals s.SlotId
+                                    where s.isDeleted == false
+                                    select bs.BookingTime).SingleOrDefaultAsync();
+            if (bookingTime.Subtract(DateTime.Now).Hours < 24)
+            {
+                var slot = _dbContext.Slots.Find(slotId);
+                slot.isDeleted = true;
+                _dbContext.Slots.Update(slot);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> CancelBooking(int slotId)
+        {
+            var bookedSlot = await (
+                                    from bs in _dbContext.BookedSlots
+                                    join s in _dbContext.Slots on bs.SlotId equals s.SlotId
+                                    where s.isDeleted == false && s.SlotId == slotId
+                                    select bs).SingleOrDefaultAsync();
+            if (bookedSlot.BookingTime.Subtract(DateTime.Now).Hours < 24)
+            {
+                var slot = _dbContext.Slots.Find(slotId);
+                slot.isBooked = false;
+                _dbContext.Slots.Update(slot);
+                await _dbContext.SaveChangesAsync();
+
+                var bookedSlotEntity = await _dbContext.BookedSlots.FindAsync(bookedSlot.BookedSlotId);
+                bookedSlotEntity.isDeleted = true;
+                _dbContext.BookedSlots.Update(bookedSlotEntity);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
     }
 }
