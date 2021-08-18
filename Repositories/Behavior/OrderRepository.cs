@@ -279,6 +279,15 @@ namespace Louman.Repositories
                           }).SingleOrDefaultAsync();
         }
         //
+        public async Task<bool> CompleteOrder(int orderId)
+        {
+            var orderEntity = await _dbContext.Orders.FindAsync(orderId);
+            orderEntity.OrderStatus = "Delivered";
+            _dbContext.Orders.Update(orderEntity);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
 
 
     }
