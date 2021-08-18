@@ -114,6 +114,19 @@ namespace Louman.Controllers
 
         }
 
+        public async Task<bool> DeleteEnquiryResponse(int enquiryResponseId)
+        {
+            var enquiryResponses = _dbContext.EnquiryResponses.Find(enquiryResponseId);
+            if (enquiryResponses != null)
+            {
+                enquiryResponses.isDeleted = true;
+                _dbContext.EnquiryResponses.Update(enquiryResponses);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
 
     }
 }
