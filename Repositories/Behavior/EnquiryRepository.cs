@@ -294,6 +294,34 @@ namespace Louman.Repositories.Behavior
 
                 });
 
+            }
+            else
+            {
 
-            } 
+                var existingEnquiry = await (from e in _dbContext.Enquiries where e.EnquiryId == enquiry.EnquiryId && e.isDeleted == false select e).SingleOrDefaultAsync();
+                if (existingEnquiry != null)
+                {
+                    existingEnquiry.ClientUserId = enquiry.ClientUserId;
+                    existingEnquiry.EnquiryMessage = enquiry.EnquiryMessage;
+                    existingEnquiry.EnquiryTypeId = enquiry.EnquiryTypeId;
+                    existingEnquiry.AdminUserId = enquiry.AdminUserId;
+                    _dbContext.Update(existingEnquiry);
+                    await _dbContext.SaveChangesAsync();
+
+                    return await Task.FromResult(new EnquiryDto
+                    {
+                        ClientUserId = enquiry.ClientUserId,
+                        EnquiryMessage = enquiry.EnquiryMessage,
+                        EnquiryTypeId = enquiry.EnquiryTypeId,
+                        AdminUserId = enquiry.AdminUserId,
+                        EnquiryId = existingEnquiry.EnquiryId
+                    });
+                }
+            }
+            return new EnquiryDto();
+
         }
+        
+    }
+    
+}
