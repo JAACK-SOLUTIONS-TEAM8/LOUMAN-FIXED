@@ -151,5 +151,17 @@ namespace Louman.Repositories.Behavior
                           }).ToListAsync();
         }
 
+        public async Task<EnquiryResponseStatusDto> GetEnquiryResponseStatusById(int enquiryResponseStatusId)
+        {
+            return await (from ers in _dbContext.EnquiryResponseStatus
+                          where ers.isDeleted == false && ers.EnquiryReponseStatusId == enquiryResponseStatusId
+                          orderby ers.EnquiryReponseStatusDescription
+                          select new EnquiryResponseStatusDto
+                          {
+                              EnquiryResponseStatusDescription = ers.EnquiryReponseStatusDescription,
+                              EnquiryResponseStatusId = ers.EnquiryReponseStatusId
+                          }).SingleOrDefaultAsync();
+        }
+
     }
 }
