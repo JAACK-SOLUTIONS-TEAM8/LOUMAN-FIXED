@@ -30,5 +30,15 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("EnquiryType/All")]
+        public async Task<IActionResult> GetAllEnquiryTypes()
+        {
+            var enquiryTypes = await _enquiryRepository.GetAllEnquiryTypes();
+            if (enquiryTypes != null)
+                return Ok(new { EnquiryTypes = enquiryTypes, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { EnquiryTypes = enquiryTypes, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
     }
 }
