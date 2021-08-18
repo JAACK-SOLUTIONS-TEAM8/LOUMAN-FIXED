@@ -344,6 +344,27 @@ namespace Louman.Repositories.Behavior
                           }).ToListAsync();
         }
 
+        public async Task<GetEnquiryDto> GetEnquiryById(int enquiryId)
+        {
+            return await (from e in _dbContext.Enquiries
+                          join cu in _dbContext.Users on e.ClientUserId equals cu.UserId
+                          join au in _dbContext.Users on e.ClientUserId equals au.UserId
+                          join et in _dbContext.EnquiryTypes on e.EnquiryTypeId equals et.EnquiryTypeId
+                          where e.isDeleted == false && e.EnquiryId == enquiryId
+                          orderby e.EnquiryMessage
+                          select new GetEnquiryDto
+                          {
+                              ClientUserId = e.ClientUserId,
+                              EnquiryMessage = e.EnquiryMessage,
+                              EnquiryTypeId = e.EnquiryTypeId,
+                              AdminUserId = e.AdminUserId,
+                              EnquiryId = e.EnquiryId,
+                              EnquiryStatus = e.EnquiryStatus,
+                              AdminName = $"{au.Initials} {au.Surname}",
+                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              EnquiryType = et.EnquiryTypeDescription
+                          }).SingleOrDefaultAsync();
+        }
 
     }
     
