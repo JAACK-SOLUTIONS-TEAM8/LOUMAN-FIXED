@@ -59,5 +59,16 @@ namespace Louman.Controllers
             return Ok(new { EnquiryTypes = response, StatusCode = StatusCodes.Status400BadRequest });
 
         }
+
+
+        [HttpGet("EnquiryResponseStatus/All")]
+        public async Task<IActionResult> GetAllEnquiryResponseStatus()
+        {
+            var enquiryResponsesStatus = await _enquiryRepository.GetAllEnquiryResponseStatus();
+            if (enquiryResponsesStatus != null)
+                return Ok(new { EnquiryResponsesStatus = enquiryResponsesStatus, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { EnquiryResponsesStatus = enquiryResponsesStatus, StatusCode = StatusCodes.Status404NotFound });
+
+        }
     }
 }
