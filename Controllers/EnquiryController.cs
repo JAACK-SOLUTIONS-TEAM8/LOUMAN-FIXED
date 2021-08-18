@@ -141,6 +141,15 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("All")]
+        public async Task<IActionResult> GetAllEnquiries()
+        {
+            var enquiries = await _enquiryRepository.GetAllEnquiries();
+            if (enquiries != null)
+                return Ok(new { Enquiries = enquiries, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Enquiries = enquiries, StatusCode = StatusCodes.Status404NotFound });
+
+        }
 
 
     }
