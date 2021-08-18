@@ -128,6 +128,16 @@ namespace Louman.Controllers
 
         }
 
+        [HttpPost("Stock/WireOff")]
+        public async Task<IActionResult> WireOffStock(StockDto stock)
+        {
+            var stockProduct = await _productReposiroty.WireOffStock(stock);
+            if (stockProduct != null)
+                return Ok(new { Product = stockProduct, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Product = stockProduct, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
 
 
 
