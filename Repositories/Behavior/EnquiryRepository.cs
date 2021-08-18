@@ -377,7 +377,7 @@ namespace Louman.Repositories.Behavior
                 return true;
             }
             return false;
-        }
+        } 
 
     }
     
