@@ -16,6 +16,7 @@ namespace Louman.Repositories.Abstraction
         Task<GetOrderDto> AddOrder(OrderDto order);
         Task<List<GetOrderDto>> GetAllClientOrders();
         Task<ClientOrderDto> GetAllClientOrderById(int orderId);
+        Task<bool> CompleteOrder(int orderId);
 
     }
 }
