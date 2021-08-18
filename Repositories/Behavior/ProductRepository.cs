@@ -265,6 +265,30 @@ namespace Louman.Repositories
                           }).SingleOrDefaultAsync();
         }
 
+        public async Task<int> GetProductQuantityInStock(int productId)
+        {
+            var quantity = (await (_dbContext.Stocks.Where(stock => stock.ProductId == productId)).SingleOrDefaultAsync()).ProductQuantity;
+            return quantity;
+
+        }
+        public async Task<List<GetProductDto>> GetStockMonthlyReport(string dateInfo)
+        {
+            var date = DateTime.Parse(dateInfo);
+
+            return await (from p in _dbContext.Products
+                          join ps in _dbContext.ProductSizes on p.ProductSizeId equals ps.ProductSizeId
+                          join s in _dbContext.Stocks on p.ProductId equals s.ProductId
+                          where s.Date.Date.Month == date.Month && s.Date.Date.Year == date.Year
+                          select new GetProductDto
+                          {
+                              ProductId = p.ProductId,
+                              ProductSizeDescription = ps.ProductSizeDescription,
+                              ProductName = p.ProductName,
+                          }).ToListAsync();
+
+
+        }
+
 
 
 
