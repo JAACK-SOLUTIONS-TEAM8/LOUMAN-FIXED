@@ -109,6 +109,15 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("Stock/Quantity/{id}")]
+        public async Task<IActionResult> GetProductQuantityInStock([FromRoute] int id)
+        {
+            var quantity = await _productReposiroty.GetProductQuantityInStock(id);
+
+            return Ok(new { Quantity = quantity, StatusCode = StatusCodes.Status200OK });
+
+        }
+
 
 
 
