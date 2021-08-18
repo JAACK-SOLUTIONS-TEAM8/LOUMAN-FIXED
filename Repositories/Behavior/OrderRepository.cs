@@ -280,6 +280,54 @@ namespace Louman.Repositories
         }
         //
 
+        public async Task<List<ProductQuantityDto>> GetMonthlyReport(string dateInfo)
+        {
+
+            var date = DateTime.Parse(dateInfo);
+
+            var stockProducts = from s in _dbContext.Stocks
+                                join p in _dbContext.Products on s.ProductId equals p.ProductId
+                                join ps in _dbContext.ProductSizes on p.ProductSizeId equals ps.ProductSizeId
+                                join pt in _dbContext.ProductTypes on p.ProductTypeId equals pt.ProductTypeId
+                                select new GetStockProductDto
+                                {
+                                    ProductId = p.ProductId,
+                                    ProductImage = p.ProductImage,
+                                    ProductName = p.ProductName,
+                                    ProductSizeId = p.ProductSizeId,
+                                    ProductTypeId = p.ProductTypeId,
+                                    Price = p.ProductId,
+                                    ProductQuantity = s.ProductQuantity,
+                                    ProductSizeDescription = ps.ProductSizeDescription,
+                                    ProductTypeName = pt.ProductTypeName
+                                };
+            var orders = await (from o in _dbContext.Orders
+                                join ol in _dbContext.OrderLines on o.OrderId equals ol.OrderId
+                                where o.CreatedDate.Value.Date.Month == date.Date.Month && o.CreatedDate.Value.Date.Year == date.Date.Year
+                                select new
+                                {
+                                    ProductId = ol.ProductId,
+                                    Quantity = ol.Quantity
+                                }).ToListAsync();
+
+            List<ProductQuantityDto> productQuantity = new List<ProductQuantityDto>();
+
+            foreach (var product in stockProducts)
+            {
+                int quantity = 0;
+                foreach (var order in orders)
+                {
+                    if (product.ProductId == order.ProductId)
+                    {
+                        quantity += order.Quantity.Value;
+                    }
+                }
+                productQuantity.Add(new ProductQuantityDto { ProductId = product.ProductId, SoldQuantity = quantity, ProductName = product.ProductName, ProductSize = product.ProductSizeDescription, ProductType = product.ProductTypeName });
+            }
+
+            return await Task.FromResult(productQuantity);
+        }
+
 
     }
 }
