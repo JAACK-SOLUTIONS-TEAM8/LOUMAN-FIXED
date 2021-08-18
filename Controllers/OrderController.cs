@@ -87,6 +87,16 @@ namespace Louman.Controllers
             return Ok(new { Order = order, StatusCode = StatusCodes.Status400BadRequest });
 
         }
+        [HttpGet("Complete/{id}")]
+        public async Task<IActionResult> CompleteClientOrder([FromRoute] int id)
+        {
+            var order = await _orderRepository.CompleteOrder(id);
+            if (order != false)
+                return Ok(new { Order = order, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Order = order, StatusCode = StatusCodes.Status400BadRequest });
+
+        }
+
 
 
     }
