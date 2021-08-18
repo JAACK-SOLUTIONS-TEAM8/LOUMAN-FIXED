@@ -170,6 +170,6 @@ namespace Louman.Controllers
             return Ok(new { Enquiry = response, StatusCode = StatusCodes.Status400BadRequest });
 
         }
-
+         
     }
 }
