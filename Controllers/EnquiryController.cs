@@ -90,5 +90,15 @@ namespace Louman.Controllers
             return Ok(new { EnquiryTypes = response, StatusCode = StatusCodes.Status400BadRequest });
 
         }
+
+        [HttpPost("EnquiryResponseStatus/Add")]
+        public async Task<IActionResult> AddEnquiryResponseStatus([FromBody] EnquiryResponseStatusDto enquiryResponseStatus)
+        {
+            var enquiryStatus = await _enquiryRepository.AddEnquiryResponseStatus(enquiryResponseStatus);
+            if (enquiryStatus != null)
+                return Ok(new { EnquiryResponseStatus = enquiryStatus, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { EnquiryResponseStatus = enquiryStatus, StatusCode = StatusCodes.Status400BadRequest });
+
+        }
     }
 }
