@@ -15,7 +15,7 @@ namespace Louman.Repositories.Abstraction
         Task<bool> DeleteEnquiryType(int enquiryType);
         Task<EnquiryResponseStatusDto> AddEnquiryResponseStatus(EnquiryResponseStatusDto enquiryResponseStatus);
         Task<List<EnquiryResponseStatusDto>> GetAllEnquiryResponseStatus();
-
+        Task<EnquiryResponseStatusDto> GetEnquiryResponseStatusById(int enquiryResponseStatusId);
 
     }
     
