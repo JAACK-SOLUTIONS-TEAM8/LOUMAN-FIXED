@@ -131,6 +131,16 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("EnquiryResponse/Delete/{id}")]
+        public async Task<IActionResult> DelteEnquiryResponse([FromRoute] int id)
+        {
+            var response = await _enquiryRepository.DeleteEnquiryResponse(id);
+            if (response != true)
+                return Ok(new { EnquiryTypes = response, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { EnquiryTypes = response, StatusCode = StatusCodes.Status400BadRequest });
+
+        }
+
 
 
 
