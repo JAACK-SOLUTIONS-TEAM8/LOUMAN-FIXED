@@ -72,5 +72,18 @@ namespace Louman.Repositories.Behavior
 
         }
 
+        public async Task<EnquiryTypeDto> GetEnquiryTypeById(int enquiryTypeId)
+        {
+            return await (from et in _dbContext.EnquiryTypes
+                          where et.isDeleted == false && et.EnquiryTypeId == enquiryTypeId
+                          orderby et.EnquiryTypeDescription
+                          select new EnquiryTypeDto
+                          {
+                              EnquiryTypeDescription = et.EnquiryTypeDescription,
+                              EnquiryTypeId = et.EnquiryTypeId
+                          }).SingleOrDefaultAsync();
+
+        }
+
     }
 }
