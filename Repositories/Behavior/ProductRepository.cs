@@ -289,6 +289,19 @@ namespace Louman.Repositories
 
         }
 
+        public async Task<bool> DeleteProduct(int productId)
+        {
+            var product = _dbContext.Products.Find(productId);
+            if (product != null)
+            {
+                product.isDeleted = true;
+                _dbContext.Products.Update(product);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
 
 
 
