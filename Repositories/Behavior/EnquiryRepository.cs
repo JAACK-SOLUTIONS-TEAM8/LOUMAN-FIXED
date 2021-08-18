@@ -85,5 +85,18 @@ namespace Louman.Repositories.Behavior
 
         }
 
+        public async Task<bool> DeleteEnquiryType(int enquiryTypeId)
+        {
+            var enquiryType = _dbContext.EnquiryTypes.Find(enquiryTypeId);
+            if (enquiryType != null)
+            {
+                enquiryType.isDeleted = true;
+                _dbContext.EnquiryTypes.Update(enquiryType);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
     }
 }
