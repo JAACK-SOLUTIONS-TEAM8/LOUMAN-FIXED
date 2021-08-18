@@ -80,5 +80,15 @@ namespace Louman.Controllers
             return Ok(new { EnquiryResponseStatus = enquiryResponseStatus, StatusCode = StatusCodes.Status404NotFound });
 
         }
+
+        [HttpGet("EnquiryResponseStatus/Delete/{id}")]
+        public async Task<IActionResult> DelteEnquiryResponseStatus([FromRoute] int id)
+        {
+            var response = await _enquiryRepository.DeleteEnquiryResponseStatus(id);
+            if (response != true)
+                return Ok(new { EnquiryTypes = response, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { EnquiryTypes = response, StatusCode = StatusCodes.Status400BadRequest });
+
+        }
     }
 }
