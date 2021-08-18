@@ -240,5 +240,31 @@ namespace Louman.Repositories.Behavior
                           }).ToListAsync();
         }
 
+        public async Task<EnquiryResponseDto> GetEnquiryResponseById(int enquiryResponseId)
+        {
+            return await (from er in _dbContext.EnquiryResponses
+                          where er.isDeleted == false && er.EnquiryResponseId == enquiryResponseId
+                          orderby er.EnquiryResponseMessage
+                          select new EnquiryResponseDto
+                          {
+                              EnquiryResponseMessage = er.EnquiryResponseMessage,
+                              EnquiryResponseId = er.EnquiryResponseId
+                          }).SingleOrDefaultAsync();
+
+        }
+
+        public async Task<bool> DeleteEnquiryResponse(int enquiryResponseId)
+        {
+            var enquiryResponses = _dbContext.EnquiryResponses.Find(enquiryResponseId);
+            if (enquiryResponses != null)
+            {
+                enquiryResponses.isDeleted = true;
+                _dbContext.EnquiryResponses.Update(enquiryResponses);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
     }
 }
