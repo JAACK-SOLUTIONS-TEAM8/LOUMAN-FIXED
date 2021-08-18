@@ -101,7 +101,17 @@ namespace Louman.Controllers
 
         }
 
-       
+        [HttpPost("Response/Add")]
+        public async Task<IActionResult> AddEnquiryResponse([FromBody] EnquiryResponseDto enquiryResponse)
+        {
+            var enquiry = await _enquiryRepository.AddEnquiryResponse(enquiryResponse);
+            if (enquiry != null)
+                return Ok(new { EnquiryResponse = enquiry, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { EnquiryResponse = enquiry, StatusCode = StatusCodes.Status400BadRequest });
+
+        }
+
+
 
 
     }
