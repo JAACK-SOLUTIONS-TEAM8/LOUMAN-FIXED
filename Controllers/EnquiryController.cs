@@ -100,5 +100,19 @@ namespace Louman.Controllers
             return Ok(new { EnquiryResponseStatus = enquiryStatus, StatusCode = StatusCodes.Status400BadRequest });
 
         }
+
+        public async Task<EnquiryResponseDto> GetEnquiryResponseById(int enquiryResponseId)
+        {
+            return await (from er in _dbContext.EnquiryResponses
+                          where er.isDeleted == false && er.EnquiryResponseId == enquiryResponseId
+                          orderby er.EnquiryResponseMessage
+                          select new EnquiryResponseDto
+                          {
+                              EnquiryResponseMessage = er.EnquiryResponseMessage,
+                              EnquiryResponseId = er.EnquiryResponseId
+                          }).SingleOrDefaultAsync();
+
+        }
+
     }
 }
