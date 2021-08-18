@@ -20,6 +20,7 @@ namespace Louman.Repositories.Abstraction
         Task<EnquiryResponseDto> AddEnquiryResponse(EnquiryResponseDto enquiryResponse);
         Task<List<EnquiryResponseDto>> GetAllEnquiryResponse();
         Task<EnquiryResponseDto> GetEnquiryResponseById(int enquiryResponseId);
+        Task<bool> DeleteEnquiryResponse(int enquiryResponseId);
 
 
 
