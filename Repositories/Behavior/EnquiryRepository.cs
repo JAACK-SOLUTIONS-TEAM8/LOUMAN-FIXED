@@ -176,5 +176,31 @@ namespace Louman.Repositories.Behavior
             return false;
         }
 
-    }
+        public async Task<EnquiryResponseDto> AddEnquiryResponse(EnquiryResponseDto enquiryResponse)
+        {
+            if (enquiryResponse.EnquiryResponseId == 0)
+            {
+                var newEnquiryResponse = new EnquiryResponseEntity
+                {
+                    EnquiryResponseMessage = enquiryResponse.EnquiryResponseMessage,
+                    EnquiryId = enquiryResponse.EnquiryId,
+                    isDeleted = false
+                };
+                _dbContext.EnquiryResponses.Add(newEnquiryResponse);
+                await _dbContext.SaveChangesAsync();
+
+                var enquiryEntity = await _dbContext.Enquiries.FindAsync(enquiryResponse.EnquiryId);
+                enquiryEntity.EnquiryStatus = "Responded";
+                _dbContext.Enquiries.Update(enquiryEntity);
+                await _dbContext.SaveChangesAsync();
+                return await Task.FromResult(new EnquiryResponseDto
+                {
+                    EnquiryResponseId = newEnquiryResponse.EnquiryResponseId,
+                    EnquiryResponseMessage = enquiryResponse.EnquiryResponseMessage,
+                    EnquiryId = enquiryResponse.EnquiryId
+                });
+
+            }
+
+        }
 }
