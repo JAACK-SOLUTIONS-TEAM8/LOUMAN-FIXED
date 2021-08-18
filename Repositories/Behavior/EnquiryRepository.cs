@@ -266,6 +266,34 @@ namespace Louman.Repositories.Behavior
             return false;
         }
         //
+        public async Task<EnquiryDto> AddEnquiry(EnquiryDto enquiry)
+        {
+            if (enquiry.EnquiryId == 0)
+            {
+                var newEnquiry = new EnquiryEntity
+                {
+                    EnquiryTypeId = enquiry.EnquiryTypeId,
+                    ClientUserId = enquiry.ClientUserId,
+                    EnquiryMessage = enquiry.EnquiryMessage,
+                    AdminUserId = enquiry.AdminUserId,
+                    EnquiryStatus = "Pending",
+                    isDeleted = false
+                };
+                _dbContext.Enquiries.Add(newEnquiry);
+                await _dbContext.SaveChangesAsync();
 
-    }
-}
+
+                return await Task.FromResult(new EnquiryDto
+                {
+                    ClientUserId = enquiry.ClientUserId,
+                    EnquiryMessage = enquiry.EnquiryMessage,
+                    EnquiryTypeId = enquiry.EnquiryTypeId,
+                    EnquiryId = newEnquiry.EnquiryId,
+                    AdminUserId = enquiry.AdminUserId,
+                    EnquiryStatus = newEnquiry.EnquiryStatus
+
+                });
+
+
+            }
+        }
