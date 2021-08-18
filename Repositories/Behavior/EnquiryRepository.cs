@@ -201,6 +201,32 @@ namespace Louman.Repositories.Behavior
                 });
 
             }
+            else
+            {
 
+                var existingEnquiryResponse = await (from er in _dbContext.EnquiryResponses where er.EnquiryResponseId == enquiryResponse.EnquiryResponseId && er.isDeleted == false select er).SingleOrDefaultAsync();
+                if (existingEnquiryResponse != null)
+                {
+                    existingEnquiryResponse.EnquiryResponseMessage = enquiryResponse.EnquiryResponseMessage;
+                    _dbContext.Update(existingEnquiryResponse);
+                    await _dbContext.SaveChangesAsync();
+
+                    var enquiryEntity = await _dbContext.Enquiries.FindAsync(enquiryResponse.EnquiryId);
+                    enquiryEntity.EnquiryStatus = "Responded";
+                    _dbContext.Enquiries.Update(enquiryEntity);
+                    await _dbContext.SaveChangesAsync();
+
+
+                    return await Task.FromResult(new EnquiryResponseDto
+                    {
+                        EnquiryResponseId = existingEnquiryResponse.EnquiryResponseId,
+                        EnquiryResponseMessage = enquiryResponse.EnquiryResponseMessage,
+                        EnquiryId = enquiryResponse.EnquiryId
+                    });
+                }
+            }
+            return new EnquiryResponseDto();
         }
+
+    }
 }
