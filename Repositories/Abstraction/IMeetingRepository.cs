@@ -17,6 +17,8 @@ namespace Louman.Repositories.Abstraction
         Task<BookedSlotDto> BookSlot(int slotId, int clientUserId);
         Task<List<BookedSlotDto>> GetAllBookedSlotByAdminId(int adminId);
         Task<bool> CancelBooking(int slotId);
+        Task<bool> DeleteBookedSlot(int clientId, int slotId);
+        Task<List<BookedSlotDto>> GetAllBookedSlotByClientId(int clientId);
 
     }
 }
