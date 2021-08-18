@@ -10,7 +10,9 @@ namespace Louman.Repositories.Abstraction
     public interface IEnquiryRepository
     {
         Task<EnquiryTypeDto> AddEnquiryType(EnquiryTypeDto enquiryType);
-       
+        Task<List<EnquiryTypeDto>> GetAllEnquiryTypes();
+
+
     }
     
 }
