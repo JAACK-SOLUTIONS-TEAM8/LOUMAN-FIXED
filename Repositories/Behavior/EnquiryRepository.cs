@@ -163,5 +163,18 @@ namespace Louman.Repositories.Behavior
                           }).SingleOrDefaultAsync();
         }
 
+        public async Task<bool> DeleteEnquiryResponseStatus(int enquiryResponseStatusId)
+        {
+            var enquiryResponsesStatus = _dbContext.EnquiryResponseStatus.Find(enquiryResponseStatusId);
+            if (enquiryResponsesStatus != null)
+            {
+                enquiryResponsesStatus.isDeleted = true;
+                _dbContext.EnquiryResponseStatus.Update(enquiryResponsesStatus);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
     }
 }
