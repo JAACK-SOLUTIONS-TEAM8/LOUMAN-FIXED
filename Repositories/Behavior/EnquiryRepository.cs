@@ -98,5 +98,46 @@ namespace Louman.Repositories.Behavior
             return false;
         }
 
+        public async Task<EnquiryResponseStatusDto> AddEnquiryResponseStatus(EnquiryResponseStatusDto enquiryResponseStatus)
+        {
+            if (enquiryResponseStatus.EnquiryResponseStatusId == 0)
+            {
+                var newEnquiryResponseStatus = new EnquiryResponseStatusEntity
+                {
+                    EnquiryReponseStatusDescription = enquiryResponseStatus.EnquiryResponseStatusDescription,
+                    isDeleted = false
+                };
+                _dbContext.EnquiryResponseStatus.Add(newEnquiryResponseStatus);
+                await _dbContext.SaveChangesAsync();
+
+
+                return await Task.FromResult(new EnquiryResponseStatusDto
+                {
+                    EnquiryResponseStatusId = newEnquiryResponseStatus.EnquiryReponseStatusId,
+                    EnquiryResponseStatusDescription = newEnquiryResponseStatus.EnquiryReponseStatusDescription
+                });
+
+            }
+            else
+            {
+
+                var existingEnquiryResponseStatus = await (from ers in _dbContext.EnquiryResponseStatus where ers.EnquiryReponseStatusId == enquiryResponseStatus.EnquiryResponseStatusId && ers.isDeleted == false select ers).SingleOrDefaultAsync();
+                if (existingEnquiryResponseStatus != null)
+                {
+                    existingEnquiryResponseStatus.EnquiryReponseStatusDescription = enquiryResponseStatus.EnquiryResponseStatusDescription;
+                    _dbContext.Update(existingEnquiryResponseStatus);
+                    await _dbContext.SaveChangesAsync();
+
+                    return await Task.FromResult(new EnquiryResponseStatusDto
+                    {
+                        EnquiryResponseStatusDescription = existingEnquiryResponseStatus.EnquiryReponseStatusDescription,
+                        EnquiryResponseStatusId = existingEnquiryResponseStatus.EnquiryReponseStatusId
+                    });
+                }
+            }
+            return new EnquiryResponseStatusDto();
+
+        }
+
     }
 }
