@@ -420,6 +420,31 @@ namespace Louman.Repositories.Behavior
                               EnquiryType = et.EnquiryTypeDescription
                           }).ToListAsync();
         }
+        public async Task<EnquiryWithResponseDto> GetEnquiryWithResponse(int enquiryId)
+        {
+            var enquiryResponse = await _dbContext.EnquiryResponses.Where(response => response.EnquiryId == enquiryId).FirstOrDefaultAsync();
+            return await (from e in _dbContext.Enquiries
+                          join cu in _dbContext.Users on e.ClientUserId equals cu.UserId
+                          join au in _dbContext.Users on e.ClientUserId equals au.UserId
+                          join et in _dbContext.EnquiryTypes on e.EnquiryTypeId equals et.EnquiryTypeId
+                          where e.isDeleted == false && e.EnquiryId == enquiryId
+                          orderby e.EnquiryMessage
+                          select new EnquiryWithResponseDto
+                          {
+                              ClientUserId = e.ClientUserId,
+                              EnquiryMessage = e.EnquiryMessage,
+                              EnquiryTypeId = e.EnquiryTypeId,
+                              AdminUserId = e.AdminUserId,
+                              EnquiryId = e.EnquiryId,
+                              EnquiryStatus = e.EnquiryStatus,
+                              AdminName = $"{au.Initials} {au.Surname}",
+                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              EnquiryType = et.EnquiryTypeDescription,
+                              EnquiryResponseId = enquiryResponse != null ? enquiryResponse.EnquiryResponseId : 0,
+                              EnquiryResponseMessage = enquiryResponse != null ? enquiryResponse.EnquiryResponseMessage : ""
+                          }).SingleOrDefaultAsync();
+
+        }
     }
     
 }
