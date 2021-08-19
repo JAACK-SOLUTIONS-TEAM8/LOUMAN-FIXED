@@ -131,9 +131,54 @@ namespace Louman.Controllers
 
         }
 
+        
+
+        [HttpGet("All")]
+        public async Task<IActionResult> GetAllEnquiries()
+        {
+            var enquiries = await _enquiryRepository.GetAllEnquiries();
+            if (enquiries != null)
+                return Ok(new { Enquiries = enquiries, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Enquiries = enquiries, StatusCode = StatusCodes.Status404NotFound });
+
+        }
 
 
+        [HttpGet("Delete/{id}")]
+        public async Task<IActionResult> DelteEnquiry([FromRoute] int id)
+        {
+            var response = await _enquiryRepository.DeleteEnquiry(id);
+            if (response != false)
+                return Ok(new { Enquiry = response, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Enquiry = response, StatusCode = StatusCodes.Status400BadRequest });
 
+        }
+        [HttpGet("AdminEnquries/{id}")]
+        public async Task<IActionResult> GetAdminEnquiriesByAdminUserId([FromRoute] int id)
+        {
+            var enquiry = await _enquiryRepository.GetAllAdminEnquiryById(id);
+            if (enquiry != null)
+                return Ok(new { Enquiries = enquiry, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Enquiries = enquiry, StatusCode = StatusCodes.Status404NotFound });
 
+        }
+        [HttpGet("AdminEnquries")]
+        public async Task<IActionResult> GetAdminEnquiriesByEnquiryTypeId([FromQuery] int adminUserId, int enquiryTypeId)
+        {
+            var enquiry = await _enquiryRepository.GetAllAdminEnquiryByEnquiryTypeId(adminUserId, enquiryTypeId);
+            if (enquiry != null)
+                return Ok(new { Enquiries = enquiry, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Enquiries = enquiry, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+        [HttpGet("WithResponse/{id}")]
+        public async Task<IActionResult> GetEnquiryWithResponse([FromRoute] int id)
+        {
+            var enquiry = await _enquiryRepository.GetEnquiryWithResponse(id);
+            if (enquiry != null)
+                return Ok(new { Enquiry = enquiry, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Enquiry = enquiry, StatusCode = StatusCodes.Status404NotFound });
+
+        }
     }
 }
