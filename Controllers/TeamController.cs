@@ -129,5 +129,14 @@ namespace Louman.Controllers
             return NotFound(new { Employees = employees, StatusCode = StatusCodes.Status404NotFound });
 
         }
+        [HttpGet("AttendanceReportData")]
+        public async Task<IActionResult> GetAttendanceData([FromQuery] int teamId, string date)
+        {
+            var attendance = await _teamRepository.GetAttendanceDataForReport(teamId, date);
+            if (attendance != null)
+                return Ok(new { Attendance = attendance, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Attendance = attendance, StatusCode = StatusCodes.Status404NotFound });
+
+        }
     }
 }
