@@ -87,5 +87,14 @@ namespace Louman.Controllers
                 return Ok(new { History = history, StatusCode = StatusCodes.Status400BadRequest });
 
         }
+
+        [HttpPost("Update")]
+        public async Task<IActionResult> Update([FromBody] UpdateEmployeeDto employee)
+        {
+            var emp = await _employeeRepository.Update(employee);
+            if (emp != null)
+                return Ok(new { Employee = emp, statusCode = StatusCodes.Status200OK });
+            return Ok(new { Employee = emp, statusCode = StatusCodes.Status400BadRequest });
+        }
     }
 }

@@ -314,6 +314,25 @@ namespace Louman.Repositories
             return await Task.FromResult(registeredEmployee);
         }
 
+        public Task<UpdateEmployeeDto> Update(UpdateEmployeeDto employee)
+        {
+            var user = (from u in _dbContext.Users where u.UserId == employee.UserId && u.isDeleted == false select u).SingleOrDefault();
+            var emp = (from e in _dbContext.Employees where e.UserId == employee.UserId && user.isDeleted == false select e).SingleOrDefault();
+
+            user.Email = employee.Email;
+            user.Surname = employee.Surname;
+            user.Initials = employee.Initials;
+
+            _dbContext.Update(user);
+            _dbContext.SaveChanges();
+
+            emp.Image = employee.Image;
+            _dbContext.Update(emp);
+            _dbContext.SaveChanges();
+
+            return Task.FromResult(employee);
+        }
+
 
     }
 

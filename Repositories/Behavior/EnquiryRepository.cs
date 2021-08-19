@@ -266,6 +266,185 @@ namespace Louman.Repositories.Behavior
             return false;
         }
         //
+        public async Task<EnquiryDto> AddEnquiry(EnquiryDto enquiry)
+        {
+            if (enquiry.EnquiryId == 0)
+            {
+                var newEnquiry = new EnquiryEntity
+                {
+                    EnquiryTypeId = enquiry.EnquiryTypeId,
+                    ClientUserId = enquiry.ClientUserId,
+                    EnquiryMessage = enquiry.EnquiryMessage,
+                    AdminUserId = enquiry.AdminUserId,
+                    EnquiryStatus = "Pending",
+                    isDeleted = false
+                };
+                _dbContext.Enquiries.Add(newEnquiry);
+                await _dbContext.SaveChangesAsync();
 
+
+                return await Task.FromResult(new EnquiryDto
+                {
+                    ClientUserId = enquiry.ClientUserId,
+                    EnquiryMessage = enquiry.EnquiryMessage,
+                    EnquiryTypeId = enquiry.EnquiryTypeId,
+                    EnquiryId = newEnquiry.EnquiryId,
+                    AdminUserId = enquiry.AdminUserId,
+                    EnquiryStatus = newEnquiry.EnquiryStatus
+
+                });
+
+            }
+            else
+            {
+
+                var existingEnquiry = await (from e in _dbContext.Enquiries where e.EnquiryId == enquiry.EnquiryId && e.isDeleted == false select e).SingleOrDefaultAsync();
+                if (existingEnquiry != null)
+                {
+                    existingEnquiry.ClientUserId = enquiry.ClientUserId;
+                    existingEnquiry.EnquiryMessage = enquiry.EnquiryMessage;
+                    existingEnquiry.EnquiryTypeId = enquiry.EnquiryTypeId;
+                    existingEnquiry.AdminUserId = enquiry.AdminUserId;
+                    _dbContext.Update(existingEnquiry);
+                    await _dbContext.SaveChangesAsync();
+
+                    return await Task.FromResult(new EnquiryDto
+                    {
+                        ClientUserId = enquiry.ClientUserId,
+                        EnquiryMessage = enquiry.EnquiryMessage,
+                        EnquiryTypeId = enquiry.EnquiryTypeId,
+                        AdminUserId = enquiry.AdminUserId,
+                        EnquiryId = existingEnquiry.EnquiryId
+                    });
+                }
+            }
+            return new EnquiryDto();
+
+        }
+
+        public async Task<List<GetEnquiryDto>> GetAllEnquiries()
+        {
+            return await (from e in _dbContext.Enquiries
+                          join cu in _dbContext.Users on e.ClientUserId equals cu.UserId
+                          join au in _dbContext.Users on e.ClientUserId equals au.UserId
+                          join et in _dbContext.EnquiryTypes on e.EnquiryTypeId equals et.EnquiryTypeId
+                          where e.isDeleted == false
+                          orderby e.EnquiryMessage
+                          select new GetEnquiryDto
+                          {
+                              ClientUserId = e.ClientUserId,
+                              EnquiryMessage = e.EnquiryMessage,
+                              EnquiryTypeId = e.EnquiryTypeId,
+                              AdminUserId = e.AdminUserId,
+                              EnquiryId = e.EnquiryId,
+                              EnquiryStatus = e.EnquiryStatus,
+                              AdminName = $"{au.Initials} {au.Surname}",
+                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              EnquiryType = et.EnquiryTypeDescription
+                          }).ToListAsync();
+        }
+
+        public async Task<GetEnquiryDto> GetEnquiryById(int enquiryId)
+        {
+            return await (from e in _dbContext.Enquiries
+                          join cu in _dbContext.Users on e.ClientUserId equals cu.UserId
+                          join au in _dbContext.Users on e.ClientUserId equals au.UserId
+                          join et in _dbContext.EnquiryTypes on e.EnquiryTypeId equals et.EnquiryTypeId
+                          where e.isDeleted == false && e.EnquiryId == enquiryId
+                          orderby e.EnquiryMessage
+                          select new GetEnquiryDto
+                          {
+                              ClientUserId = e.ClientUserId,
+                              EnquiryMessage = e.EnquiryMessage,
+                              EnquiryTypeId = e.EnquiryTypeId,
+                              AdminUserId = e.AdminUserId,
+                              EnquiryId = e.EnquiryId,
+                              EnquiryStatus = e.EnquiryStatus,
+                              AdminName = $"{au.Initials} {au.Surname}",
+                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              EnquiryType = et.EnquiryTypeDescription
+                          }).SingleOrDefaultAsync();
+        }
+
+        public async Task<bool> DeleteEnquiry(int enquiryId)
+        {
+            var enquiry = _dbContext.Enquiries.Find(enquiryId);
+            if (enquiry != null)
+            {
+                enquiry.isDeleted = true;
+                _dbContext.Enquiries.Update(enquiry);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+        public async Task<List<GetEnquiryDto>> GetAllAdminEnquiryById(int adminUserId)
+        {
+            return await (from e in _dbContext.Enquiries
+                          join cu in _dbContext.Users on e.ClientUserId equals cu.UserId
+                          join au in _dbContext.Users on e.ClientUserId equals au.UserId
+                          join et in _dbContext.EnquiryTypes on e.EnquiryTypeId equals et.EnquiryTypeId
+                          where e.isDeleted == false && e.AdminUserId == adminUserId
+                          orderby e.EnquiryMessage
+                          select new GetEnquiryDto
+                          {
+                              ClientUserId = e.ClientUserId,
+                              EnquiryMessage = e.EnquiryMessage,
+                              EnquiryTypeId = e.EnquiryTypeId,
+                              AdminUserId = e.AdminUserId,
+                              EnquiryId = e.EnquiryId,
+                              EnquiryStatus = e.EnquiryStatus,
+                              AdminName = $"{au.Initials} {au.Surname}",
+                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              EnquiryType = et.EnquiryTypeDescription
+                          }).ToListAsync();
+        }
+        public async Task<List<GetEnquiryDto>> GetAllAdminEnquiryByEnquiryTypeId(int adminUserId, int enquiryTypeId)
+        {
+            return await (from e in _dbContext.Enquiries
+                          join cu in _dbContext.Users on e.ClientUserId equals cu.UserId
+                          join au in _dbContext.Users on e.ClientUserId equals au.UserId
+                          join et in _dbContext.EnquiryTypes on e.EnquiryTypeId equals et.EnquiryTypeId
+                          where e.isDeleted == false && e.AdminUserId == adminUserId && e.EnquiryTypeId == enquiryTypeId
+                          orderby e.EnquiryMessage
+                          select new GetEnquiryDto
+                          {
+                              ClientUserId = e.ClientUserId,
+                              EnquiryMessage = e.EnquiryMessage,
+                              EnquiryTypeId = e.EnquiryTypeId,
+                              AdminUserId = e.AdminUserId,
+                              EnquiryId = e.EnquiryId,
+                              EnquiryStatus = e.EnquiryStatus,
+                              AdminName = $"{au.Initials} {au.Surname}",
+                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              EnquiryType = et.EnquiryTypeDescription
+                          }).ToListAsync();
+        }
+        public async Task<EnquiryWithResponseDto> GetEnquiryWithResponse(int enquiryId)
+        {
+            var enquiryResponse = await _dbContext.EnquiryResponses.Where(response => response.EnquiryId == enquiryId).FirstOrDefaultAsync();
+            return await (from e in _dbContext.Enquiries
+                          join cu in _dbContext.Users on e.ClientUserId equals cu.UserId
+                          join au in _dbContext.Users on e.ClientUserId equals au.UserId
+                          join et in _dbContext.EnquiryTypes on e.EnquiryTypeId equals et.EnquiryTypeId
+                          where e.isDeleted == false && e.EnquiryId == enquiryId
+                          orderby e.EnquiryMessage
+                          select new EnquiryWithResponseDto
+                          {
+                              ClientUserId = e.ClientUserId,
+                              EnquiryMessage = e.EnquiryMessage,
+                              EnquiryTypeId = e.EnquiryTypeId,
+                              AdminUserId = e.AdminUserId,
+                              EnquiryId = e.EnquiryId,
+                              EnquiryStatus = e.EnquiryStatus,
+                              AdminName = $"{au.Initials} {au.Surname}",
+                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              EnquiryType = et.EnquiryTypeDescription,
+                              EnquiryResponseId = enquiryResponse != null ? enquiryResponse.EnquiryResponseId : 0,
+                              EnquiryResponseMessage = enquiryResponse != null ? enquiryResponse.EnquiryResponseMessage : ""
+                          }).SingleOrDefaultAsync();
+
+        }
     }
+    
 }
