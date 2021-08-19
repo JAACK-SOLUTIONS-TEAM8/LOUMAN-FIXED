@@ -336,13 +336,14 @@ namespace Louman.Repositories
 
 
         }
-        public async Task<GetStockProductDto> GetProductById(int productId)
+
+        public async Task<GetStockProductDto> GetStockProductById(int stockId)
         {
             return await (from p in _dbContext.Products
                           join pt in _dbContext.ProductTypes on p.ProductTypeId equals pt.ProductTypeId
                           join ps in _dbContext.ProductSizes on p.ProductSizeId equals ps.ProductSizeId
                           join s in _dbContext.Stocks on p.ProductId equals s.ProductId
-                          where p.isDeleted == false && p.ProductId == productId
+                          where p.isDeleted == false && s.StockId == stockId
                           orderby p.ProductName
                           select new GetStockProductDto
                           {
@@ -354,11 +355,13 @@ namespace Louman.Repositories
                               ProductSizeDescription = ps.ProductSizeDescription,
                               ProductTypeName = pt.ProductTypeName,
                               ProductQuantity = s.ProductQuantity,
-                              ProductImage = p.ProductImage,
-                              StockId = s.StockId
+                              StockId = s.StockId,
+                              ProductImage = p.ProductImage
 
                           }).SingleOrDefaultAsync();
+
         }
+
 
 
 
