@@ -22,6 +22,7 @@ namespace Louman.Repositories.Abstraction
         Task<int> GetProductQuantityInStock(int productId);
         Task<bool> DeleteProduct(int productId);
         Task<GetStockProductDto> WireOffStock(StockDto stock);
+        Task<List<ProductSizeDto>> GetAllProductSize();
 
 
 
