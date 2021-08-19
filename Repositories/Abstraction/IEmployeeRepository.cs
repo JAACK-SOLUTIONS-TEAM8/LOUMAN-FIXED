@@ -16,6 +16,7 @@ namespace Louman.Repositories.Abstraction
         Task<List<EmployeeAttendance>> GetEmployeeMonthlyAttendanceReport(string dateInfo);
         Task<List<RegistrationDetail>> GetEmployeeSixMonthRegistrationReport();
         Task<UpdateEmployeeDto> Update(UpdateEmployeeDto employee);
+        Task<EmployeeDto> GetByUserIdAsync(int userId);
 
 
 
