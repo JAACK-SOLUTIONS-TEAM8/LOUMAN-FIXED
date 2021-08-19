@@ -341,9 +341,23 @@ namespace Louman.Repositories
 
             return Task.FromResult(employee);
         }
+        .
+         public async Task<EmployeeDto> GetByUserIdAsync(int userId)
+        {
+            var team = await (from et in _dbContext.EmployeeTeams
+                              join t in _dbContext.Teams on et.TeamId equals t.TeamId
+                              join e in _dbContext.Employees on et.EmployeeId equals e.EmployeeId
+                              where e.UserId == userId
+                              select
+new
+{
+    TeamId = t.TeamId,
+    TeamName = t.TeamName
+}).SingleOrDefaultAsync();
 
 
-    }
+
+        }
 
 
 
