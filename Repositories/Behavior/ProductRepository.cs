@@ -362,6 +362,19 @@ namespace Louman.Repositories
 
         }
 
+        public async Task<List<ProductSizeDto>> GetAllProductSize()
+        {
+            return await (from ps in _dbContext.ProductSizes
+                          where ps.isDeleted == false
+                          orderby ps.ProductSizeDescription
+                          select new ProductSizeDto
+                          {
+                              ProductSizeId = ps.ProductSizeId,
+                              ProductSizeDescription = ps.ProductSizeDescription
+                          }).ToListAsync();
+
+        }
+
 
 
 
