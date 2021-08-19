@@ -88,6 +88,14 @@ namespace Louman.Controllers
                 return Ok(new { Slot = newSlot, StatusCode = StatusCodes.Status200OK });
             return NotFound(new { Slot = newSlot, StatusCode = StatusCodes.Status404NotFound });
         }
+        [HttpGet("BookedSlots/Cancel/{id}")]
+        public async Task<IActionResult> CancelBooking(int id)
+        {
+            var isBooked = await _meetingRepository.CancelBooking(id);
+            if (isBooked != false)
+                return Ok(new { Response = isBooked, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Response = isBooked, StatusCode = StatusCodes.Status404NotFound });
 
+        }
     }
 }
