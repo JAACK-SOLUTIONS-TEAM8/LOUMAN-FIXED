@@ -19,6 +19,8 @@ namespace Louman.Repositories.Abstraction
         Task<bool> CancelBooking(int slotId);
         Task<bool> DeleteBookedSlot(int clientId, int slotId);
         Task<List<BookedSlotDto>> GetAllBookedSlotByClientId(int clientId);
+        Task<SlotDto> AddNewSlot(SlotDto slot);
+
 
     }
 }
