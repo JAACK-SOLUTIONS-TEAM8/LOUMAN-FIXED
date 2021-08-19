@@ -147,6 +147,16 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("ProductSize/All")]
+        public async Task<IActionResult> GetAllProdutSizes()
+        {
+            var productSizes = await _productReposiroty.GetAllProductSize();
+            if (productSizes != null)
+                return Ok(new { ProductSizes = productSizes, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { ProductSizes = productSizes, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
 
 
 
