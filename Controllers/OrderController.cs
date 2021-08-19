@@ -97,6 +97,14 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("MonthlySalesReport")]
+        public async Task<IActionResult> GetMonthlySalesReport([FromQuery] string dateInfo)
+        {
+            var quantity = await _orderRepository.GetMonthlyReport(dateInfo);
+
+            return Ok(new { Quantity = quantity, StatusCode = StatusCodes.Status200OK });
+
+        }
 
 
     }
