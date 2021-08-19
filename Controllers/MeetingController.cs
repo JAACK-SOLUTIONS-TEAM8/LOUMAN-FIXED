@@ -71,7 +71,14 @@ namespace Louman.Controllers
 
         }
 
-
+        [HttpPost("Slot/Add")]
+        public async Task<IActionResult> AddSlot(SlotDto slot)
+        {
+            var newSlot = await _meetingRepository.AddNewSlot(slot);
+            if (newSlot != null)
+                return Ok(new { Slot = newSlot, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Slot = newSlot, StatusCode = StatusCodes.Status404NotFound });
+        }
 
     }
 }
