@@ -386,6 +386,43 @@ namespace Louman.Repositories.Behavior
                          }).ToListAsync();
 
         }
+        public async Task<List<AttendanceDto>> GetAttendanceDataForReport(int teamId, string date)
+        {
+            var todayRecord = await (from ah in _dbContext.AttendanceHistoryEntities
+                                     where ah.TeamId == teamId && ah.Date.Date == DateTime.Parse(date).Date
+                                     select ah).SingleOrDefaultAsync();
+
+            if (todayRecord == null)
+            {
+
+                return new List<AttendanceDto>();
+
+            }
+            else
+            {
+
+                var attendanceRecord = await (from a in _dbContext.AttendanceEntities
+                                              join ah in _dbContext.AttendanceHistoryEntities on a.AttendanceHistoryId equals ah.AttendanceHistoryId
+                                              join e in _dbContext.Employees on a.EmployeeId equals e.EmployeeId
+                                              join u in _dbContext.Users on e.UserId equals u.UserId
+                                              where u.isDeleted == false && ah.Date.Date == DateTime.Parse(date).Date && ah.TeamId == teamId
+                                              select new AttendanceDto
+                                              {
+                                                  AttendanceId = a.AttendanceId,
+                                                  AttendanceHistoryId = ah.AttendanceHistoryId,
+                                                  Absent = a.Absent,
+                                                  Present = a.Present,
+                                                  Date = ah.Date,
+                                                  EmployeeId = a.EmployeeId,
+                                                  Initials = u.Initials,
+                                                  Surname = u.Surname,
+                                                  Reason = a.Reason,
+                                                  TeamId = teamId
+                                              }).ToListAsync();
+                return attendanceRecord;
+
+            }
+        }
 
         public async Task<bool> RemoveEmployeeFromTeam(int teamId, int employeeId)
         {
