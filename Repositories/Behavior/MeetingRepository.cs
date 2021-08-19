@@ -225,5 +225,60 @@ namespace Louman.Repositories.Behavior
             return false;
         }
 
+        public async Task<SlotDto> AddNewSlot(SlotDto slot)
+        {
+            if (slot.SlotId == 0)
+            {
+                var newSlot = new SlotEntity
+                {
+                    Date = slot.Date,
+                    StartTime = Convert.ToDateTime(slot.StartTime),
+                    EndTime = Convert.ToDateTime(slot.EndTime),
+                    isBooked = false,
+                    AdminUserId = slot.AdminUserId,
+                    isDeleted = false
+                };
+                _dbContext.Slots.Add(newSlot);
+                await _dbContext.SaveChangesAsync();
+                return await Task.FromResult(new SlotDto
+                {
+                    Date = slot.Date,
+                    SlotId = newSlot.SlotId,
+                    AdminUserId = slot.AdminUserId,
+                    StartTime = slot.StartTime,
+                    EndTime = slot.EndTime,
+                    isBooked = false
+                });
+
+            }
+            else
+            {
+
+                var existingSlot = (from s in _dbContext.Slots where s.SlotId == slot.SlotId && s.isDeleted == false select s).SingleOrDefault();
+                if (existingSlot != null)
+                {
+                    existingSlot.StartTime = Convert.ToDateTime(slot.StartTime);
+                    existingSlot.EndTime = Convert.ToDateTime(slot.EndTime);
+
+                    _dbContext.Update(existingSlot);
+                    await _dbContext.SaveChangesAsync();
+
+
+
+                    return await Task.FromResult(new SlotDto
+                    {
+                        Date = slot.Date,
+                        SlotId = slot.SlotId,
+                        AdminUserId = slot.AdminUserId,
+                        StartTime = slot.StartTime,
+                        EndTime = slot.EndTime,
+                        isBooked = slot.isBooked
+                    });
+                }
+            }
+            return null;
+
+        }
+
     }
 }
