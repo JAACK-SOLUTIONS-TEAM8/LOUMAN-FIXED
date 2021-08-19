@@ -17,6 +17,8 @@ namespace Louman.Repositories.Abstraction
         Task<List<GetOrderDto>> GetAllClientOrders();
         Task<ClientOrderDto> GetAllClientOrderById(int orderId);
         Task<bool> CompleteOrder(int orderId);
+        Task<List<ProductQuantityDto>> GetMonthlyReport(string dateInfo);
+
 
     }
 }
