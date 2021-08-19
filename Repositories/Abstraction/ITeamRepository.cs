@@ -20,6 +20,7 @@ namespace Louman.Repositories.Abstraction
         Task<List<DayDto>> GetWeekDays();
         Task<bool> RemoveEmployeeFromTeam(int teamId, int employeeId);
         Task<List<TeamEmployeeDto>> AddTeamEmployee(TeamEmployeeDto employee);
+        Task<List<AttendanceDto>> GetAttendanceDataForReport(int teamId, string date);
 
 
 
