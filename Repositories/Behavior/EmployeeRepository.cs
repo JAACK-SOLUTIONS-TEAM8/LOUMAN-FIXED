@@ -174,6 +174,15 @@ namespace Louman.Repositories
 
         public async Task<EmployeeDto> GetByIdAsync(int employeeId)  //get employee by ID
         {
+          
+            var team=await (from  et in _dbContext.EmployeeTeams 
+                     join t in _dbContext.Teams on et.TeamId equals t.TeamId
+                     where et.EmployeeId ==employeeId select
+                     new{
+                     TeamId=t.TeamId,
+                     TeamName=t.TeamName
+                     }).SingleOrDefaultAsync();
+            
             return await (from u in _dbContext.Users
                           join e in _dbContext.Employees on u.UserId equals e.UserId
                           where u.isDeleted == false && e.EmployeeId == employeeId
