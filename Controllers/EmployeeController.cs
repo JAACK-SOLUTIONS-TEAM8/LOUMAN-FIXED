@@ -96,5 +96,14 @@ namespace Louman.Controllers
                 return Ok(new { Employee = emp, statusCode = StatusCodes.Status200OK });
             return Ok(new { Employee = emp, statusCode = StatusCodes.Status400BadRequest });
         }
+
+        [HttpGet("Clients")]
+        public async Task<IActionResult> GetById([FromQuery] string name)
+        {
+            var clients = await _employeeRepository.SearchByNameAsync(name);
+            if (clients != null)
+                return Ok(new { clients = clients, statusCode = StatusCodes.Status200OK });
+            return Ok(new { clients = clients, statusCode = StatusCodes.Status400BadRequest });
+        }
     }
 }
