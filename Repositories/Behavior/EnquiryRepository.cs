@@ -399,6 +399,27 @@ namespace Louman.Repositories.Behavior
                               EnquiryType = et.EnquiryTypeDescription
                           }).ToListAsync();
         }
+        public async Task<List<GetEnquiryDto>> GetAllAdminEnquiryByEnquiryTypeId(int adminUserId, int enquiryTypeId)
+        {
+            return await (from e in _dbContext.Enquiries
+                          join cu in _dbContext.Users on e.ClientUserId equals cu.UserId
+                          join au in _dbContext.Users on e.ClientUserId equals au.UserId
+                          join et in _dbContext.EnquiryTypes on e.EnquiryTypeId equals et.EnquiryTypeId
+                          where e.isDeleted == false && e.AdminUserId == adminUserId && e.EnquiryTypeId == enquiryTypeId
+                          orderby e.EnquiryMessage
+                          select new GetEnquiryDto
+                          {
+                              ClientUserId = e.ClientUserId,
+                              EnquiryMessage = e.EnquiryMessage,
+                              EnquiryTypeId = e.EnquiryTypeId,
+                              AdminUserId = e.AdminUserId,
+                              EnquiryId = e.EnquiryId,
+                              EnquiryStatus = e.EnquiryStatus,
+                              AdminName = $"{au.Initials} {au.Surname}",
+                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              EnquiryType = et.EnquiryTypeDescription
+                          }).ToListAsync();
+        }
     }
     
 }
