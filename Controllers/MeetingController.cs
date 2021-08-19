@@ -30,6 +30,15 @@ namespace Louman.Controllers
             return NotFound(new { Slots=slots,StatusCode=StatusCodes.Status404NotFound});
 
         }
+        [HttpGet("Slot/{id}")]
+        public async Task<IActionResult> GetSlotById([FromRoute] int id)
+        {
+            var slot = await _meetingRepository.GetBySlotId(id);
+            if (slot != null)
+                return Ok(new { Slot = slot, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Slot = slot, StatusCode = StatusCodes.Status404NotFound });
+
+        }
         [HttpGet("Slot/Delete/{id}")]
         public async Task<IActionResult> DeleteSlot([FromRoute] int id)
         {
