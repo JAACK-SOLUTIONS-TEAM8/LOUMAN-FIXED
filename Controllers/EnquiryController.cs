@@ -188,5 +188,14 @@ namespace Louman.Controllers
             return Ok(new { Enquiries = enquiry, StatusCode = StatusCodes.Status404NotFound });
 
         }
+        [HttpGet("WithResponse/{id}")]
+        public async Task<IActionResult> GetEnquiryWithResponse([FromRoute] int id)
+        {
+            var enquiry = await _enquiryRepository.GetEnquiryWithResponse(id);
+            if (enquiry != null)
+                return Ok(new { Enquiry = enquiry, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Enquiry = enquiry, StatusCode = StatusCodes.Status404NotFound });
+
+        }
     }
 }
