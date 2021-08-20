@@ -21,6 +21,15 @@ namespace Louman.Controllers
         }
 
 
+        [HttpGet("All")]
+        public async Task<IActionResult> GetAll()
+        {
+            var employees = await _employeeRepository.GetAllAsync();
+            if (employees != null)
+                return Ok(new { Employees = employees, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Employees = employees, StatusCode = StatusCodes.Status404NotFound });
+        }
+
         [HttpPost("Upsert")]
         public async Task<IActionResult> Add([FromBody] EmployeeDto employee)
         {
@@ -30,22 +39,14 @@ namespace Louman.Controllers
             return Ok(new { Employee = emp, statusCode = StatusCodes.Status400BadRequest });
         }
 
-        [HttpGet("Delete/{id}")]
-        public async Task<IActionResult> Delete([FromRoute] int id)
-        {
-            var isDeleted = await _employeeRepository.DeleteAsync(id);
-            if (isDeleted != false)
-                return Ok(new { Employee = isDeleted, StatusCode = StatusCodes.Status200OK });
-            return Ok(new { Employee = isDeleted, StatusCode = StatusCodes.Status400BadRequest });
-        }
 
-        [HttpGet("All")]
-        public async Task<IActionResult> GetAll()
+        [HttpPost("Update")]
+        public async Task<IActionResult> Update([FromBody] UpdateEmployeeDto employee)
         {
-            var employees = await _employeeRepository.GetAllAsync();
-            if (employees != null)
-                return Ok(new { Employees = employees, StatusCode = StatusCodes.Status200OK });
-            return Ok(new { Employees = employees, StatusCode = StatusCodes.Status404NotFound });
+            var emp = await _employeeRepository.Update(employee);
+            if (emp != null)
+                return Ok(new { Employee = emp, statusCode = StatusCodes.Status200OK });
+            return Ok(new { Employee = emp, statusCode = StatusCodes.Status400BadRequest });
         }
 
 
@@ -58,14 +59,33 @@ namespace Louman.Controllers
             return Ok(new { employee = employee, statusCode = StatusCodes.Status400BadRequest });
         }
 
-        [HttpGet("emp")]
+        [HttpGet("User/{id}")]
+        public async Task<IActionResult> GetByUserId([FromRoute] int id)
+        {
+            var employee = await _employeeRepository.GetByUserIdAsync(id);
+            if (employee != null)
+                return Ok(new { employee = employee, statusCode = StatusCodes.Status200OK });
+            return Ok(new { employee = employee, statusCode = StatusCodes.Status400BadRequest });
+        }
+
+        [HttpGet("Clients")]
         public async Task<IActionResult> GetById([FromQuery] string name)
         {
-            var emp = await _employeeRepository.SearchByNameAsync(name);
-            if (emp != null)
-                return Ok(new { clients = emp, statusCode = StatusCodes.Status200OK });
-            return Ok(new { clients = emp, statusCode = StatusCodes.Status400BadRequest });
+            var clients = await _employeeRepository.SearchByNameAsync(name);
+            if (clients != null)
+                return Ok(new { clients = clients, statusCode = StatusCodes.Status200OK });
+            return Ok(new { clients = clients, statusCode = StatusCodes.Status400BadRequest });
         }
+
+        [HttpGet("Delete/{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            var isDeleted = await _employeeRepository.DeleteAsync(id);
+            if (isDeleted != false)
+                return Ok(new { Employee = isDeleted, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Employee = isDeleted, StatusCode = StatusCodes.Status400BadRequest });
+        }
+
 
         [HttpGet("Search")]
         public async Task<IActionResult> SearchByName([FromQuery] string name)
@@ -77,6 +97,8 @@ namespace Louman.Controllers
                 return Ok(new { Employees = reponse, StatusCode = StatusCodes.Status400BadRequest });
 
         }
+
+
         [HttpGet("EmployeeMonthlyAttendanceHistory")]
         public async Task<IActionResult> GetEmployeeMonthlyAttendanceHistory([FromQuery] string dateInfo)
         {
@@ -88,23 +110,8 @@ namespace Louman.Controllers
 
         }
 
-        [HttpPost("Update")]
-        public async Task<IActionResult> Update([FromBody] UpdateEmployeeDto employee)
-        {
-            var emp = await _employeeRepository.Update(employee);
-            if (emp != null)
-                return Ok(new { Employee = emp, statusCode = StatusCodes.Status200OK });
-            return Ok(new { Employee = emp, statusCode = StatusCodes.Status400BadRequest });
-        }
 
-        [HttpGet("Clients")]
-        public async Task<IActionResult> GetById([FromQuery] string name)
-        {
-            var clients = await _employeeRepository.SearchByNameAsync(name);
-            if (clients != null)
-                return Ok(new { clients = clients, statusCode = StatusCodes.Status200OK });
-            return Ok(new { clients = clients, statusCode = StatusCodes.Status400BadRequest });
-        }
+
 
         [HttpGet("EmployeeSixMonthRegistrationHistory")]
         public async Task<IActionResult> GetEmployeeSixMonthRegistrationHistory()
