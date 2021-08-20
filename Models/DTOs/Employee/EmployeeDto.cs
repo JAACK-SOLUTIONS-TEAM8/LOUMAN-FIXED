@@ -12,6 +12,8 @@ namespace Louman.Models.DTOs.Employee
         public int? AddressId { get; set; }
 
         public string IdNumber { get; set; }
+        public int TeamId { get; set; }
+        public string TeamName { get; set; }
 
         public string Initials { get; set; }
         public string Surname { get; set; }

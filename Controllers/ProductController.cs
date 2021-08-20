@@ -160,7 +160,15 @@ namespace Louman.Controllers
 
 
 
+        [HttpGet("ProductSize/{id}")]
+        public async Task<IActionResult> GetProductSizesById([FromRoute] int id)
+        {
+            var productSize = await _productReposiroty.GetProductSizeById(id);
+            if (productSize != null)
+                return Ok(new { ProductSize = productSize, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { ProductSize = productSize, StatusCode = StatusCodes.Status404NotFound });
 
+        }
 
 
 

@@ -375,6 +375,18 @@ namespace Louman.Repositories
 
         }
 
+        public async Task<ProductSizeDto> GetProductSizeById(int productSizeId)
+        {
+            return await (from ps in _dbContext.ProductSizes
+                          where ps.isDeleted == false && ps.ProductSizeId == productSizeId
+                          orderby ps.ProductSizeDescription
+                          select new ProductSizeDto
+                          {
+                              ProductSizeId = ps.ProductSizeId,
+                              ProductSizeDescription = ps.ProductSizeDescription
+                          }).SingleOrDefaultAsync();
+        }
+
 
 
 

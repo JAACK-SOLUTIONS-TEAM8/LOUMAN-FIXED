@@ -42,16 +42,16 @@ namespace Louman.Repositories
                 var newEmployee = new EmployeeEntity
                 {
                     UserId = user.UserId,
-                     CommencementDate=employee.CommenceDate.HasValue ? employee.CommenceDate.Value : null,
-                     TerminationDate =employee.TerminationDate.HasValue?employee.TerminationDate.Value:null,
-                     TerminationReason=employee.TerminationReason??null,
-                     Image=employee.Image,
-                     Document=employee.Document
+                    CommencementDate = employee.CommenceDate.HasValue ? employee.CommenceDate.Value : null,
+                    TerminationDate = employee.TerminationDate.HasValue ? employee.TerminationDate.Value : null,
+                    TerminationReason = employee.TerminationReason ?? null,
+                    Image = employee.Image,
+                    Document = employee.Document
                 };
 
                 _dbContext.Employees.Add(newEmployee);
                 _dbContext.SaveChanges();
-                return await Task.FromResult( new EmployeeDto
+                return await Task.FromResult(new EmployeeDto
                 {
                     EmployeeId = newEmployee.EmployeeId,
                     UserId = user.UserId,
@@ -64,13 +64,13 @@ namespace Louman.Repositories
                     Surname = user.Surname,
                     UserName = user.UserName,
                     UserTypeId = user.UserTypeId,
-                    CommenceDate = newEmployee.CommencementDate?? null,
-                    TerminationReason =newEmployee.TerminationReason??null,
-                    TerminationDate=newEmployee.TerminationDate??null,
+                    CommenceDate = newEmployee.CommencementDate ?? null,
+                    TerminationReason = newEmployee.TerminationReason ?? null,
+                    TerminationDate = newEmployee.TerminationDate ?? null,
                     //added upload documents/image
                     Image = employee.Image,
-                    Document=employee.Document
-                    
+                    Document = employee.Document
+
 
                 });
 
@@ -174,15 +174,17 @@ namespace Louman.Repositories
 
         public async Task<EmployeeDto> GetByIdAsync(int employeeId)  //get employee by ID
         {
-          
-            var team=await (from  et in _dbContext.EmployeeTeams 
-                     join t in _dbContext.Teams on et.TeamId equals t.TeamId
-                     where et.EmployeeId ==employeeId select
-                     new{
-                     TeamId=t.TeamId,
-                     TeamName=t.TeamName
-                     }).SingleOrDefaultAsync();
-            
+
+            var team = await (from et in _dbContext.EmployeeTeams
+                              join t in _dbContext.Teams on et.TeamId equals t.TeamId
+                              where et.EmployeeId == employeeId
+                              select
+new
+{
+ TeamId = t.TeamId,
+ TeamName = t.TeamName
+}).SingleOrDefaultAsync();
+
             return await (from u in _dbContext.Users
                           join e in _dbContext.Employees on u.UserId equals e.UserId
                           where u.isDeleted == false && e.EmployeeId == employeeId
@@ -341,8 +343,8 @@ namespace Louman.Repositories
 
             return Task.FromResult(employee);
         }
-        .
-         public async Task<EmployeeDto> GetByUserIdAsync(int userId)
+
+        public async Task<EmployeeDto> GetByUserIdAsync(int userId)
         {
             var team = await (from et in _dbContext.EmployeeTeams
                               join t in _dbContext.Teams on et.TeamId equals t.TeamId
@@ -355,12 +357,37 @@ new
     TeamName = t.TeamName
 }).SingleOrDefaultAsync();
 
-
-
+            return await (from u in _dbContext.Users
+                          join e in _dbContext.Employees on u.UserId equals e.UserId
+                          where u.isDeleted == false && e.UserId == userId
+                          orderby u.UserName
+                          select new EmployeeDto
+                          {
+                              UserId = e.UserId,
+                              EmployeeId = e.EmployeeId,
+                              AddressId = u.AddressId,
+                              CellNumber = u.CellNumber,
+                              Email = u.Email,
+                              IdNumber = u.IdNumber,
+                              Initials = u.Initials,
+                              Password = u.Password,
+                              Surname = u.Surname,
+                              UserName = u.UserName,
+                              UserTypeId = u.UserTypeId,
+                              CommenceDate = e.CommencementDate,
+                              TerminationDate = e.TerminationDate,
+                              TerminationReason = e.TerminationReason,
+                              Image = e.Image,
+                              Document = e.Document,
+                              TeamId = team != null ? team.TeamId : 0,
+                              TeamName = team != null ? team.TeamName : null
+                          }).SingleOrDefaultAsync();
         }
 
 
 
+
+    }
 
 
 

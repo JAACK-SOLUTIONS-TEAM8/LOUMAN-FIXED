@@ -105,5 +105,16 @@ namespace Louman.Controllers
                 return Ok(new { clients = clients, statusCode = StatusCodes.Status200OK });
             return Ok(new { clients = clients, statusCode = StatusCodes.Status400BadRequest });
         }
+
+        [HttpGet("EmployeeSixMonthRegistrationHistory")]
+        public async Task<IActionResult> GetEmployeeSixMonthRegistrationHistory()
+        {
+            var history = await _employeeRepository.GetEmployeeSixMonthRegistrationReport();
+            if (history != null)
+                return Ok(new { History = history, StatusCode = StatusCodes.Status200OK });
+            else
+                return Ok(new { History = history, StatusCode = StatusCodes.Status400BadRequest });
+
+        }
     }
 }
