@@ -116,5 +116,15 @@ namespace Louman.Controllers
                 return Ok(new { Slot = bookedSlot, StatusCode = StatusCodes.Status200OK });
             return NotFound(new { Slot = bookedSlot, StatusCode = StatusCodes.Status404NotFound });
         }
+
+        [HttpGet("ClientSlots/BookedSlots/{id}")]
+        public async Task<IActionResult> GetAllBookedSlotsByClient([FromRoute] int id)
+        {
+            var slots = await _meetingRepository.GetAllBookedSlotByClientId(id);
+            if (slots != null)
+                return Ok(new { Slots = slots, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Slots = slots, StatusCode = StatusCodes.Status404NotFound });
+
+        }
     }
 }
