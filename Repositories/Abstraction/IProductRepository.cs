@@ -24,7 +24,7 @@ namespace Louman.Repositories.Abstraction
         Task<GetStockProductDto> WireOffStock(StockDto stock);
         Task<List<ProductSizeDto>> GetAllProductSize();
         Task<ProductSizeDto> GetProductSizeById(int productSizeId);
-
+        Task<List<GetProductDto>> GetStockMonthlyReport(string dateInfo);
 
 
     }
