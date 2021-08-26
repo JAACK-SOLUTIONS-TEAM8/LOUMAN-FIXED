@@ -1,5 +1,6 @@
 ﻿using Louman.Models.DTOs.Client;
 using Louman.Repositories.Abstraction;
+using Louman.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -14,10 +15,12 @@ namespace Louman.Controllers
     public class ClientController : ControllerBase
     {
         private readonly IClientRepository _clientRepository;
+        private readonly IMailingService __mailService;
 
-        public ClientController(IClientRepository clientRepository)
+        public ClientController(IClientRepository clientRepository,IMailingService mailingService)
         {
             _clientRepository = clientRepository;
+            __mailService = mailingService;
         }
 
         [HttpGet("All")]
@@ -34,7 +37,11 @@ namespace Louman.Controllers
         {
             var clients = await _clientRepository.Add(client);
             if (clients != null)
+            {
+                if (client.ClientId == 0 || client.UserId==0)
+                    await __mailService.SendEmailAsync(clients);
                 return Ok(new { Client = clients, StatusCode = StatusCodes.Status200OK });
+            }
             return Ok(new { Client = clients, StatusCode = StatusCodes.Status400BadRequest });
         }
 

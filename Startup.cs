@@ -1,3 +1,5 @@
+using Louman.Models.DTOs.Email;
+using Louman.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -28,7 +30,10 @@ namespace Louman
         {
 
             services.AddControllers();
-            
+            services.AddScoped<IMailingService, MailingService>();
+            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +49,7 @@ namespace Louman
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {
