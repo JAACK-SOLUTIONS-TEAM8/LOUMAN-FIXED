@@ -1,9 +1,14 @@
+using Louman.AppDbContexts;
 using Louman.Models.DTOs.Email;
+using Louman.Repositories;
+using Louman.Repositories.Abstraction;
+using Louman.Repositories.Behavior;
 using Louman.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -29,10 +34,27 @@ namespace Louman
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
             services.AddScoped<IMailingService, MailingService>();
             services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
+            services.AddControllers();
+            services.AddDbContext<AppDbContext>(options => {
+                options.UseSqlServer(Configuration.GetConnectionString("LoumanAPIConnectionStr"));
+            });
 
+
+            services.AddScoped<IAdminRepository, AdminRpository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            services.AddScoped<ITeamRepository, TeamRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IMeetingRepository, MeetingRepository>();
+            services.AddScoped<IClientRepository, ClientRepository>();
+            services.AddScoped<IEnquiryRepository, EnquiryRepository>();
+            services.AddScoped<ILocationRepository, LocationRepository>();
+            services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+
+            services.AddCors();
 
         }
 
@@ -44,12 +66,18 @@ namespace Louman
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            app.UseCors(options => {
+                options.AllowAnyMethod();
+                options.AllowAnyOrigin();
+                options.AllowAnyHeader();
+            });
 
+            app.UseHttpsRedirection();
             app.UseRouting();
 
             app.UseAuthorization();
             app.UseStaticFiles();
+
 
             app.UseEndpoints(endpoints =>
             {

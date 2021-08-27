@@ -144,9 +144,9 @@ namespace Louman.Repositories
             return false;
         }
 
-        public async Task<List<EmployeeDto>> GetAllAsync()  //get all employees
+        public  Task<List<EmployeeDto>> GetAllAsync()  //get all employees
         {
-            return await (from u in _dbContext.Users
+            var employees= (from u in _dbContext.Users
                           join e in _dbContext.Employees on u.UserId equals e.UserId
                           where u.isDeleted == false
                           orderby u.UserName
@@ -169,7 +169,8 @@ namespace Louman.Repositories
                               Image = e.Image,
                               Document = e.Document
 
-                          }).ToListAsync();
+                          }).ToList();
+            return Task.FromResult(employees);
         }
 
         public async Task<EmployeeDto> GetByIdAsync(int employeeId)  //get employee by ID
