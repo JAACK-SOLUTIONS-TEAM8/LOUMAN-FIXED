@@ -180,5 +180,15 @@ namespace Louman.Controllers
             return Ok(new { Enquiry = enquiry, StatusCode = StatusCodes.Status404NotFound });
 
         }
+
+        [HttpGet("ClientEnquiry/All")]
+        public async Task<IActionResult> GetAllClientEnquiries([FromQuery] int clientUserId)
+        {
+            var enquiries = await _enquiryRepository.GetAllClientEnquiries(clientUserId);
+            if (enquiries != null)
+                return Ok(new { Enquiries = enquiries, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Enquiries = enquiries, StatusCode = StatusCodes.Status404NotFound });
+
+        }
     }
 }
