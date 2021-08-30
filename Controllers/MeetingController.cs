@@ -26,10 +26,11 @@ namespace Louman.Controllers
         {
             var slots = await _meetingRepository.GetAllSlots();
             if (slots != null)
-                return Ok(new { Slots=slots,StatusCode=StatusCodes.Status200OK});
-            return NotFound(new { Slots=slots,StatusCode=StatusCodes.Status404NotFound});
+                return Ok(new { Slots = slots, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Slots = slots, StatusCode = StatusCodes.Status404NotFound });
 
         }
+
         [HttpGet("Slot/{id}")]
         public async Task<IActionResult> GetSlotById([FromRoute] int id)
         {
@@ -39,6 +40,16 @@ namespace Louman.Controllers
             return NotFound(new { Slot = slot, StatusCode = StatusCodes.Status404NotFound });
 
         }
+
+        [HttpPost("Slot/Add")]
+        public async Task<IActionResult> AddSlot(SlotDto slot)
+        {
+            var newSlot = await _meetingRepository.AddNewSlot(slot);
+            if (newSlot != null)
+                return Ok(new { Slot = newSlot, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Slot = newSlot, StatusCode = StatusCodes.Status404NotFound });
+        }
+
         [HttpGet("Slot/Delete/{id}")]
         public async Task<IActionResult> DeleteSlot([FromRoute] int id)
         {
@@ -47,6 +58,7 @@ namespace Louman.Controllers
                 return Ok(new { response = true, StatusCode = StatusCodes.Status200OK });
             return NotFound(new { response = false, StatusCode = StatusCodes.Status404NotFound });
         }
+
 
         [HttpGet("Slot/Search")]
         public async Task<IActionResult> SearchSlotByDateName([FromQuery] string date)
@@ -70,31 +82,45 @@ namespace Louman.Controllers
 
         }
 
+
         [HttpGet("AdminSlots/BookedSlots/{id}")]
         public async Task<IActionResult> GetAllBookedSlotsByAdmin([FromRoute] int id)
         {
             var slots = await _meetingRepository.GetAllBookedSlotByAdminId(id);
             if (slots != null)
                 return Ok(new { Slots = slots, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Slots = slots, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Slots = slots, StatusCode = StatusCodes.Status404NotFound });
 
         }
 
-        [HttpPost("Slot/Add")]
-        public async Task<IActionResult> AddSlot(SlotDto slot)
+        [HttpGet("AdminSlots/SearchSlots")]
+        public async Task<IActionResult> SearchBookedSlotsByAdmin([FromQuery] int userId, string date)
         {
-            var newSlot = await _meetingRepository.AddNewSlot(slot);
-            if (newSlot != null)
-                return Ok(new { Slot = newSlot, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Slot = newSlot, StatusCode = StatusCodes.Status404NotFound });
+            var slots = await _meetingRepository.SearchAllBookedSlotByAdminId(userId, date);
+            if (slots != null)
+                return Ok(new { Slots = slots, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Slots = slots, StatusCode = StatusCodes.Status404NotFound });
+
         }
-        [HttpGet("BookedSlots/Cancel/{id}")]
-        public async Task<IActionResult> CancelBooking(int id)
+
+
+        [HttpGet("ClientSlots/BookedSlots/{id}")]
+        public async Task<IActionResult> GetAllBookedSlotsByClient([FromRoute] int id)
         {
-            var isBooked = await _meetingRepository.CancelBooking(id);
-            if (isBooked != false)
-                return Ok(new { Response = isBooked, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Response = isBooked, StatusCode = StatusCodes.Status404NotFound });
+            var slots = await _meetingRepository.GetAllBookedSlotByClientId(id);
+            if (slots != null)
+                return Ok(new { Slots = slots, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Slots = slots, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
+        [HttpGet("ClientSlots/SearchSlots")]
+        public async Task<IActionResult> SearchAllBookedSlotsByClient([FromQuery] int userId, string date)
+        {
+            var slots = await _meetingRepository.SearchAllBookedSlotByClient(userId, date);
+            if (slots != null)
+                return Ok(new { Slots = slots, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Slots = slots, StatusCode = StatusCodes.Status404NotFound });
 
         }
 
@@ -104,7 +130,7 @@ namespace Louman.Controllers
             var isDeleted = await _meetingRepository.DeleteBookedSlot(slotIdId, clientUserId);
             if (isDeleted != false)
                 return Ok(new { Response = isDeleted, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Response = isDeleted, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Response = isDeleted, StatusCode = StatusCodes.Status404NotFound });
 
         }
 
@@ -114,17 +140,19 @@ namespace Louman.Controllers
             var bookedSlot = await _meetingRepository.BookSlot(slotId, clientUserId);
             if (bookedSlot != null)
                 return Ok(new { Slot = bookedSlot, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Slot = bookedSlot, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Slot = bookedSlot, StatusCode = StatusCodes.Status404NotFound });
         }
 
-        [HttpGet("ClientSlots/BookedSlots/{id}")]
-        public async Task<IActionResult> GetAllBookedSlotsByClient([FromRoute] int id)
+        [HttpGet("BookedSlots/Cancel/{id}")]
+        public async Task<IActionResult> CancelBooking(int id)
         {
-            var slots = await _meetingRepository.GetAllBookedSlotByClientId(id);
-            if (slots != null)
-                return Ok(new { Slots = slots, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Slots = slots, StatusCode = StatusCodes.Status404NotFound });
+            var isBooked = await _meetingRepository.CancelBooking(id);
+            if (isBooked != false)
+                return Ok(new { Response = isBooked, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Response = isBooked, StatusCode = StatusCodes.Status404NotFound });
 
         }
+
+
     }
 }

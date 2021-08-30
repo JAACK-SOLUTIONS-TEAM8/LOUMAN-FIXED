@@ -61,6 +61,7 @@ namespace Louman.Repositories
             return new DeliveryTypeDto();
 
         }
+
         public async Task<bool> DeleteDeliveryType(int deliveryTypeId)
         {
             var deliveryType = _dbContext.DeliveryTypes.Find(deliveryTypeId);
@@ -83,6 +84,7 @@ namespace Louman.Repositories
                               Description = d.Description,
                               DeliveryTypeId = d.DeliveryTypeId
                           }).ToListAsync();
+
         }
         public async Task<DeliveryTypeDto> GetDeliveryTypeById(int deloiveryTypeId)
         {
@@ -96,6 +98,8 @@ namespace Louman.Repositories
                           }).SingleOrDefaultAsync();
 
         }
+
+
         public async Task<GetOrderDto> AddOrder(OrderDto order)
         {
             var newOrderEntity = new OrderEntity
@@ -104,8 +108,8 @@ namespace Louman.Repositories
                 DeliveryTypeId = order.DeliveryTypeId,
                 PaymentType = order.PaymentType,
                 OrderStatus = "Pending",
-                PickupDate = DateTime.Parse(order.PickupDate),
-                PickupTime = DateTime.Parse(order.PickupTime),
+                PickupDate = (order.PickupDate == "null" || order.PickupDate == null) ? null : DateTime.Parse(order.PickupDate),
+                PickupTime = (order.PickupTime == "null" || order.PickupTime == null) ? null : DateTime.Parse(order.PickupTime),
                 CreatedDate = DateTime.Now,
                 isDeleted = false
             };
@@ -124,6 +128,7 @@ namespace Louman.Repositories
                 await _dbContext.SaveChangesAsync();
 
             }
+
             var billEntity = new OrderBillEntity
             {
                 OrderId = newOrderEntity.OrderId,
@@ -150,7 +155,6 @@ namespace Louman.Repositories
                 await _dbContext.SaveChangesAsync();
 
             }
-
             else
             {
                 cardDetail.CardNumber = order.CardDetail.CardNumber;
@@ -186,7 +190,6 @@ ClientName = $"{u.Initials} {u.Surname}"
 
         }
 
-
         public async Task<List<GetOrderDto>> GetAllClientOrders()
         {
             return
@@ -210,6 +213,9 @@ ClientName = $"{u.Initials} {u.Surname}"
                               PickupTime = o.PickupTime.Value.ToString("F")
                           }).ToListAsync();
         }
+
+
+
 
         public async Task<ClientOrderDto> GetAllClientOrderById(int orderId)
         {
@@ -279,7 +285,7 @@ ClientName = $"{u.Initials} {u.Surname}"
                               CardDetail = new CardDetailDto { CardNumber = cd.CardNumber, HolderName = cd.HolderName, SecurityNumber = cd.SecurityNumber }
                           }).SingleOrDefaultAsync();
         }
-        //
+
         public async Task<bool> CompleteOrder(int orderId)
         {
             var orderEntity = await _dbContext.Orders.FindAsync(orderId);
@@ -288,7 +294,6 @@ ClientName = $"{u.Initials} {u.Surname}"
             await _dbContext.SaveChangesAsync();
             return true;
         }
-
         public async Task<List<ProductQuantityDto>> GetMonthlyReport(string dateInfo)
         {
 
@@ -337,6 +342,30 @@ ClientName = $"{u.Initials} {u.Surname}"
             return await Task.FromResult(productQuantity);
         }
 
+        public async Task<List<GetOrderDto>> GetAllClientOrdersByClientUserId(int clientUserId)
+        {
+            return await (from o in _dbContext.Orders
+                          join dt in _dbContext.DeliveryTypes on o.DeliveryTypeId equals dt.DeliveryTypeId
+                          join b in _dbContext.OrderBills on o.OrderId equals b.OrderId
+                          join u in _dbContext.Users on o.ClientUserId equals u.UserId
+                          where u.isDeleted == false && o.isDeleted == false && o.ClientUserId == clientUserId
+                          select new GetOrderDto
+                          {
+                              OrderId = o.OrderId,
+                              BillId = b.BillId,
+                              ClientUserId = o.ClientUserId,
+                              OrderStatus = o.OrderStatus,
+                              Total = b.Total.Value,
+                              Discount = b.Discount.Value,
+                              DeliveryType = dt.Description,
+                              CreatedDate = o.CreatedDate,
+                              PaymentType = o.PaymentType,
+                              ClientName = $"{u.Initials} {u.Surname}",
+                              PickupDate = o.PickupDate.Value.ToString("F"),
+                              PickupTime = o.PickupTime.Value.ToString("F")
+                          }).ToListAsync();
+
+        }
     }
 }
 
