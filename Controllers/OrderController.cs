@@ -30,6 +30,7 @@ namespace Louman.Controllers
             return Ok(new { DeliveryTypes = enquiryTypes, StatusCode = StatusCodes.Status404NotFound });
 
         }
+
         [HttpGet("DeliveryType/{id}")]
         public async Task<IActionResult> GetDeliveryTypeById([FromRoute] int id)
         {
@@ -39,6 +40,7 @@ namespace Louman.Controllers
             return Ok(new { DeliveryType = enquiryType, StatusCode = StatusCodes.Status404NotFound });
 
         }
+
         [HttpPost("DeliveryType/Add")]
         public async Task<IActionResult> AddDeliveryType([FromBody] DeliveryTypeDto deliveryType)
         {
@@ -48,6 +50,7 @@ namespace Louman.Controllers
             return Ok(new { DeliveryType = enquiry, StatusCode = StatusCodes.Status400BadRequest });
 
         }
+
         [HttpGet("DeliveryType/Delete/{id}")]
         public async Task<IActionResult> DelteDeliveryType([FromRoute] int id)
         {
@@ -57,6 +60,8 @@ namespace Louman.Controllers
             return Ok(new { DeliveryTypes = response, StatusCode = StatusCodes.Status400BadRequest });
 
         }
+
+
 
         [HttpPost("Add")]
         public async Task<IActionResult> AddOrder([FromBody] OrderDto newOrdre)
@@ -87,6 +92,7 @@ namespace Louman.Controllers
             return Ok(new { Order = order, StatusCode = StatusCodes.Status400BadRequest });
 
         }
+
         [HttpGet("Complete/{id}")]
         public async Task<IActionResult> CompleteClientOrder([FromRoute] int id)
         {
@@ -106,6 +112,16 @@ namespace Louman.Controllers
 
         }
 
+
+        [HttpGet("ClientOrders/{id}")]
+        public async Task<IActionResult> GetClientAllOrders([FromRoute] int id)
+        {
+            var order = await _orderRepository.GetAllClientOrdersByClientUserId(id);
+            if (order != null)
+                return Ok(new { Orders = order, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Orders = order, StatusCode = StatusCodes.Status400BadRequest });
+
+        }
 
     }
 }

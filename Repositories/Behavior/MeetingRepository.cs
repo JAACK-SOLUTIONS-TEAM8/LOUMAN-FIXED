@@ -21,53 +21,78 @@ namespace Louman.Repositories.Behavior
         {
             _dbContext = dbContext;
         }
-       
+        public async Task<SlotDto> AddNewSlot(SlotDto slot)
+        {
+            if (slot.SlotId == 0)
+            {
+                var newSlot = new SlotEntity
+                {
+                    Date = slot.Date,
+                    StartTime = Convert.ToDateTime(slot.StartTime),
+                    EndTime = Convert.ToDateTime(slot.EndTime),
+                    isBooked = false,
+                    AdminUserId = slot.AdminUserId,
+                    isDeleted = false
+                };
+                _dbContext.Slots.Add(newSlot);
+                await _dbContext.SaveChangesAsync();
+                return await Task.FromResult(new SlotDto
+                {
+                    Date = slot.Date,
+                    SlotId = newSlot.SlotId,
+                    AdminUserId = slot.AdminUserId,
+                    StartTime = slot.StartTime,
+                    EndTime = slot.EndTime,
+                    isBooked = false
+                });
+
+            }
+            else
+            {
+
+                var existingSlot = (from s in _dbContext.Slots where s.SlotId == slot.SlotId && s.isDeleted == false select s).SingleOrDefault();
+                if (existingSlot != null)
+                {
+                    existingSlot.StartTime = Convert.ToDateTime(slot.StartTime);
+                    existingSlot.EndTime = Convert.ToDateTime(slot.EndTime);
+
+                    _dbContext.Update(existingSlot);
+                    await _dbContext.SaveChangesAsync();
+
+
+
+                    return await Task.FromResult(new SlotDto
+                    {
+                        Date = slot.Date,
+                        SlotId = slot.SlotId,
+                        AdminUserId = slot.AdminUserId,
+                        StartTime = slot.StartTime,
+                        EndTime = slot.EndTime,
+                        isBooked = slot.isBooked
+                    });
+                }
+            }
+            return null;
+
+        }
 
         public async Task<List<SlotDto>> GetAllSlots()
         {
             return await (from s in _dbContext.Slots
-                         join u in _dbContext.Users on s.AdminUserId equals u.UserId
-                         where s.isDeleted == false && s.isBooked==false
-                         select new SlotDto
-                         {
-                             Date=s.Date,
-                            SlotId=s.SlotId,
-                            isBooked=s.isBooked,
-                            AdminUserId=u.UserId,
-                            StartTime=s.StartTime.ToString("F"),
-                            EndTime=s.EndTime.ToString("F")
-
-                         }).ToListAsync();
-        }
-
-        public async Task<bool> DeleteSlot(int slotId)
-        {
-            var existingSlot = _dbContext.Slots.Find(slotId);
-            if (existingSlot != null)
-            {
-                existingSlot.isDeleted = true;
-                _dbContext.Slots.Update(existingSlot);
-                await _dbContext.SaveChangesAsync();
-                return true;
-            }
-            return false;
-        }
-        public async Task<List<SlotDto>> SearchSlotByDate(string date)
-        {
-            return await (from s in _dbContext.Slots
                           join u in _dbContext.Users on s.AdminUserId equals u.UserId
-                          where s.isDeleted == false && (date == null || s.Date.Date == Convert.ToDateTime(date).Date)
+                          where s.isDeleted == false && s.isBooked == false
                           select new SlotDto
                           {
                               Date = s.Date,
                               SlotId = s.SlotId,
-                              AdminUserId = u.UserId,
                               isBooked = s.isBooked,
-                              EndTime = s.StartTime.ToString("F"),
-                              StartTime = s.EndTime.ToString("F")
+                              AdminUserId = u.UserId,
+                              StartTime = s.StartTime.ToString("F"),
+                              EndTime = s.EndTime.ToString("F")
 
                           }).ToListAsync();
         }
+
         public async Task<SlotDto> GetBySlotId(int slotId)
         {
             return await (from s in _dbContext.Slots
@@ -85,6 +110,40 @@ namespace Louman.Repositories.Behavior
                           }).SingleOrDefaultAsync();
 
         }
+
+
+        public async Task<bool> DeleteSlot(int slotId)
+        {
+            var existingSlot = _dbContext.Slots.Find(slotId);
+            if (existingSlot != null)
+            {
+                existingSlot.isDeleted = true;
+                _dbContext.Slots.Update(existingSlot);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
+
+        public async Task<List<SlotDto>> SearchSlotByDate(string date)
+        {
+            return await (from s in _dbContext.Slots
+                          join u in _dbContext.Users on s.AdminUserId equals u.UserId
+                          where s.isDeleted == false && (date == null || s.Date.Date == Convert.ToDateTime(date).Date)
+                          select new SlotDto
+                          {
+                              Date = s.Date,
+                              SlotId = s.SlotId,
+                              AdminUserId = u.UserId,
+                              isBooked = s.isBooked,
+                              EndTime = s.StartTime.ToString("F"),
+                              StartTime = s.EndTime.ToString("F")
+
+                          }).ToListAsync();
+        }
+
+
         public async Task<List<SlotDto>> SearchAdminSlotsByDate(int adminUserId, string date)
         {
             return await (from s in _dbContext.Slots
@@ -101,26 +160,7 @@ namespace Louman.Repositories.Behavior
 
                           }).ToListAsync();
         }
-        public async Task<List<BookedSlotDto>> GetAllBookedSlotByAdminId(int adminUserId)
-        {
-            return await (from bs in _dbContext.BookedSlots
-                          join s in _dbContext.Slots on bs.SlotId equals s.SlotId
-                          join au in _dbContext.Users on bs.AdminUserId equals au.UserId
-                          join cu in _dbContext.Users on bs.ClientUserId equals cu.UserId
-                          where s.isDeleted == false && bs.AdminUserId == adminUserId && s.isBooked == true && bs.isDeleted == false
-                          select new BookedSlotDto
-                          {
-                              AdminUserId = bs.AdminUserId,
-                              AdminName = $"{au.Initials} {au.Surname}",
-                              BookedSlotId = bs.BookedSlotId,
-                              ClientName = $"{cu.Initials} {cu.Surname}",
-                              ClientUserId = bs.ClientUserId,
-                              Date = s.Date,
-                              StartTime = s.StartTime,
-                              EndTime = s.EndTime,
-                              SlotId = s.SlotId
-                          }).ToListAsync();
-        }
+
 
         public async Task<BookedSlotDto> BookSlot(int slotId, int clientUserId)
         {
@@ -178,7 +218,27 @@ namespace Louman.Repositories.Behavior
 
         }
 
-      
+        public async Task<List<BookedSlotDto>> GetAllBookedSlotByAdminId(int adminUserId)
+        {
+            return await (from bs in _dbContext.BookedSlots
+                          join s in _dbContext.Slots on bs.SlotId equals s.SlotId
+                          join au in _dbContext.Users on bs.AdminUserId equals au.UserId
+                          join cu in _dbContext.Users on bs.ClientUserId equals cu.UserId
+                          where s.isDeleted == false && bs.AdminUserId == adminUserId && s.isBooked == true && bs.isDeleted == false
+                          select new BookedSlotDto
+                          {
+                              AdminUserId = bs.AdminUserId,
+                              AdminName = $"{au.Initials} {au.Surname}",
+                              BookedSlotId = bs.BookedSlotId,
+                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              ClientUserId = bs.ClientUserId,
+                              Date = s.Date,
+                              StartTime = s.StartTime,
+                              EndTime = s.EndTime,
+                              SlotId = s.SlotId
+                          }).ToListAsync();
+        }
+
 
         public async Task<List<BookedSlotDto>> GetAllBookedSlotByClientId(int clientUserId)
         {
@@ -224,9 +284,12 @@ namespace Louman.Repositories.Behavior
             var bookedSlot = await (
                                     from bs in _dbContext.BookedSlots
                                     join s in _dbContext.Slots on bs.SlotId equals s.SlotId
-                                    where s.isDeleted == false && s.SlotId == slotId
+                                    where s.isDeleted == false && bs.isDeleted == false && s.SlotId == slotId
                                     select bs).SingleOrDefaultAsync();
-            if (bookedSlot.BookingTime.Subtract(DateTime.Now).Hours < 24)
+
+            var timeDiff = bookedSlot.BookingTime.Subtract(DateTime.Now);
+
+            if (bookedSlot.BookingTime.Subtract(DateTime.Now).TotalHours < 24)
             {
                 var slot = _dbContext.Slots.Find(slotId);
                 slot.isBooked = false;
@@ -242,60 +305,45 @@ namespace Louman.Repositories.Behavior
             return false;
         }
 
-        public async Task<SlotDto> AddNewSlot(SlotDto slot)
+        public async Task<List<BookedSlotDto>> SearchAllBookedSlotByAdminId(int userId, string date)
         {
-            if (slot.SlotId == 0)
-            {
-                var newSlot = new SlotEntity
-                {
-                    Date = slot.Date,
-                    StartTime = Convert.ToDateTime(slot.StartTime),
-                    EndTime = Convert.ToDateTime(slot.EndTime),
-                    isBooked = false,
-                    AdminUserId = slot.AdminUserId,
-                    isDeleted = false
-                };
-                _dbContext.Slots.Add(newSlot);
-                await _dbContext.SaveChangesAsync();
-                return await Task.FromResult(new SlotDto
-                {
-                    Date = slot.Date,
-                    SlotId = newSlot.SlotId,
-                    AdminUserId = slot.AdminUserId,
-                    StartTime = slot.StartTime,
-                    EndTime = slot.EndTime,
-                    isBooked = false
-                });
-
-            }
-            else
-            {
-
-                var existingSlot = (from s in _dbContext.Slots where s.SlotId == slot.SlotId && s.isDeleted == false select s).SingleOrDefault();
-                if (existingSlot != null)
-                {
-                    existingSlot.StartTime = Convert.ToDateTime(slot.StartTime);
-                    existingSlot.EndTime = Convert.ToDateTime(slot.EndTime);
-
-                    _dbContext.Update(existingSlot);
-                    await _dbContext.SaveChangesAsync();
-
-
-
-                    return await Task.FromResult(new SlotDto
-                    {
-                        Date = slot.Date,
-                        SlotId = slot.SlotId,
-                        AdminUserId = slot.AdminUserId,
-                        StartTime = slot.StartTime,
-                        EndTime = slot.EndTime,
-                        isBooked = slot.isBooked
-                    });
-                }
-            }
-            return null;
-
+            return await (from bs in _dbContext.BookedSlots
+                          join s in _dbContext.Slots on bs.SlotId equals s.SlotId
+                          join au in _dbContext.Users on bs.AdminUserId equals au.UserId
+                          join cu in _dbContext.Users on bs.ClientUserId equals cu.UserId
+                          where s.isDeleted == false && (string.IsNullOrEmpty(date) || (s.Date.Date == Convert.ToDateTime(date).Date) && s.AdminUserId == userId) && bs.isDeleted == false
+                          select new BookedSlotDto
+                          {
+                              AdminUserId = bs.AdminUserId,
+                              AdminName = $"{au.Initials} {au.Surname}",
+                              BookedSlotId = bs.BookedSlotId,
+                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              ClientUserId = bs.ClientUserId,
+                              Date = s.Date,
+                              StartTime = s.StartTime,
+                              EndTime = s.EndTime,
+                              SlotId = s.SlotId
+                          }).ToListAsync();
         }
-
+        public async Task<List<BookedSlotDto>> SearchAllBookedSlotByClient(int userId, string date)
+        {
+            return await (from bs in _dbContext.BookedSlots
+                          join s in _dbContext.Slots on bs.SlotId equals s.SlotId
+                          join au in _dbContext.Users on bs.AdminUserId equals au.UserId
+                          join cu in _dbContext.Users on bs.ClientUserId equals cu.UserId
+                          where s.isDeleted == false && (string.IsNullOrEmpty(date) || (s.Date.Date == Convert.ToDateTime(date).Date) && bs.ClientUserId == userId) && bs.isDeleted == false
+                          select new BookedSlotDto
+                          {
+                              AdminUserId = bs.AdminUserId,
+                              AdminName = $"{au.Initials} {au.Surname}",
+                              BookedSlotId = bs.BookedSlotId,
+                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              ClientUserId = bs.ClientUserId,
+                              Date = s.Date,
+                              StartTime = s.StartTime,
+                              EndTime = s.EndTime,
+                              SlotId = s.SlotId
+                          }).ToListAsync();
+        }
     }
 }
