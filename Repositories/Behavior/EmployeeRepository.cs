@@ -67,7 +67,6 @@ namespace Louman.Repositories
                     CommenceDate = newEmployee.CommencementDate ?? null,
                     TerminationReason = newEmployee.TerminationReason ?? null,
                     TerminationDate = newEmployee.TerminationDate ?? null,
-                    //added upload documents/image
                     Image = employee.Image,
                     Document = employee.Document
 
