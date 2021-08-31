@@ -190,5 +190,15 @@ namespace Louman.Controllers
             return Ok(new { Enquiries = enquiries, StatusCode = StatusCodes.Status404NotFound });
 
         }
+
+        [HttpPost("Add")]
+        public async Task<IActionResult> AddEnquiry([FromBody] EnquiryDto enquiry)
+        {
+            var enq = await _enquiryRepository.AddEnquiry(enquiry);
+            if (enq != null)
+                return Ok(new { Enquiry = enq, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Enquiry = enq, StatusCode = StatusCodes.Status400BadRequest });
+
+        }
     }
 }

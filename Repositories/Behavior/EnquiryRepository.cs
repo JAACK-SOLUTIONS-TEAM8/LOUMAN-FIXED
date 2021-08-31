@@ -320,7 +320,8 @@ namespace Louman.Repositories.Behavior
             }
             return new EnquiryDto();
 
-        }
+        
+    }
 
         public async Task<List<GetEnquiryDto>> GetAllEnquiries()
         {
