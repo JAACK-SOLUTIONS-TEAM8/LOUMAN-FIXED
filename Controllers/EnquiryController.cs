@@ -20,16 +20,6 @@ namespace Louman.Controllers
             _enquiryRepository = enquiryRepository;
         }
 
-        [HttpPost("EnquiryType/Add")]
-        public async Task<IActionResult> AddEnquiryType([FromBody] EnquiryTypeDto enquiryType)
-        {
-            var enquiry = await _enquiryRepository.AddEnquiryType(enquiryType);
-            if (enquiry != null)
-                return Ok(new { EnquiryType = enquiry, StatusCode = StatusCodes.Status200OK });
-            return Ok(new { EnquiryType = enquiry, StatusCode = StatusCodes.Status400BadRequest });
-
-        }
-
         [HttpGet("EnquiryType/All")]
         public async Task<IActionResult> GetAllEnquiryTypes()
         {
@@ -50,11 +40,66 @@ namespace Louman.Controllers
 
         }
 
+        [HttpPost("EnquiryType/Add")]
+        public async Task<IActionResult> AddEnquiryType([FromBody] EnquiryTypeDto enquiryType)
+        {
+            var enquiry = await _enquiryRepository.AddEnquiryType(enquiryType);
+            if (enquiry != null)
+                return Ok(new { EnquiryType = enquiry, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { EnquiryType = enquiry, StatusCode = StatusCodes.Status400BadRequest });
+
+        }
+
         [HttpGet("EnquiryType/Delete/{id}")]
         public async Task<IActionResult> DelteEnquiryType([FromRoute] int id)
         {
             var response = await _enquiryRepository.DeleteEnquiryType(id);
             if (response != false)
+                return Ok(new { EnquiryTypes = response, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { EnquiryTypes = response, StatusCode = StatusCodes.Status400BadRequest });
+
+        }
+
+
+        [HttpGet("EnquiryResponse/All")]
+        public async Task<IActionResult> GetAllEnquiryResponse()
+        {
+            var enquiryResponses = await _enquiryRepository.GetAllEnquiryResponse();
+            if (enquiryResponses != null)
+                return Ok(new { EnquiryResponses = enquiryResponses, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { EnquiryResponses = enquiryResponses, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
+        [HttpGet("EnquiryResponse/{id}")]
+        public async Task<IActionResult> GetEnquiryResponseById([FromRoute] int id)
+        {
+            var enquiryResponse = await _enquiryRepository.GetEnquiryResponseById(id);
+            if (enquiryResponse != null)
+                return Ok(new { enquiryResponse = enquiryResponse, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { enquiryResponse = enquiryResponse, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
+
+
+        [HttpPost("Response/Add")]
+        public async Task<IActionResult> AddEnquiryResponse([FromBody] EnquiryResponseDto enquiryResponse)
+        {
+            var enquiry = await _enquiryRepository.AddEnquiryResponse(enquiryResponse);
+            if (enquiry != null)
+                return Ok(new { EnquiryResponse = enquiry, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { EnquiryResponse = enquiry, StatusCode = StatusCodes.Status400BadRequest });
+
+        }
+
+
+
+        [HttpGet("EnquiryResponse/Delete/{id}")]
+        public async Task<IActionResult> DelteEnquiryResponse([FromRoute] int id)
+        {
+            var response = await _enquiryRepository.DeleteEnquiryResponse(id);
+            if (response != true)
                 return Ok(new { EnquiryTypes = response, StatusCode = StatusCodes.Status200OK });
             return Ok(new { EnquiryTypes = response, StatusCode = StatusCodes.Status400BadRequest });
 
@@ -81,16 +126,6 @@ namespace Louman.Controllers
 
         }
 
-        [HttpGet("EnquiryResponseStatus/Delete/{id}")]
-        public async Task<IActionResult> DelteEnquiryResponseStatus([FromRoute] int id)
-        {
-            var response = await _enquiryRepository.DeleteEnquiryResponseStatus(id);
-            if (response != true)
-                return Ok(new { EnquiryTypes = response, StatusCode = StatusCodes.Status200OK });
-            return Ok(new { EnquiryTypes = response, StatusCode = StatusCodes.Status400BadRequest });
-
-        }
-
         [HttpPost("EnquiryResponseStatus/Add")]
         public async Task<IActionResult> AddEnquiryResponseStatus([FromBody] EnquiryResponseStatusDto enquiryResponseStatus)
         {
@@ -101,37 +136,17 @@ namespace Louman.Controllers
 
         }
 
-        [HttpPost("Response/Add")]
-        public async Task<IActionResult> AddEnquiryResponse([FromBody] EnquiryResponseDto enquiryResponse)
+        [HttpGet("EnquiryResponseStatus/Delete/{id}")]
+        public async Task<IActionResult> DelteEnquiryResponseStatus([FromRoute] int id)
         {
-            var enquiry = await _enquiryRepository.AddEnquiryResponse(enquiryResponse);
-            if (enquiry != null)
-                return Ok(new { EnquiryResponse = enquiry, StatusCode = StatusCodes.Status200OK });
-            return Ok(new { EnquiryResponse = enquiry, StatusCode = StatusCodes.Status400BadRequest });
+            var response = await _enquiryRepository.DeleteEnquiryResponseStatus(id);
+            if (response != true)
+                return Ok(new { EnquiryTypes = response, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { EnquiryTypes = response, StatusCode = StatusCodes.Status400BadRequest });
 
         }
 
-        [HttpGet("EnquiryResponse/All")]
-        public async Task<IActionResult> GetAllEnquiryResponse()
-        {
-            var enquiryResponses = await _enquiryRepository.GetAllEnquiryResponse();
-            if (enquiryResponses != null)
-                return Ok(new { EnquiryResponses = enquiryResponses, StatusCode = StatusCodes.Status200OK });
-            return Ok(new { EnquiryResponses = enquiryResponses, StatusCode = StatusCodes.Status404NotFound });
 
-        }
-
-        [HttpGet("EnquiryResponse/{id}")]
-        public async Task<IActionResult> GetEnquiryResponseById([FromRoute] int id)
-        {
-            var enquiryResponse = await _enquiryRepository.GetEnquiryResponseById(id);
-            if (enquiryResponse != null)
-                return Ok(new { enquiryResponse = enquiryResponse, StatusCode = StatusCodes.Status200OK });
-            return Ok(new { enquiryResponse = enquiryResponse, StatusCode = StatusCodes.Status404NotFound });
-
-        }
-
-        
 
         [HttpGet("All")]
         public async Task<IActionResult> GetAllEnquiries()
@@ -144,6 +159,28 @@ namespace Louman.Controllers
         }
 
 
+        [HttpGet("ClientEnquiry/All")]
+        public async Task<IActionResult> GetAllClientEnquiries([FromQuery] int clientUserId)
+        {
+            var enquiries = await _enquiryRepository.GetAllClientEnquiries(clientUserId);
+            if (enquiries != null)
+                return Ok(new { Enquiries = enquiries, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Enquiries = enquiries, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetEnquiryById([FromRoute] int id)
+        {
+            var enquiry = await _enquiryRepository.GetEnquiryById(id);
+            if (enquiry != null)
+                return Ok(new { Enquiry = enquiry, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Enquiry = enquiry, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
+        
+
         [HttpGet("Delete/{id}")]
         public async Task<IActionResult> DelteEnquiry([FromRoute] int id)
         {
@@ -153,6 +190,8 @@ namespace Louman.Controllers
             return Ok(new { Enquiry = response, StatusCode = StatusCodes.Status400BadRequest });
 
         }
+
+
         [HttpGet("AdminEnquries/{id}")]
         public async Task<IActionResult> GetAdminEnquiriesByAdminUserId([FromRoute] int id)
         {
@@ -171,6 +210,7 @@ namespace Louman.Controllers
             return Ok(new { Enquiries = enquiry, StatusCode = StatusCodes.Status404NotFound });
 
         }
+
         [HttpGet("WithResponse/{id}")]
         public async Task<IActionResult> GetEnquiryWithResponse([FromRoute] int id)
         {
@@ -180,17 +220,6 @@ namespace Louman.Controllers
             return Ok(new { Enquiry = enquiry, StatusCode = StatusCodes.Status404NotFound });
 
         }
-
-        [HttpGet("ClientEnquiry/All")]
-        public async Task<IActionResult> GetAllClientEnquiries([FromQuery] int clientUserId)
-        {
-            var enquiries = await _enquiryRepository.GetAllClientEnquiries(clientUserId);
-            if (enquiries != null)
-                return Ok(new { Enquiries = enquiries, StatusCode = StatusCodes.Status200OK });
-            return Ok(new { Enquiries = enquiries, StatusCode = StatusCodes.Status404NotFound });
-
-        }
-
         [HttpPost("Add")]
         public async Task<IActionResult> AddEnquiry([FromBody] EnquiryDto enquiry)
         {
@@ -200,5 +229,8 @@ namespace Louman.Controllers
             return Ok(new { Enquiry = enq, StatusCode = StatusCodes.Status400BadRequest });
 
         }
+
+
+
     }
 }
