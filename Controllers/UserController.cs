@@ -61,6 +61,15 @@ namespace Louman.Controllers
 
         }
         //add audit method
+        [HttpGet("Audit")]
+        public async Task<IActionResult> GetAudits()
+        {
+            var audits = await _userRepository.GetAuditDetail();
+            if (audits != null)
+                return Ok(new { Audits = audits, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Audits = audits, StatusCode = StatusCodes.Status404NotFound });
+
+        }
 
 
 
