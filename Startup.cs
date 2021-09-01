@@ -72,11 +72,8 @@ namespace Louman
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors(options => {
-                options.AllowAnyMethod();
-                options.AllowAnyOrigin();
-                options.AllowAnyHeader();
-            });
+            app.UseCors("CorsPolicy");
+              
 
             app.UseHttpsRedirection();
             app.UseRouting();

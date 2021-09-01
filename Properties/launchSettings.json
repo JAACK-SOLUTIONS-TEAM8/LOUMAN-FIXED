@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:55348",
+      "applicationUrl": "http://localhost:58031",
       "sslPort": 44383
     }
   },
@@ -19,7 +19,6 @@
     "Louman": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
