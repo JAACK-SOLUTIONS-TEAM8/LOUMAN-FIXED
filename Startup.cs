@@ -54,7 +54,13 @@ namespace Louman
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
 
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder => builder.WithOrigins("http://localhost:4200", "https://loumanweb.azurewebsites.net")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
+            });
 
         }
 

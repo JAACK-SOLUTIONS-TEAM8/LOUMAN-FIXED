@@ -180,6 +180,20 @@ namespace Louman.Controllers
         }
 
 
+        [HttpGet("Search")]
+        public async Task<IActionResult> SearhProductByName([FromQuery] string name)
+        {
+            var products = await _productReposiroty.SearchProductByName(name);
+            if(products!=null)
+            {
+                return Ok(new { Products = products, StatusCode = StatusCodes.Status200OK });
+
+            }
+            return Ok(new { Products = products, StatusCode = StatusCodes.Status204NoContent });
+
+        }
+
+
 
 
 

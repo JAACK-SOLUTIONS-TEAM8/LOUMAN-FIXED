@@ -71,6 +71,16 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("Audit/Search")]
+        public async Task<IActionResult> SearchAudit([FromQuery] string name)
+        {
+            var audits = await _userRepository.SearchAuditByUserName(name);
+            if (audits != null)
+                return Ok(new { Audits = audits, StatusCode = StatusCodes.Status200OK });
+            return NotFound(new { Audits = audits, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
 
 
     }

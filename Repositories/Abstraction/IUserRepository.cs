@@ -14,6 +14,7 @@ namespace Louman.Repositories.Abstraction
         Task<UserTypeDto> GetUserTypeById(int userTypeId);
         Task<bool> DeleteUserType(int userTypeId);
         Task<List<AuditDto>> GetAuditDetail();
+        Task<List<AuditDto>> SearchAuditByUserName(string name);
 
     }
 }
