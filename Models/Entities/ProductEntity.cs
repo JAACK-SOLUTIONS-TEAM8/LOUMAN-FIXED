@@ -18,6 +18,7 @@ namespace Louman.Models.Entities
         public string ProductImage { get; set; }
         public decimal Price { get; set; }
         public bool isDeleted { get; set; }
+        public DateTime? Date { get; set; }
 
     }
 }
