@@ -124,7 +124,7 @@ namespace Louman.Controllers
             var response = await _productReposiroty.DeleteProduct(id);
             if (response != false)
                 return Ok(new { Response = true, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Response = false, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Response = false, StatusCode = StatusCodes.Status404NotFound });
 
         }
 
