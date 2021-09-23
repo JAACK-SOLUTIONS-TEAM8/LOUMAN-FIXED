@@ -165,6 +165,16 @@ namespace Louman.Repositories
 
             }
 
+            var auditEntity = new AuditEntity
+            {
+                Date = DateTime.Now,
+                UserId = order.ClientUserId,
+                Operation = $"New Order Created!"
+            };
+
+            await _dbContext.Audits.AddAsync(auditEntity);
+            await _dbContext.SaveChangesAsync();
+
 
             return await Task.FromResult(
                     (from o in _dbContext.Orders
