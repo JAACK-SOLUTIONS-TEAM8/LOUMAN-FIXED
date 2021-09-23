@@ -181,7 +181,7 @@ namespace Louman.Repositories.Behavior
                         AttendanceHistoryId = attendanceHistoryEntity.AttendanceHistoryId,
                         EmployeeId = member.EmployeeId,
                         Absent = false,
-                        Present = false,
+                        Present = true,
                         Reason = ""
                     };
 
@@ -444,7 +444,15 @@ namespace Louman.Repositories.Behavior
         public async Task<List<TeamEmployeeDto>> AddTeamEmployee(TeamEmployeeDto employee)
         {
             var existingTeam = await _dbContext.Teams.FindAsync(employee.TeamId);
-            if (existingTeam.NumberOfEmployees < existingTeam.MaxEmployees)
+
+            var employeesInTeams = (from e in _dbContext.Employees
+                                    join et in _dbContext.EmployeeTeams on e.EmployeeId equals et.EmployeeId
+                                    join t in _dbContext.Teams on et.TeamId equals t.TeamId
+                                    where t.isDeleted == false
+                                    select new { EmployeeId = e.EmployeeId }).ToList();
+
+            if ((existingTeam.NumberOfEmployees < existingTeam.MaxEmployees) && !employeesInTeams.Any(e => e.EmployeeId == employee.EmployeeId))
+
             {
 
                 var employeeTeamEntity = new EmployeeTeamEntity
@@ -459,32 +467,36 @@ namespace Louman.Repositories.Behavior
                 existingTeam.NumberOfEmployees += 1;
                 _dbContext.Teams.Update(existingTeam);
                 await _dbContext.SaveChangesAsync();
+
+
+                return await (from u in _dbContext.Users
+                              join e in _dbContext.Employees on u.UserId equals e.UserId
+                              join et in _dbContext.EmployeeTeams on e.EmployeeId equals et.EmployeeId
+                              where u.isDeleted == false && et.TeamId == employee.TeamId
+                              orderby u.UserName
+                              select new TeamEmployeeDto
+                              {
+                                  UserId = e.UserId,
+                                  EmployeeId = e.EmployeeId,
+                                  AddressId = u.AddressId,
+                                  CellNumber = u.CellNumber,
+                                  Email = u.Email,
+                                  IdNumber = u.IdNumber,
+                                  Initials = u.Initials,
+                                  Password = u.Password,
+                                  Surname = u.Surname,
+                                  UserName = u.UserName,
+                                  UserTypeId = u.UserTypeId,
+                                  CommenceDate = e.CommencementDate,
+                                  TerminationDate = e.TerminationDate,
+                                  TerminationReason = e.TerminationReason,
+                                  TeamId = employee.TeamId
+
+                              }).ToListAsync();
             }
 
-            return await (from u in _dbContext.Users
-                          join e in _dbContext.Employees on u.UserId equals e.UserId
-                          join et in _dbContext.EmployeeTeams on e.EmployeeId equals et.EmployeeId
-                          where u.isDeleted == false && et.TeamId == employee.TeamId
-                          orderby u.UserName
-                          select new TeamEmployeeDto
-                          {
-                              UserId = e.UserId,
-                              EmployeeId = e.EmployeeId,
-                              AddressId = u.AddressId,
-                              CellNumber = u.CellNumber,
-                              Email = u.Email,
-                              IdNumber = u.IdNumber,
-                              Initials = u.Initials,
-                              Password = u.Password,
-                              Surname = u.Surname,
-                              UserName = u.UserName,
-                              UserTypeId = u.UserTypeId,
-                              CommenceDate = e.CommencementDate,
-                              TerminationDate = e.TerminationDate,
-                              TerminationReason = e.TerminationReason,
-                              TeamId = employee.TeamId
-
-                          }).ToListAsync();
+            return null;
+        
         }
 
     }

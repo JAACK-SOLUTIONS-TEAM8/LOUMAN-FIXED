@@ -198,6 +198,16 @@ namespace Louman.Repositories.Behavior
             _dbContext.Slots.Update(slotEntity);
             _dbContext.SaveChanges();
 
+            var auditEntity = new AuditEntity
+            {
+                Date = DateTime.Now,
+                UserId = clientUserId,
+                Operation = $"Slot was Booked"
+            };
+
+            await _dbContext.Audits.AddAsync(auditEntity);
+            await _dbContext.SaveChangesAsync();
+
             return await (from bs in _dbContext.BookedSlots
                           join s in _dbContext.Slots on bs.SlotId equals s.SlotId
                           join au in _dbContext.Users on bs.AdminUserId equals au.UserId

@@ -116,7 +116,7 @@ namespace Louman.Controllers
             var employees = await _teamRepository.AddTeamEmployee(employee);
             if (employees != null)
                 return Ok(new { Employees = employees, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Employees = employees, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Employees = employees, StatusCode = StatusCodes.Status404NotFound });
 
         }
 

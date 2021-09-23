@@ -46,7 +46,7 @@ namespace Louman.Repositories
                     TerminationDate = employee.TerminationDate.HasValue ? employee.TerminationDate.Value : null,
                     TerminationReason = employee.TerminationReason ?? null,
                     Image = employee.Image,
-                    Document = employee.Document
+                    EmployeeDocument = employee.Document
                 };
 
                 _dbContext.Employees.Add(newEmployee);
@@ -99,7 +99,7 @@ namespace Louman.Repositories
                     emp.TerminationDate = employee.TerminationDate.HasValue ? employee.TerminationDate.Value : null;
                     emp.TerminationReason = employee.TerminationReason ?? null;
                     emp.Image = employee.Image;
-                    emp.Document = employee.Document;
+                    emp.EmployeeDocument = employee.Document;
 
 
                     _dbContext.Update(emp);
@@ -166,7 +166,7 @@ namespace Louman.Repositories
                               TerminationDate = e.TerminationDate,
                               TerminationReason = e.TerminationReason,
                               Image = e.Image,
-                              Document = e.Document
+                              Document = e.EmployeeDocument
 
                           }).ToList();
             return Task.FromResult(employees);
@@ -206,7 +206,7 @@ new
                               TerminationDate = e.TerminationDate,
                               TerminationReason = e.TerminationReason,
                               Image = e.Image,
-                              Document = e.Document
+                              Document = e.EmployeeDocument
                           }).SingleOrDefaultAsync();
         }
 
@@ -233,7 +233,7 @@ new
                               TerminationDate = e.TerminationDate,
                               TerminationReason = e.TerminationReason,
                               Image = e.Image,
-                              Document = e.Document
+                              Document = e.EmployeeDocument
                           }).ToListAsync();
         }
 
@@ -378,7 +378,7 @@ new
                               TerminationDate = e.TerminationDate,
                               TerminationReason = e.TerminationReason,
                               Image = e.Image,
-                              Document = e.Document,
+                              Document = e.EmployeeDocument,
                               TeamId = team != null ? team.TeamId : 0,
                               TeamName = team != null ? team.TeamName : null
                           }).SingleOrDefaultAsync();

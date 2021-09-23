@@ -17,7 +17,7 @@ namespace Louman.Models.Entities
       public DateTime? TerminationDate {get;set;}
       public string TerminationReason{get;set;}
       public string Image{get;set;}
-     public string Document { get; set; }
+     public string EmployeeDocument { get; set; }
 
     }
 }

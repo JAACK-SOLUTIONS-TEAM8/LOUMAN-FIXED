@@ -31,7 +31,8 @@ namespace Louman.Repositories
                     ProductSizeId=product.ProductSizeId,
                     ProductTypeId=product.ProductTypeId,
                     ProductImage=product.ProductImage,
-                    isDeleted = false
+                    isDeleted = false,
+                    Date = DateTime.Now
                 };
                 _dbContext.Products.Add(newProduct);
                 await _dbContext.SaveChangesAsync();
