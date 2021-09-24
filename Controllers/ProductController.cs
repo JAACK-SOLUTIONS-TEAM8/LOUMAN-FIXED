@@ -137,6 +137,15 @@ namespace Louman.Controllers
             return NotFound(new { Product = stockProduct, StatusCode = StatusCodes.Status404NotFound });
 
         }
+        [HttpPost("Stock/Complete")]
+        public async Task<IActionResult> CompleteStock(StockDto stock)
+        {
+            var stockProduct = await _productReposiroty.CompleteStock(stock);
+            if (stockProduct != null)
+                return Ok(new { Product = stockProduct, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Product = stockProduct, StatusCode = StatusCodes.Status404NotFound });
+
+        }
         [HttpGet("Stock/{id}")]
         public async Task<IActionResult> GetStockProductById([FromRoute] int id)
         {
