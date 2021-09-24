@@ -71,5 +71,16 @@ namespace Louman.Controllers
                 return Ok(new { Admin = reponse, statusCode = StatusCodes.Status204NoContent });
 
         }
+        [HttpGet("GetTimerConfig")]
+        public IActionResult GetTimerConfig()
+        {
+            var reponse = _adminRepository.GetTimerCongif();
+            if (reponse != null)
+                return Ok(new { Config = reponse, statusCode = StatusCodes.Status200OK });
+            else
+                return Ok(new { Config = reponse, statusCode = StatusCodes.Status400BadRequest });
+
+        }
+
     }
 }
