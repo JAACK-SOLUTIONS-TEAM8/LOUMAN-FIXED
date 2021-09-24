@@ -157,6 +157,10 @@ namespace Louman.Repositories
 
                     }).SingleOrDefault();
         }
+        public TimerConfigEntity GetTimerCongif()
+        {
+            return _dbContext.Timer.Where(t => t.Id == 1).SingleOrDefault();
+        }
 
         public List<AdminDto> SearchByName(string name)
         {
