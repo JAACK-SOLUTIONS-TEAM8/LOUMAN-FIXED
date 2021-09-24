@@ -184,6 +184,16 @@ namespace Louman.Repositories
 
                     }).ToList();
         }
+        public bool SetTimerConfig(TimerConfigDto config)
+        {
+            var configEntity = _dbContext.Timer.Find(1);
 
+            configEntity.LeftTime = config.LeftTime;
+            configEntity.Notify = config.Notify;
+            configEntity.StopTime = config.StopTime;
+            _dbContext.Timer.Update(configEntity);
+            _dbContext.SaveChanges();
+            return true;
+        }
     }
 }
