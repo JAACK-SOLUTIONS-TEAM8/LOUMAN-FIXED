@@ -15,5 +15,7 @@ namespace Louman.Repositories.Abstraction
         List<AdminDto> GetAll();
         AdminDto GetById(int id);
         List<AdminDto> SearchByName(string name);
+        TimerConfigEntity GetTimerCongif();
+
     }
 }
