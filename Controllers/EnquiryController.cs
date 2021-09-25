@@ -179,7 +179,7 @@ namespace Louman.Controllers
 
         }
 
-        
+
 
         [HttpGet("Delete/{id}")]
         public async Task<IActionResult> DelteEnquiry([FromRoute] int id)
@@ -192,19 +192,19 @@ namespace Louman.Controllers
         }
 
 
-        [HttpGet("AdminEnquries/{id}")]
-        public async Task<IActionResult> GetAdminEnquiriesByAdminUserId([FromRoute] int id)
+        [HttpGet("AdminEnquries")]
+        public async Task<IActionResult> GetAdminEnquiriesByAdminUserId()
         {
-            var enquiry = await _enquiryRepository.GetAllAdminEnquiryById(id);
+            var enquiry = await _enquiryRepository.GetAllAdminEnquiryById();
             if (enquiry != null)
                 return Ok(new { Enquiries = enquiry, StatusCode = StatusCodes.Status200OK });
             return Ok(new { Enquiries = enquiry, StatusCode = StatusCodes.Status404NotFound });
 
         }
-        [HttpGet("AdminEnquries")]
-        public async Task<IActionResult> GetAdminEnquiriesByEnquiryTypeId([FromQuery] int adminUserId, int enquiryTypeId)
+        [HttpGet("AdminEnquriesById")]
+        public async Task<IActionResult> GetAdminEnquiriesByEnquiryTypeId(int enquiryTypeId)
         {
-            var enquiry = await _enquiryRepository.GetAllAdminEnquiryByEnquiryTypeId(adminUserId, enquiryTypeId);
+            var enquiry = await _enquiryRepository.GetAllAdminEnquiryByEnquiryTypeId(enquiryTypeId);
             if (enquiry != null)
                 return Ok(new { Enquiries = enquiry, StatusCode = StatusCodes.Status200OK });
             return Ok(new { Enquiries = enquiry, StatusCode = StatusCodes.Status404NotFound });
