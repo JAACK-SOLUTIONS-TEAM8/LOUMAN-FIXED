@@ -45,7 +45,7 @@ namespace Louman.Repositories.Behavior
                             CellNumber = u.CellNumber,
                             Email = u.Email,
                             IdNumber = u.IdNumber,
-                            Initials = u.Initials,
+                            Initials = u.Name,
                             UserTypeId = u.UserTypeId,
                             UserType = ut.UserTypeDescription
                         }

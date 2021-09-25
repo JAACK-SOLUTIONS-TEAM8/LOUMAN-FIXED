@@ -34,7 +34,7 @@ namespace Louman.Repositories
                     CellNumber = client.CellNumber,
                     Email = client.Email,
                     IdNumber = client.IdNumber,
-                    Initials = client.Initials,
+                    Name = client.Initials,
                     Password = client.Password,
                     Surname = client.Surname,
                     UserTypeId = client.UserTypeId,
@@ -60,7 +60,7 @@ namespace Louman.Repositories
                      CellNumber = user.CellNumber,
                      Email = user.Email,
                      IdNumber = user.IdNumber,
-                     Initials = user.Initials,
+                     Initials = user.Name,
                      Password = user.Password,
                      Surname = user.Surname,
                      UserName = user.UserName,
@@ -96,7 +96,7 @@ namespace Louman.Repositories
                     user.Password = client.Password;
                     user.Surname = client.Surname;
                     user.UserTypeId = client.UserTypeId;
-                    user.Initials = client.Initials;
+                    user.Name = client.Initials;
                     user.AddressId = client.AddressId;
                     user.IdNumber = client.IdNumber;
                     _dbContext.Update(user);
@@ -111,7 +111,7 @@ namespace Louman.Repositories
                         CellNumber = user.CellNumber,
                         Email = user.Email,
                         IdNumber = user.IdNumber,
-                        Initials = user.Initials,
+                        Initials = user.Name,
                         Password = user.Password,
                         Surname = user.Surname,
                         UserName = user.UserName,
@@ -141,7 +141,7 @@ namespace Louman.Repositories
                               CellNumber = u.CellNumber,
                               Email = u.Email,
                               IdNumber = u.IdNumber,
-                              Initials = u.Initials,
+                              Initials = u.Name,
                               Password = u.Password,
                               Surname = u.Surname,
                               UserName = u.UserName,
@@ -168,7 +168,7 @@ namespace Louman.Repositories
                               CellNumber = u.CellNumber,
                               Email = u.Email,
                               IdNumber = u.IdNumber,
-                              Initials = u.Initials,
+                              Initials = u.Name,
                               Password = u.Password,
                               Surname = u.Surname,
                               UserName = u.UserName,
@@ -195,7 +195,7 @@ namespace Louman.Repositories
                               CellNumber = u.CellNumber,
                               Email = u.Email,
                               IdNumber = u.IdNumber,
-                              Initials = u.Initials,
+                              Initials = u.Name,
                               Password = u.Password,
                               Surname = u.Surname,
                               UserName = u.UserName,
@@ -221,7 +221,7 @@ namespace Louman.Repositories
                               CellNumber = u.CellNumber,
                               Email = u.Email,
                               IdNumber = u.IdNumber,
-                              Initials = u.Initials,
+                              Initials = u.Name,
                               Password = u.Password,
                               Surname = u.Surname,
                               UserName = u.UserName,
