@@ -10,8 +10,8 @@ namespace Louman.Models.DTOs.Enquiry
         public int EnquiryId { get; set; }
         public int EnquiryTypeId { get; set; }
         public int ClientUserId { get; set; }
-        public int AdminUserId { get; set; }
-        public string AdminName { get; set; }
+      //  public int AdminUserId { get; set; }
+     //   public string AdminName { get; set; }
         public string ClientName{ get; set; }
         public string EnquiryStatus { get; set; }
         public string EnquiryType { get; set; }
