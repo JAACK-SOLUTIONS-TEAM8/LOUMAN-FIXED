@@ -2,6 +2,7 @@
 using Louman.Models.DTOs.Client;
 using Louman.Models.Entities;
 using Louman.Repositories.Abstraction;
+using Louman.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -34,11 +35,14 @@ namespace Louman.Repositories
                     CellNumber = client.CellNumber,
                     Email = client.Email,
                     IdNumber = client.IdNumber,
-                    Initials = client.Initials,
-                    Password = client.Password,
+                    Name = client.Initials,
+                    Password = Hashing.GenerateSha512String(client.Password),
                     Surname = client.Surname,
                     UserTypeId = client.UserTypeId,
-                    isDeleted = false
+                    isDeleted = false,
+                    EmailConfirmationCode = null,
+                    TokenExpirationTime = null,
+
                 };
                 await _dbContext.Users.AddAsync(user);
                 await _dbContext.SaveChangesAsync();
@@ -60,8 +64,8 @@ namespace Louman.Repositories
                      CellNumber = user.CellNumber,
                      Email = user.Email,
                      IdNumber = user.IdNumber,
-                     Initials = user.Initials,
-                     Password = user.Password,
+                     Initials = user.Name,
+                     Password = Hashing.GenerateSha512String(client.Password),
                      Surname = user.Surname,
                      UserName = user.UserName,
                      UserTypeId = user.UserTypeId,
@@ -93,10 +97,10 @@ namespace Louman.Repositories
                     user.UserName = client.UserName;
                     user.CellNumber = client.CellNumber;
                     user.Email = client.Email;
-                    user.Password = client.Password;
+                    user.Password = Hashing.GenerateSha512String(client.Password);
                     user.Surname = client.Surname;
                     user.UserTypeId = client.UserTypeId;
-                    user.Initials = client.Initials;
+                    user.Name = client.Initials;
                     user.AddressId = client.AddressId;
                     user.IdNumber = client.IdNumber;
                     _dbContext.Update(user);
@@ -111,8 +115,8 @@ namespace Louman.Repositories
                         CellNumber = user.CellNumber,
                         Email = user.Email,
                         IdNumber = user.IdNumber,
-                        Initials = user.Initials,
-                        Password = user.Password,
+                        Initials = user.Name,
+                        Password = Hashing.GenerateSha512String(client.Password),
                         Surname = user.Surname,
                         UserName = user.UserName,
                         UserTypeId = user.UserTypeId,
@@ -141,7 +145,7 @@ namespace Louman.Repositories
                               CellNumber = u.CellNumber,
                               Email = u.Email,
                               IdNumber = u.IdNumber,
-                              Initials = u.Initials,
+                              Initials = u.Name,
                               Password = u.Password,
                               Surname = u.Surname,
                               UserName = u.UserName,
@@ -168,7 +172,7 @@ namespace Louman.Repositories
                               CellNumber = u.CellNumber,
                               Email = u.Email,
                               IdNumber = u.IdNumber,
-                              Initials = u.Initials,
+                              Initials = u.Name,
                               Password = u.Password,
                               Surname = u.Surname,
                               UserName = u.UserName,
@@ -195,7 +199,7 @@ namespace Louman.Repositories
                               CellNumber = u.CellNumber,
                               Email = u.Email,
                               IdNumber = u.IdNumber,
-                              Initials = u.Initials,
+                              Initials = u.Name,
                               Password = u.Password,
                               Surname = u.Surname,
                               UserName = u.UserName,
@@ -221,7 +225,7 @@ namespace Louman.Repositories
                               CellNumber = u.CellNumber,
                               Email = u.Email,
                               IdNumber = u.IdNumber,
-                              Initials = u.Initials,
+                              Initials = u.Name,
                               Password = u.Password,
                               Surname = u.Surname,
                               UserName = u.UserName,

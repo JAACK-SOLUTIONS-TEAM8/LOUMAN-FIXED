@@ -11,9 +11,9 @@ namespace Louman.Models.Entities
     public class LocationEntity
     {
         [Key]
-        public int LocationId { get; set; }
-        public string LocationArea { get; set; }
-        public string LocationProvince { get; set; }
-        public bool isDeleted { get; set; }
+        public int LocationId{get;set;}
+        public string LocationArea{get;set;}
+        public string LocationProvince{get;set;}
+        public bool isDeleted{get;set;}
     }
 }

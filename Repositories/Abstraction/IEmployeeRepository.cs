@@ -8,7 +8,7 @@ namespace Louman.Repositories.Abstraction
 {
     public interface IEmployeeRepository
     {
-        Task<EmployeeDto> Add(EmployeeDto employee);
+        Task<EmployeeDto> Add(UserEmployee employee);
         Task<List<EmployeeDto>> GetAllAsync();
         Task<EmployeeDto> GetByIdAsync(int employeeId);
         Task<List<EmployeeDto>> SearchByNameAsync(string name);

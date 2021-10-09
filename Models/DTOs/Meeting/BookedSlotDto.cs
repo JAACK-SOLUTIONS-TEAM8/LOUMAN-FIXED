@@ -13,6 +13,7 @@ namespace Louman.Models.DTOs
         public int AdminUserId { get; set; }
         public string AdminName { get; set; }
         public string ClientName { get; set; }
+        public string ClientPhone{ get; set; }
         public DateTime Date { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }

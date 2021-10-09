@@ -164,7 +164,15 @@ namespace Louman.Repositories
                 await _dbContext.SaveChangesAsync();
 
             }
+            var auditEntity = new AuditEntity
+            {
+                Date = DateTime.Now,
+                UserId = order.ClientUserId,
+                Operation = $"New Order Created!"
+            };
 
+            await _dbContext.Audits.AddAsync(auditEntity);
+            await _dbContext.SaveChangesAsync();
 
             return await Task.FromResult(
                     (from o in _dbContext.Orders
@@ -185,7 +193,7 @@ CreatedDate = newOrderEntity.CreatedDate,
 PaymentType = o.PaymentType,
 PickupDate = o.PickupDate.Value.ToString("F"),
 PickupTime = o.PickupTime.Value.ToString("F"),
-ClientName = $"{u.Initials} {u.Surname}"
+ClientName = $"{u.Name} {u.Surname}"
 }).SingleOrDefault());
 
         }
@@ -208,15 +216,11 @@ ClientName = $"{u.Initials} {u.Surname}"
                               DeliveryType = dt.Description,
                               CreatedDate = o.CreatedDate,
                               PaymentType = o.PaymentType,
-                              ClientName = $"{u.Initials} {u.Surname}",
+                              ClientName = $"{u.Name} {u.Surname}",
                               PickupDate = o.PickupDate.Value.ToString("F"),
                               PickupTime = o.PickupTime.Value.ToString("F")
                           }).ToListAsync();
         }
-
-
-
-
         public async Task<ClientOrderDto> GetAllClientOrderById(int orderId)
         {
             var products = await (from ol in _dbContext.OrderLines
@@ -272,7 +276,7 @@ ClientName = $"{u.Initials} {u.Surname}"
                               DeliveryType = dt.Description,
                               CreatedDate = o.CreatedDate,
                               PaymentType = o.PaymentType,
-                              ClientName = $"{u.Initials} {u.Surname}",
+                              ClientName = $"{u.Name} {u.Surname}",
                               DeliveryTypeId = o.DeliveryTypeId,
                               Products = productInfo,
                               Email = u.Email,
@@ -360,7 +364,7 @@ ClientName = $"{u.Initials} {u.Surname}"
                               DeliveryType = dt.Description,
                               CreatedDate = o.CreatedDate,
                               PaymentType = o.PaymentType,
-                              ClientName = $"{u.Initials} {u.Surname}",
+                              ClientName = $"{u.Name} {u.Surname}",
                               PickupDate = o.PickupDate.Value.ToString("F"),
                               PickupTime = o.PickupTime.Value.ToString("F")
                           }).ToListAsync();

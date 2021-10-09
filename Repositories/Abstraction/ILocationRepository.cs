@@ -8,9 +8,11 @@ namespace Louman.Repositories.Abstraction
 {
     public interface ILocationRepository
     {
-        Task<LocationDto> AddAsync(LocationDto location);
+        Task<LocationDto> AddAsync(UserLocation location);
         Task<List<LocationDto>> GetAllAsync();
-        Task<bool> DeleteAsync(int locationId);
+
+        Task<List<ProvinceDto>> GetAllProvinces();
+        Task<bool> DeleteAsync(LocationDeletionDto location);
 
         Task<LocationDto> GetByIdAsync(int locationId);
 

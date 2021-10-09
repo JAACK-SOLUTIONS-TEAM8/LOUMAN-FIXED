@@ -30,6 +30,7 @@ namespace Louman.AppDbContexts
         public DbSet<EnquiryTypeEntity> EnquiryTypes { get; set; }
         public DbSet<InvoiceEntity> Invoices{ get; set; }
         public DbSet<LocationEntity> Locations { get; set; }
+        public DbSet<ProvinceEntity> Provinces { get; set; }
         public DbSet<MeetingEntity> Meetings{ get; set; }
         public DbSet<MeetingStatusEntity> MeetingStatus { get; set; }
         public DbSet<OrderEntity> Orders{ get; set; }

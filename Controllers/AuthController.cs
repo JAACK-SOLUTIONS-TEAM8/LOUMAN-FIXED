@@ -1,4 +1,5 @@
-﻿using Louman.Models.DTOs.User;
+﻿using Louman.Models.DTOs.Auth;
+using Louman.Models.DTOs.User;
 using Louman.Repositories.Abstraction;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,12 +24,28 @@ namespace Louman.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginDto user)
         {
-            var existingUser = await _authRepository.LoginAsync(user);
-            if (existingUser != null)
-                return Ok(new { User = existingUser, StatusCode = StatusCodes.Status200OK });
-            return Ok(new { User = existingUser, StatusCode = StatusCodes.Status404NotFound });
+            var response = await _authRepository.LoginAsync(user);
+            if (response.ResponseType == Models.DTOs.Auth.UserLoginResponseType.Authenticated)
+                return Ok(new { User = response.User, StatusCode = StatusCodes.Status200OK });
+            else 
+                return Ok(new { User = response.User, StatusCode = StatusCodes.Status404NotFound });
         }
 
+        [HttpPost("VerifyCode")]
+        public async Task<IActionResult> VerifyCode(CodeDto code)
+        {
+            var response = await _authRepository.VerifyCode(code);
+            if (response.ResponseType == UserLoginResponseType.Authenticated)
+            {
+                return Ok(new { Status = response, StatusCode = StatusCodes.Status200OK });
+            }
+            else if(response.ResponseType == UserLoginResponseType.IncorrectCode)
+            {
+                return Ok(new { Status = response, StatusCode = StatusCodes.Status401Unauthorized });
+            }
+            else
+                return Ok(new { isVerified = response, StatusCode = StatusCodes.Status404NotFound });
+        }
 
         [HttpGet("Logout/{id}")]
         public async Task<IActionResult> Logout([FromRoute] int id)

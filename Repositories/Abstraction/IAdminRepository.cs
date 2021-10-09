@@ -1,4 +1,5 @@
 ﻿using Louman.Models.DTOs;
+using Louman.Models.DTOs.Timer;
 using Louman.Models.Entities;
 using System;
 using System.Collections.Generic;
@@ -15,5 +16,8 @@ namespace Louman.Repositories.Abstraction
         List<AdminDto> GetAll();
         AdminDto GetById(int id);
         List<AdminDto> SearchByName(string name);
+        TimerConfigEntity GetTimerCongif();
+
+        bool SetTimerConfig(TimerConfigDto config);
     }
 }

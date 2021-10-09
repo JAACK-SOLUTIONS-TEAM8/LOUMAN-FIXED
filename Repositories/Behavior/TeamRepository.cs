@@ -154,8 +154,24 @@ namespace Louman.Repositories.Behavior
 
             return await Task.FromResult(teams);
         }
+
+        public bool CanMarkAttendance(int teamId)
+        {
+            var teamWorkingDays= (from d in _dbContext.Days
+                                 join td in _dbContext.TeamDays on d.DayId equals td.DayId
+                                 where td.TeamId==teamId select new DayDto
+                                 {
+                                     DayId=d.DayId,
+                                     DayName=d.DayName
+                                 }).ToList();
+
+            return teamWorkingDays.Any(day => day.DayName.ToLower() == DateTime.Now.DayOfWeek.ToString().ToLower());
+        }
+
         public async Task<List<AttendanceDto>> GetAttendanceData(int teamId)
         {
+
+
             var todayRecord = await (from ah in _dbContext.AttendanceHistoryEntities
                                      where ah.TeamId == teamId && ah.Date.Date == DateTime.Now.Date
                                      select ah).SingleOrDefaultAsync();
@@ -181,7 +197,7 @@ namespace Louman.Repositories.Behavior
                         AttendanceHistoryId = attendanceHistoryEntity.AttendanceHistoryId,
                         EmployeeId = member.EmployeeId,
                         Absent = false,
-                        Present = false,
+                        Present = true,
                         Reason = ""
                     };
 
@@ -196,13 +212,14 @@ namespace Louman.Repositories.Behavior
                                               where u.isDeleted == false && ah.TeamId == teamId
                                               select new AttendanceDto
                                               {
+                                                  UserId=u.UserId,
                                                   AttendanceId = a.AttendanceId,
                                                   AttendanceHistoryId = ah.AttendanceHistoryId,
                                                   Absent = a.Absent,
                                                   Present = a.Present,
                                                   Date = ah.Date,
                                                   EmployeeId = a.EmployeeId,
-                                                  Initials = u.Initials,
+                                                  Initials = u.Name,
                                                   Surname = u.Surname,
                                                   Reason = a.Reason,
                                                   TeamId = teamId
@@ -226,7 +243,7 @@ namespace Louman.Repositories.Behavior
                                                   Present = a.Present,
                                                   Date = ah.Date,
                                                   EmployeeId = a.EmployeeId,
-                                                  Initials = u.Initials,
+                                                  Initials = u.Name,
                                                   Surname = u.Surname,
                                                   Reason = a.Reason,
                                                   TeamId = teamId
@@ -298,7 +315,7 @@ namespace Louman.Repositories.Behavior
                               CellNumber = u.CellNumber,
                               Email = u.Email,
                               IdNumber = u.IdNumber,
-                              Initials = u.Initials,
+                              Initials = u.Name,
                               Password = u.Password,
                               Surname = u.Surname,
                               UserName = u.UserName,
@@ -321,15 +338,11 @@ namespace Louman.Repositories.Behavior
                 var teamDays = await (from td in _dbContext.TeamDays
                                       join d in _dbContext.Days on td.DayId equals d.DayId
                                       where td.TeamId == team.TeamId
-                                      select new DayDto
-                                      {
-                                          DayId = td.DayId,
-                                          DayName = d.DayName
-                                      }).ToListAsync();
+                                      select td).ToListAsync();
 
                 foreach (var day in teamDays)
                 {
-                    _dbContext.Remove(day);
+                    _dbContext.TeamDays.Remove(day);
                     await _dbContext.SaveChangesAsync();
                 }
 
@@ -414,7 +427,7 @@ namespace Louman.Repositories.Behavior
                                                   Present = a.Present,
                                                   Date = ah.Date,
                                                   EmployeeId = a.EmployeeId,
-                                                  Initials = u.Initials,
+                                                  Initials = u.Name,
                                                   Surname = u.Surname,
                                                   Reason = a.Reason,
                                                   TeamId = teamId
@@ -444,7 +457,14 @@ namespace Louman.Repositories.Behavior
         public async Task<List<TeamEmployeeDto>> AddTeamEmployee(TeamEmployeeDto employee)
         {
             var existingTeam = await _dbContext.Teams.FindAsync(employee.TeamId);
-            if (existingTeam.NumberOfEmployees < existingTeam.MaxEmployees)
+
+            var employeesInTeams = (from e in _dbContext.Employees
+                                    join et in _dbContext.EmployeeTeams on e.EmployeeId equals et.EmployeeId
+                                    join t in _dbContext.Teams on et.TeamId equals t.TeamId
+                                    where t.isDeleted == false
+                                    select new { EmployeeId = e.EmployeeId }).ToList();
+
+            if ((existingTeam.NumberOfEmployees < existingTeam.MaxEmployees) && !employeesInTeams.Any(e=>e.EmployeeId==employee.EmployeeId))
             {
 
                 var employeeTeamEntity = new EmployeeTeamEntity
@@ -459,34 +479,67 @@ namespace Louman.Repositories.Behavior
                 existingTeam.NumberOfEmployees += 1;
                 _dbContext.Teams.Update(existingTeam);
                 await _dbContext.SaveChangesAsync();
+
+                return await (from u in _dbContext.Users
+                              join e in _dbContext.Employees on u.UserId equals e.UserId
+                              join et in _dbContext.EmployeeTeams on e.EmployeeId equals et.EmployeeId
+                              where u.isDeleted == false && et.TeamId == employee.TeamId
+                              orderby u.UserName
+                              select new TeamEmployeeDto
+                              {
+                                  UserId = e.UserId,
+                                  EmployeeId = e.EmployeeId,
+                                  AddressId = u.AddressId,
+                                  CellNumber = u.CellNumber,
+                                  Email = u.Email,
+                                  IdNumber = u.IdNumber,
+                                  Initials = u.Name,
+                                  Password = u.Password,
+                                  Surname = u.Surname,
+                                  UserName = u.UserName,
+                                  UserTypeId = u.UserTypeId,
+                                  CommenceDate = e.CommencementDate,
+                                  TerminationDate = e.TerminationDate,
+                                  TerminationReason = e.TerminationReason,
+                                  TeamId = employee.TeamId
+
+                              }).ToListAsync();
+
             }
 
-            return await (from u in _dbContext.Users
-                          join e in _dbContext.Employees on u.UserId equals e.UserId
-                          join et in _dbContext.EmployeeTeams on e.EmployeeId equals et.EmployeeId
-                          where u.isDeleted == false && et.TeamId == employee.TeamId
-                          orderby u.UserName
-                          select new TeamEmployeeDto
-                          {
-                              UserId = e.UserId,
-                              EmployeeId = e.EmployeeId,
-                              AddressId = u.AddressId,
-                              CellNumber = u.CellNumber,
-                              Email = u.Email,
-                              IdNumber = u.IdNumber,
-                              Initials = u.Initials,
-                              Password = u.Password,
-                              Surname = u.Surname,
-                              UserName = u.UserName,
-                              UserTypeId = u.UserTypeId,
-                              CommenceDate = e.CommencementDate,
-                              TerminationDate = e.TerminationDate,
-                              TerminationReason = e.TerminationReason,
-                              TeamId = employee.TeamId
+            return null;
 
-                          }).ToListAsync();
+            
         }
 
+        public bool CheckTeamValidity(CheckTeamDto team)
+        {
+            var teams = (from t in _dbContext.Teams where t.isDeleted == false select t).ToList();
+
+            foreach (var t in teams)
+            {
+                var teamDays = (from td in _dbContext.TeamDays
+                               where td.TeamId == t.TeamId
+                               select td.DayId).ToList();
+
+
+
+                var startTime = DateTime.Parse(team.StartTime);
+                var endTime = DateTime.Parse(team.EndTime);
+
+                if (
+                     (teamDays.Contains(team.TeamDay))&&
+                    (team.LocationId == t.LocationId) &&
+                    ((t.StartTime.TimeOfDay < startTime.TimeOfDay) && (t.EndTime.TimeOfDay >= startTime.TimeOfDay) ||
+                    (t.StartTime.TimeOfDay >= startTime.TimeOfDay) && (t.EndTime.TimeOfDay <= endTime.TimeOfDay) ||
+                    (t.StartTime.TimeOfDay <= endTime.TimeOfDay) && (t.EndTime.TimeOfDay > endTime.TimeOfDay))
+                    )
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
 

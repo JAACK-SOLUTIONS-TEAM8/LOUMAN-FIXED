@@ -18,23 +18,34 @@ namespace Louman.Repositories.Behavior
         {
             _dbContext = dbContext;
         }
-        public async Task<LocationDto> AddAsync(LocationDto location)
+        public async Task<LocationDto> AddAsync(UserLocation newLocation)
         {
-            if (location.LocationId == 0)
+
+            var location = newLocation.Location;
+
+                if (location.LocationId == 0)
             {
-                var newLocation = new LocationEntity
+                var locationEntity = new LocationEntity
                 {
                     LocationArea=location.LocationArea,
                     LocationProvince=location.LocationProvince,
                     isDeleted = false
                 };
-                _dbContext.Locations.Add(newLocation);
+                _dbContext.Locations.Add(locationEntity);
                 await _dbContext.SaveChangesAsync();
 
-                
+                var auditEntity = new AuditEntity
+                {
+                    Date = DateTime.Now,
+                    UserId = newLocation.UserId,
+                    Operation = $"Location:{location.LocationArea} ${location.LocationProvince} is added to the system"
+                };
+
+                await _dbContext.Audits.AddAsync(auditEntity);
+                await _dbContext.SaveChangesAsync();
                 return await Task.FromResult(new LocationDto
                 {
-                    LocationId=newLocation.LocationId,
+                    LocationId= locationEntity.LocationId,
                     LocationArea = location.LocationArea,
                     LocationProvince = location.LocationProvince
                 });
@@ -50,7 +61,15 @@ namespace Louman.Repositories.Behavior
                     existingLocation.LocationProvince = location.LocationProvince;
                     _dbContext.Update(existingLocation);
                     await _dbContext.SaveChangesAsync();
+                    var auditEntity = new AuditEntity
+                    {
+                        Date = DateTime.Now,
+                        UserId = newLocation.UserId,
+                        Operation = $"Location:{location.LocationArea} ${location.LocationProvince} is Updated to the system"
+                    };
 
+                    await _dbContext.Audits.AddAsync(auditEntity);
+                    await _dbContext.SaveChangesAsync();
                     return await Task.FromResult(new LocationDto
                     {
                         LocationId = location.LocationId,
@@ -63,14 +82,31 @@ namespace Louman.Repositories.Behavior
 
         }
 
-        public async Task<bool> DeleteAsync(int locationId)
+        public async Task<bool> DeleteAsync(LocationDeletionDto loc)
         {
-            var location = _dbContext.Locations.Find(locationId);
-            if (location != null)
+            var location = _dbContext.Locations.Find(loc.LocationId);
+
+            var locationsForTeam = (from l in _dbContext.Locations
+                                    join t in _dbContext.Teams on l.LocationId equals t.LocationId
+                                    where t.isDeleted == false && l.isDeleted == false
+                                    select new { LocationId = l.LocationId }).ToList();
+
+            if (location != null && !locationsForTeam.Any(l => l.LocationId == location.LocationId))
             {
                 location.isDeleted = true;
                 _dbContext.Locations.Update(location);
                await _dbContext.SaveChangesAsync();
+
+                var auditEntity = new AuditEntity
+                {
+                    Date = DateTime.Now,
+                    UserId = loc.UserId,
+                    Operation = $"Location:{location.LocationArea} ${location.LocationProvince} is deleted from the system"
+                };
+
+                await _dbContext.Audits.AddAsync(auditEntity);
+                await _dbContext.SaveChangesAsync();
+
                 return true;
             }
             return false;
@@ -87,6 +123,15 @@ namespace Louman.Repositories.Behavior
                        LocationProvince=l.LocationProvince,
                        LocationId=l.LocationId
                     }).ToListAsync();
+        }
+
+        public async Task<List<ProvinceDto>> GetAllProvinces()
+        {
+            return await(from p in _dbContext.Provinces 
+                         select new ProvinceDto { 
+                         ProvinceId=p.ProvinceId,
+                         ProvinceName=p.ProvinceName
+                         }).ToListAsync();
         }
 
         public async Task<LocationDto> GetByIdAsync(int locationId)

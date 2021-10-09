@@ -11,7 +11,7 @@ namespace Louman.Models.Entities
     public class ProductEntity
     {
         [Key]
-        public int ProductId { get; set; }
+        public int ProductId {get;set;}
         public int ProductTypeId { get; set; }
         public int ProductSizeId { get; set; }
         public string ProductName { get; set; }

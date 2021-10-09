@@ -7,6 +7,7 @@ namespace Louman.Models.DTOs.Team
 {
     public class AttendanceDto
     {
+        public int UserId { get; set; }
         public int AttendanceId { get; set; }
         public int AttendanceHistoryId { get; set; }
         public int TeamId { get; set; }

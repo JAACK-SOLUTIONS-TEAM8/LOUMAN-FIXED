@@ -3,6 +3,7 @@ using Louman.Models.DTOs.Employee;
 using Louman.Models.DTOs.Team;
 using Louman.Models.Entities;
 using Louman.Repositories.Abstraction;
+using Louman.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -19,8 +20,9 @@ namespace Louman.Repositories
         {
             _dbContext = dbContext;
         }
-        public async Task<EmployeeDto> Add(EmployeeDto employee)
+        public async Task<EmployeeDto> Add(UserEmployee ep)
         {
+            var employee = ep.Employee;
             if (employee.UserId == 0)
             {
                 var user = new UserEntity
@@ -30,14 +32,21 @@ namespace Louman.Repositories
                     CellNumber = employee.CellNumber,
                     Email = employee.Email,
                     IdNumber = employee.IdNumber,
-                    Initials = employee.Initials,
-                    Password = employee.Password,
+                    Name = employee.Initials,
+                    Password = Hashing.GenerateSha512String(employee.Password),
                     Surname = employee.Surname,
                     UserTypeId = employee.UserTypeId,
-                    isDeleted = false
+                    isDeleted = false,
+                    EmailConfirmationCode = null,
+                    TokenExpirationTime = null,
+
                 };
                 _dbContext.Users.Add(user);
                 _dbContext.SaveChanges();
+
+
+
+                
 
                 var newEmployee = new EmployeeEntity
                 {
@@ -46,11 +55,21 @@ namespace Louman.Repositories
                     TerminationDate = employee.TerminationDate.HasValue ? employee.TerminationDate.Value : null,
                     TerminationReason = employee.TerminationReason ?? null,
                     Image = employee.Image,
-                    Document = employee.Document
+                    EmployeeDocument = employee.Document
                 };
 
                 _dbContext.Employees.Add(newEmployee);
                 _dbContext.SaveChanges();
+                var auditEntity = new AuditEntity
+                {
+                    Date = DateTime.Now,
+                    UserId = ep.UserId,
+                    Operation = $"Employee :{employee.Initials} ${employee.Surname} is added to the system"
+                };
+
+                await _dbContext.Audits.AddAsync(auditEntity);
+                await _dbContext.SaveChangesAsync();
+
                 return await Task.FromResult(new EmployeeDto
                 {
                     EmployeeId = newEmployee.EmployeeId,
@@ -59,8 +78,8 @@ namespace Louman.Repositories
                     CellNumber = user.CellNumber,
                     Email = user.Email,
                     IdNumber = user.IdNumber,
-                    Initials = user.Initials,
-                    Password = user.Password,
+                    Initials = user.Name,
+                    Password = Hashing.GenerateSha512String(employee.Password),
                     Surname = user.Surname,
                     UserName = user.UserName,
                     UserTypeId = user.UserTypeId,
@@ -69,8 +88,6 @@ namespace Louman.Repositories
                     TerminationDate = newEmployee.TerminationDate ?? null,
                     Image = employee.Image,
                     Document = employee.Document
-
-
                 });
 
             }
@@ -83,10 +100,10 @@ namespace Louman.Repositories
                     user.UserName = employee.UserName;
                     user.CellNumber = employee.CellNumber;
                     user.Email = employee.Email;
-                    user.Password = employee.Password;
+                    user.Password = Hashing.GenerateSha512String(employee.Password);
                     user.Surname = employee.Surname;
                     user.UserTypeId = employee.UserTypeId;
-                    user.Initials = employee.Initials;
+                    user.Name = employee.Initials;
                     user.IdNumber = employee.IdNumber;
                     user.AddressId = employee.AddressId;
 
@@ -99,10 +116,20 @@ namespace Louman.Repositories
                     emp.TerminationDate = employee.TerminationDate.HasValue ? employee.TerminationDate.Value : null;
                     emp.TerminationReason = employee.TerminationReason ?? null;
                     emp.Image = employee.Image;
-                    emp.Document = employee.Document;
+                    emp.EmployeeDocument = employee.Document;
 
 
                     _dbContext.Update(emp);
+                    await _dbContext.SaveChangesAsync();
+
+                    var auditEntity = new AuditEntity
+                    {
+                        Date = DateTime.Now,
+                        UserId = ep.UserId,
+                        Operation = $"Employee :{employee.Initials} ${employee.Surname} is added to the system"
+                    };
+
+                    await _dbContext.Audits.AddAsync(auditEntity);
                     await _dbContext.SaveChangesAsync();
 
                     return await Task.FromResult(new EmployeeDto
@@ -113,8 +140,8 @@ namespace Louman.Repositories
                         CellNumber = user.CellNumber,
                         Email = user.Email,
                         IdNumber = user.IdNumber,
-                        Initials = user.Initials,
-                        Password = user.Password,
+                        Initials = user.Name,
+                        Password = Hashing.GenerateSha512String(employee.Password),
                         Surname = user.Surname,
                         UserName = user.UserName,
                         UserTypeId = user.UserTypeId,
@@ -157,7 +184,7 @@ namespace Louman.Repositories
                               CellNumber = u.CellNumber,
                               Email = u.Email,
                               IdNumber = u.IdNumber,
-                              Initials = u.Initials,
+                              Initials = u.Name,
                               Password = u.Password,
                               Surname = u.Surname,
                               UserName = u.UserName,
@@ -166,7 +193,7 @@ namespace Louman.Repositories
                               TerminationDate = e.TerminationDate,
                               TerminationReason = e.TerminationReason,
                               Image = e.Image,
-                              Document = e.Document
+                              Document = e.EmployeeDocument
 
                           }).ToList();
             return Task.FromResult(employees);
@@ -197,7 +224,7 @@ new
                               CellNumber = u.CellNumber,
                               Email = u.Email,
                               IdNumber = u.IdNumber,
-                              Initials = u.Initials,
+                              Initials = u.Name,
                               Password = u.Password,
                               Surname = u.Surname,
                               UserName = u.UserName,
@@ -206,7 +233,7 @@ new
                               TerminationDate = e.TerminationDate,
                               TerminationReason = e.TerminationReason,
                               Image = e.Image,
-                              Document = e.Document
+                              Document = e.EmployeeDocument
                           }).SingleOrDefaultAsync();
         }
 
@@ -224,7 +251,7 @@ new
                               CellNumber = u.CellNumber,
                               Email = u.Email,
                               IdNumber = u.IdNumber,
-                              Initials = u.Initials,
+                              Initials = u.Name,
                               Password = u.Password,
                               Surname = u.Surname,
                               UserName = u.UserName,
@@ -233,7 +260,7 @@ new
                               TerminationDate = e.TerminationDate,
                               TerminationReason = e.TerminationReason,
                               Image = e.Image,
-                              Document = e.Document
+                              Document = e.EmployeeDocument
                           }).ToListAsync();
         }
 
@@ -248,7 +275,7 @@ new
                                    where u.isDeleted == false
                                    select new
                                    {
-                                       Initials = u.Initials,
+                                       Initials = u.Name,
                                        Surname = u.Surname,
                                        EmployeeId = e.EmployeeId,
                                        UserName = u.UserName,
@@ -312,7 +339,7 @@ new
                                  where (e.CommencementDate.Value.Date.Month == month.Key && e.CommencementDate.Value.Date.Year == month.Value)
                                  select new RegisteredEmployeeDto
                                  {
-                                     Initials = u.Initials,
+                                     Initials = u.Name,
                                      Surname = u.Surname,
                                      Email = u.Email,
                                      IdNumber = u.IdNumber
@@ -332,7 +359,7 @@ new
 
             user.Email = employee.Email;
             user.Surname = employee.Surname;
-            user.Initials = employee.Initials;
+            user.Name = employee.Initials;
 
             _dbContext.Update(user);
             _dbContext.SaveChanges();
@@ -369,7 +396,7 @@ new
                               CellNumber = u.CellNumber,
                               Email = u.Email,
                               IdNumber = u.IdNumber,
-                              Initials = u.Initials,
+                              Initials = u.Name,
                               Password = u.Password,
                               Surname = u.Surname,
                               UserName = u.UserName,
@@ -378,7 +405,7 @@ new
                               TerminationDate = e.TerminationDate,
                               TerminationReason = e.TerminationReason,
                               Image = e.Image,
-                              Document = e.Document,
+                              Document = e.EmployeeDocument,
                               TeamId = team != null ? team.TeamId : 0,
                               TeamName = team != null ? team.TeamName : null
                           }).SingleOrDefaultAsync();

@@ -1,7 +1,9 @@
 ﻿using Louman.AppDbContexts;
 using Louman.Models.DTOs;
+using Louman.Models.DTOs.Timer;
 using Louman.Models.Entities;
 using Louman.Repositories.Abstraction;
+using Louman.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -32,11 +34,13 @@ namespace Louman.Repositories
                     CellNumber = admin.CellNumber,
                     Email = admin.Email,
                     IdNumber = admin.IdNumber,
-                    Initials = admin.Initials,
-                    Password = admin.Password,
+                    Name = admin.Initials,
+                    Password = Hashing.GenerateSha512String(admin.Password),
                     Surname = admin.Surname,
                     UserTypeId = admin.UserTypeId,
-                    isDeleted = false
+                    isDeleted = false,
+                    EmailConfirmationCode = null,
+                    TokenExpirationTime = null,
                 };
                 _dbContext.Users.Add(user);
                 _dbContext.SaveChanges();
@@ -56,8 +60,8 @@ namespace Louman.Repositories
                     CellNumber = user.CellNumber,
                     Email = user.Email,
                     IdNumber = user.IdNumber,
-                    Initials = user.Initials,
-                    Password = user.Password,
+                    Initials = user.Name,
+                    Password = Hashing.GenerateSha512String(admin.Password),
                     Surname = user.Surname,
                     UserName = user.UserName,
                     UserTypeId = user.UserTypeId
@@ -73,10 +77,9 @@ namespace Louman.Repositories
                     user.UserName = admin.UserName;
                     user.CellNumber = admin.CellNumber;
                     user.Email = admin.Email;
-                    user.Password = admin.Password;
                     user.Surname = admin.Surname;
                     user.UserTypeId = admin.UserTypeId;
-                    user.Initials = admin.Initials;
+                    user.Name = admin.Initials;
                     _dbContext.Update(user);
                     _dbContext.SaveChanges();
 
@@ -88,8 +91,8 @@ namespace Louman.Repositories
                         CellNumber = user.CellNumber,
                         Email = user.Email,
                         IdNumber = user.IdNumber,
-                        Initials = user.Initials,
-                        Password = user.Password,
+                        Initials = user.Name,
+                        Password = " ",
                         Surname = user.Surname,
                         UserName = user.UserName,
                         UserTypeId = user.UserTypeId
@@ -125,7 +128,7 @@ namespace Louman.Repositories
                         CellNumber = u.CellNumber,
                         Email = u.Email,
                         IdNumber = u.IdNumber,
-                        Initials = u.Initials,
+                        Initials = u.Name,
                         Password = u.Password,
                         Surname = u.Surname,
                         UserName = u.UserName,
@@ -149,13 +152,18 @@ namespace Louman.Repositories
                         CellNumber = u.CellNumber,
                         Email = u.Email,
                         IdNumber = u.IdNumber,
-                        Initials = u.Initials,
+                        Initials = u.Name,
                         Password = u.Password,
                         Surname = u.Surname,
                         UserName = u.UserName,
                         UserTypeId = u.UserTypeId
 
                     }).SingleOrDefault();
+        }
+
+        public  TimerConfigEntity GetTimerCongif()
+        {
+            return _dbContext.Timer.Where(t => t.Id == 1).SingleOrDefault();
         }
 
         public List<AdminDto> SearchByName(string name)
@@ -172,7 +180,7 @@ namespace Louman.Repositories
                         CellNumber = u.CellNumber,
                         Email = u.Email,
                         IdNumber = u.IdNumber,
-                        Initials = u.Initials,
+                        Initials = u.Name,
                         Password = u.Password,
                         Surname = u.Surname,
                         UserName = u.UserName,
@@ -181,5 +189,16 @@ namespace Louman.Repositories
                     }).ToList();
         }
 
+        public bool SetTimerConfig(TimerConfigDto config)
+        {
+            var configEntity = _dbContext.Timer.Find(1);
+
+            configEntity.LeftTime = config.LeftTime;
+            configEntity.Notify = config.Notify;
+            configEntity.StopTime = config.StopTime;
+            _dbContext.Timer.Update(configEntity);
+            _dbContext.SaveChanges();
+            return true;
+        }
     }
 }

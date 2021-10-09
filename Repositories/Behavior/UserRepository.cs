@@ -108,7 +108,7 @@ namespace Louman.Repositories
                               Date = at.Date,
                               Operation = at.Operation,
                               UserId = at.UserId,
-                              UserName = $"{u.Initials} {u.Surname}",
+                              UserName = $"{u.Name} {u.Surname}",
                           }).ToListAsync();
         }
 
@@ -116,7 +116,7 @@ namespace Louman.Repositories
         {
             return await(from at in _dbContext.Audits
                          join u in _dbContext.Users on at.UserId equals u.UserId
-                         where u.Initials.StartsWith(name) ||u.Surname.StartsWith(name)|| u.Initials.Contains(name) || u.Surname.Contains(name)
+                         where u.Name.StartsWith(name) ||u.Surname.StartsWith(name)|| u.Name.Contains(name) || u.Surname.Contains(name)
                          orderby at.Date descending
                          select new AuditDto
                          {
@@ -124,7 +124,7 @@ namespace Louman.Repositories
                              Date = at.Date,
                              Operation = at.Operation,
                              UserId = at.UserId,
-                             UserName = $"{u.Initials} {u.Surname}",
+                             UserName = $"{u.Name} {u.Surname}",
                          }).ToListAsync();
         }
     }

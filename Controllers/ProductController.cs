@@ -24,12 +24,12 @@ namespace Louman.Controllers
 
       
         [HttpPost("Add")]
-        public async Task<IActionResult> AddNewProduct(ProductDto product)
+        public async Task<IActionResult> AddNewProduct(UserProduct userProduct)
         {
-            var newProduct =await  _productReposiroty.AddProduct(product);
-            if (product != null)
+            var newProduct =await  _productReposiroty.AddProduct(userProduct);
+            if (newProduct != null)
                 return Ok(new { Product = newProduct, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Product = newProduct, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Product = newProduct, StatusCode = StatusCodes.Status404NotFound });
 
         }
 
@@ -137,6 +137,17 @@ namespace Louman.Controllers
             return NotFound(new { Product = stockProduct, StatusCode = StatusCodes.Status404NotFound });
 
         }
+
+        [HttpPost("Stock/Complete")]
+        public async Task<IActionResult> CompleteStock(StockDto stock)
+        {
+            var stockProduct = await _productReposiroty.CompleteStock(stock);
+            if (stockProduct != null)
+                return Ok(new { Product = stockProduct, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Product = stockProduct, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
         [HttpGet("Stock/{id}")]
         public async Task<IActionResult> GetStockProductById([FromRoute] int id)
         {

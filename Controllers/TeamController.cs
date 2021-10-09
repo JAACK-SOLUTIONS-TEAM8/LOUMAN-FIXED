@@ -20,8 +20,6 @@ namespace Louman.Controllers
            _teamRepository = teamRepository;
         }
 
-
-
         [HttpPost("Add")]
         public async Task<IActionResult> AddNewTeam(TeamDto team)
         {
@@ -32,13 +30,24 @@ namespace Louman.Controllers
 
         }
 
+
+        [HttpPost("CheckValidity")]
+        public  IActionResult IsValidTeam(CheckTeamDto team)
+        {
+            var isValid =  _teamRepository.CheckTeamValidity(team);
+            if (isValid==true)
+                return Ok(new { IsValie = isValid, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { IsValie = isValid, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
         [HttpGet("WeekDays")]
         public async Task<IActionResult> GetWeekDays()
         {
             var days = await _teamRepository.GetWeekDays();
             if (days != null)
                 return Ok(new { Days = days, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Days = days, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Days = days, StatusCode = StatusCodes.Status404NotFound });
 
         }
         [HttpGet("All")]
@@ -47,7 +56,7 @@ namespace Louman.Controllers
             var teams = await _teamRepository.GetAllAsync();
             if (teams != null)
                 return Ok(new { Teams = teams, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Teams = teams, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Teams = teams, StatusCode = StatusCodes.Status404NotFound });
 
         }
 
@@ -58,25 +67,29 @@ namespace Louman.Controllers
             var attendance = await _teamRepository.GetAttendanceData(id);
             if (attendance != null)
                 return Ok(new { Attendance = attendance, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Attendance = attendance, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Attendance = attendance, StatusCode = StatusCodes.Status404NotFound });
 
         }
+
+
         [HttpPost("MarkAttendance")]
         public async Task<IActionResult> MarkAttendance(List<AttendanceDto> attendance)
         {
             var isMarked = await _teamRepository.MarkAttendance(attendance);
             if (isMarked != false)
                 return Ok(new { Attendance = isMarked, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Attendance = isMarked, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Attendance = isMarked, StatusCode = StatusCodes.Status404NotFound });
 
         }
+
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTeamsById([FromRoute] int id)
         {
             var team = await _teamRepository.GetByIdAsync(id);
             if (team != null)
                 return Ok(new { Team = team, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Team = team, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Team = team, StatusCode = StatusCodes.Status404NotFound });
 
         }
 
@@ -86,7 +99,7 @@ namespace Louman.Controllers
             var employees = await _teamRepository.GetTeamEmployees(id);
             if (employees != null)
                 return Ok(new { Employees = employees, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Employees = employees, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Employees = employees, StatusCode = StatusCodes.Status404NotFound });
 
         }
 
@@ -96,7 +109,7 @@ namespace Louman.Controllers
             var response = await _teamRepository.RemoveAsync(id);
             if (response != false)
                 return Ok(new { Team = true, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Team = false, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Team = false, StatusCode = StatusCodes.Status404NotFound });
 
         }
 
@@ -106,7 +119,7 @@ namespace Louman.Controllers
             var teams = await _teamRepository.SearchByName(name);
             if (teams != null)
                 return Ok(new { Teams = teams, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Teams = teams, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Teams = teams, StatusCode = StatusCodes.Status404NotFound });
 
         }
 
@@ -116,7 +129,7 @@ namespace Louman.Controllers
             var employees = await _teamRepository.AddTeamEmployee(employee);
             if (employees != null)
                 return Ok(new { Employees = employees, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Employees = employees, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Employees = employees, StatusCode = StatusCodes.Status404NotFound });
 
         }
 
@@ -126,7 +139,7 @@ namespace Louman.Controllers
             var employees = await _teamRepository.RemoveEmployeeFromTeam(teamId, employeeId);
             if (employees != false)
                 return Ok(new { Employees = employees, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Employees = employees, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Employees = employees, StatusCode = StatusCodes.Status404NotFound });
 
         }
         [HttpGet("AttendanceReportData")]
@@ -135,8 +148,30 @@ namespace Louman.Controllers
             var attendance = await _teamRepository.GetAttendanceDataForReport(teamId, date);
             if (attendance != null)
                 return Ok(new { Attendance = attendance, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Attendance = attendance, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Attendance = attendance, StatusCode = StatusCodes.Status404NotFound });
 
         }
+
+        [HttpGet("CanMarkAttendance")]
+        public  IActionResult CanMarkAttendance([FromQuery] int teamId)
+        {
+            var attendance =  _teamRepository.CanMarkAttendance(teamId);
+            if (attendance == true)
+                return Ok(new { Attendance = attendance, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Attendance = attendance, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
+
+        [HttpPost("ImportMarkAttendance")]
+        public async Task<IActionResult> ImportAndMarkAttendance(List<AttendanceDto> attendance)
+        {
+            var isMarked = await _teamRepository.MarkAttendance(attendance);
+            if (isMarked != false)
+                return Ok(new { Attendance = isMarked, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Attendance = isMarked, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
     }
 }

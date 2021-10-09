@@ -16,12 +16,12 @@ namespace Louman.Models.Entities
         public int? AddressId { get; set; }
         public string IdNumber { get; set; }
         public string Name { get; set; }
-        public string Surname { get; set; }
-        public string CellNumber { get; set; }
-        public string Email { get; set; }
-        public string UserName { get; set; }
-        public string Password { get; set; }
-        public bool isDeleted { get; set; }
+        public string Surname{ get; set; }
+        public string CellNumber{ get; set; }
+        public string Email{ get; set; }
+        public string UserName{ get; set; }
+        public string Password{ get; set; }
+        public bool isDeleted{ get; set; }
         public string EmailConfirmationCode { get; set; }
         public DateTime? TokenExpirationTime { get; set; }
     }

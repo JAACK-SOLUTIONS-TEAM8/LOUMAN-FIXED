@@ -275,7 +275,7 @@ namespace Louman.Repositories.Behavior
                     EnquiryTypeId = enquiry.EnquiryTypeId,
                     ClientUserId = enquiry.ClientUserId,
                     EnquiryMessage = enquiry.EnquiryMessage,
-                    AdminUserId = enquiry.AdminUserId,
+                    //AdminUserId = enquiry.AdminUserId,
                     EnquiryStatus = "Pending",
                     isDeleted = false
                 };
@@ -289,7 +289,7 @@ namespace Louman.Repositories.Behavior
                     EnquiryMessage = enquiry.EnquiryMessage,
                     EnquiryTypeId = enquiry.EnquiryTypeId,
                     EnquiryId = newEnquiry.EnquiryId,
-                    AdminUserId = enquiry.AdminUserId,
+                   // AdminUserId = enquiry.AdminUserId,
                     EnquiryStatus = newEnquiry.EnquiryStatus
 
                 });
@@ -304,7 +304,7 @@ namespace Louman.Repositories.Behavior
                     existingEnquiry.ClientUserId = enquiry.ClientUserId;
                     existingEnquiry.EnquiryMessage = enquiry.EnquiryMessage;
                     existingEnquiry.EnquiryTypeId = enquiry.EnquiryTypeId;
-                    existingEnquiry.AdminUserId = enquiry.AdminUserId;
+                   // existingEnquiry.AdminUserId = enquiry.AdminUserId;
                     _dbContext.Update(existingEnquiry);
                     await _dbContext.SaveChangesAsync();
 
@@ -313,7 +313,7 @@ namespace Louman.Repositories.Behavior
                         ClientUserId = enquiry.ClientUserId,
                         EnquiryMessage = enquiry.EnquiryMessage,
                         EnquiryTypeId = enquiry.EnquiryTypeId,
-                        AdminUserId = enquiry.AdminUserId,
+                       // AdminUserId = enquiry.AdminUserId,
                         EnquiryId = existingEnquiry.EnquiryId
                     });
                 }
@@ -336,11 +336,11 @@ namespace Louman.Repositories.Behavior
                               ClientUserId = e.ClientUserId,
                               EnquiryMessage = e.EnquiryMessage,
                               EnquiryTypeId = e.EnquiryTypeId,
-                              AdminUserId = e.AdminUserId,
+                              ///AdminUserId = e.AdminUserId,
                               EnquiryId = e.EnquiryId,
                               EnquiryStatus = e.EnquiryStatus,
-                              AdminName = $"{au.Initials} {au.Surname}",
-                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              //AdminName = $"{au.Name} {au.Surname}",
+                              ClientName = $"{cu.Name} {cu.Surname}",
                               EnquiryType = et.EnquiryTypeDescription
                           }).ToListAsync();
         }
@@ -358,11 +358,11 @@ namespace Louman.Repositories.Behavior
                               ClientUserId = e.ClientUserId,
                               EnquiryMessage = e.EnquiryMessage,
                               EnquiryTypeId = e.EnquiryTypeId,
-                              AdminUserId = e.AdminUserId,
+                              //AdminUserId = e.AdminUserId,
                               EnquiryId = e.EnquiryId,
                               EnquiryStatus = e.EnquiryStatus,
-                              AdminName = $"{au.Initials} {au.Surname}",
-                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              //AdminName = $"{au.Name} {au.Surname}",
+                              ClientName = $"{cu.Name} {cu.Surname}",
                               EnquiryType = et.EnquiryTypeDescription
                           }).SingleOrDefaultAsync();
         }
@@ -379,45 +379,46 @@ namespace Louman.Repositories.Behavior
             }
             return false;
         }
-        public async Task<List<GetEnquiryDto>> GetAllAdminEnquiryById(int adminUserId)
+        public async Task<List<GetEnquiryDto>> GetAllAdminEnquiryById()
         {
             return await (from e in _dbContext.Enquiries
                           join cu in _dbContext.Users on e.ClientUserId equals cu.UserId
                           join au in _dbContext.Users on e.ClientUserId equals au.UserId
                           join et in _dbContext.EnquiryTypes on e.EnquiryTypeId equals et.EnquiryTypeId
-                          where e.isDeleted == false && e.AdminUserId == adminUserId
+                          where e.isDeleted == false //&& e.AdminUserId == adminUserId
                           orderby e.EnquiryMessage
                           select new GetEnquiryDto
                           {
                               ClientUserId = e.ClientUserId,
                               EnquiryMessage = e.EnquiryMessage,
                               EnquiryTypeId = e.EnquiryTypeId,
-                              AdminUserId = e.AdminUserId,
+                              //AdminUserId = e.AdminUserId,
                               EnquiryId = e.EnquiryId,
                               EnquiryStatus = e.EnquiryStatus,
-                              AdminName = $"{au.Initials} {au.Surname}",
-                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              //AdminName = $"{au.Name} {au.Surname}",
+                              ClientName = $"{cu.Name} {cu.Surname}",
                               EnquiryType = et.EnquiryTypeDescription
                           }).ToListAsync();
         }
-        public async Task<List<GetEnquiryDto>> GetAllAdminEnquiryByEnquiryTypeId(int adminUserId, int enquiryTypeId)
+        public async Task<List<GetEnquiryDto>> GetAllAdminEnquiryByEnquiryTypeId(int enquiryTypeId)
         {
             return await (from e in _dbContext.Enquiries
                           join cu in _dbContext.Users on e.ClientUserId equals cu.UserId
                           join au in _dbContext.Users on e.ClientUserId equals au.UserId
                           join et in _dbContext.EnquiryTypes on e.EnquiryTypeId equals et.EnquiryTypeId
-                          where e.isDeleted == false && e.AdminUserId == adminUserId && e.EnquiryTypeId == enquiryTypeId
+                          where e.isDeleted == false// && e.AdminUserId == adminUserId
+                                                    && e.EnquiryTypeId == enquiryTypeId
                           orderby e.EnquiryMessage
                           select new GetEnquiryDto
                           {
                               ClientUserId = e.ClientUserId,
                               EnquiryMessage = e.EnquiryMessage,
                               EnquiryTypeId = e.EnquiryTypeId,
-                              AdminUserId = e.AdminUserId,
+                              //AdminUserId = e.AdminUserId,
                               EnquiryId = e.EnquiryId,
                               EnquiryStatus = e.EnquiryStatus,
-                              AdminName = $"{au.Initials} {au.Surname}",
-                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              //AdminName = $"{au.Name} {au.Surname}",
+                              ClientName = $"{cu.Name} {cu.Surname}",
                               EnquiryType = et.EnquiryTypeDescription
                           }).ToListAsync();
         }
@@ -435,11 +436,11 @@ namespace Louman.Repositories.Behavior
                               ClientUserId = e.ClientUserId,
                               EnquiryMessage = e.EnquiryMessage,
                               EnquiryTypeId = e.EnquiryTypeId,
-                              AdminUserId = e.AdminUserId,
+                              //AdminUserId = e.AdminUserId,
                               EnquiryId = e.EnquiryId,
                               EnquiryStatus = e.EnquiryStatus,
-                              AdminName = $"{au.Initials} {au.Surname}",
-                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              //AdminName = $"{au.Name} {au.Surname}",
+                              ClientName = $"{cu.Name} {cu.Surname}",
                               EnquiryType = et.EnquiryTypeDescription,
                               EnquiryResponseId = enquiryResponse != null ? enquiryResponse.EnquiryResponseId : 0,
                               EnquiryResponseMessage = enquiryResponse != null ? enquiryResponse.EnquiryResponseMessage : ""
@@ -460,11 +461,11 @@ namespace Louman.Repositories.Behavior
                               ClientUserId = e.ClientUserId,
                               EnquiryMessage = e.EnquiryMessage,
                               EnquiryTypeId = e.EnquiryTypeId,
-                              AdminUserId = e.AdminUserId,
+                              //AdminUserId = e.AdminUserId,
                               EnquiryId = e.EnquiryId,
                               EnquiryStatus = e.EnquiryStatus,
-                              AdminName = $"{au.Initials} {au.Surname}",
-                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              //AdminName = $"{au.Name} {au.Surname}",
+                              ClientName = $"{cu.Name} {cu.Surname}",
                               EnquiryType = et.EnquiryTypeDescription
                           }).ToListAsync();
         }

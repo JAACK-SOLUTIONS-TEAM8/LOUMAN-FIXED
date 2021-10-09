@@ -25,8 +25,8 @@ namespace Louman.Repositories.Abstraction
         Task<List<GetEnquiryDto>> GetAllEnquiries();
         Task<GetEnquiryDto> GetEnquiryById(int enquiryId);
         Task<bool> DeleteEnquiry(int enquiryId);
-        Task<List<GetEnquiryDto>> GetAllAdminEnquiryById(int adminUserId);
-        Task<List<GetEnquiryDto>> GetAllAdminEnquiryByEnquiryTypeId(int adminUserId, int enquiryTypeId);
+        Task<List<GetEnquiryDto>> GetAllAdminEnquiryById();
+        Task<List<GetEnquiryDto>> GetAllAdminEnquiryByEnquiryTypeId(int enquiryTypeId);
         Task<EnquiryWithResponseDto> GetEnquiryWithResponse(int enquiryId);
         Task<List<GetEnquiryDto>> GetAllClientEnquiries(int clientUserId);
 

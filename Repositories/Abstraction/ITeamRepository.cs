@@ -11,6 +11,8 @@ namespace Louman.Repositories.Abstraction
     {
         Task<TeamDto> AddAsync(TeamDto team);
         Task<List<TeamDto>> GetAllAsync();
+        bool CanMarkAttendance(int teamId);
+        bool CheckTeamValidity(CheckTeamDto team);
         Task<List<AttendanceDto>> GetAttendanceData(int teamId);
         Task<bool> MarkAttendance(List<AttendanceDto> attendances);
         Task<TeamDto> GetByIdAsync(int teamId);

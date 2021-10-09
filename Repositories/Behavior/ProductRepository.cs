@@ -20,8 +20,9 @@ namespace Louman.Repositories
         }
        
 
-        public async Task<ProductDto> AddProduct(ProductDto product)
+        public async Task<ProductDto> AddProduct(UserProduct userProduct)
         {
+            var product = userProduct.Product;
             if (product.ProductId == 0)
             {
                 var newProduct = new ProductEntity
@@ -32,7 +33,7 @@ namespace Louman.Repositories
                     ProductTypeId=product.ProductTypeId,
                     ProductImage=product.ProductImage,
                     isDeleted = false,
-                    Date = DateTime.Now
+                    Date=DateTime.Now
                 };
                 _dbContext.Products.Add(newProduct);
                 await _dbContext.SaveChangesAsync();
@@ -47,6 +48,17 @@ namespace Louman.Repositories
 
                 await _dbContext.Stocks.AddAsync(stockEntity);
                 await _dbContext.SaveChangesAsync();
+
+                var auditEntity = new AuditEntity
+                {
+                    Date = DateTime.Now,
+                    UserId = userProduct.UserId,
+                    Operation = $"Product:{product.ProductName} is added to the system"
+                };
+
+                await _dbContext.Audits.AddAsync(auditEntity);
+                await _dbContext.SaveChangesAsync();
+
                 return await Task.FromResult(new ProductDto
                 {
                     ProductName = product.ProductName,
@@ -72,6 +84,16 @@ namespace Louman.Repositories
                     existingProduct.ProductTypeId = product.ProductTypeId;
                     
                     _dbContext.Update(existingProduct);
+                    await _dbContext.SaveChangesAsync();
+
+                    var auditEntity = new AuditEntity
+                    {
+                        Date = DateTime.Now,
+                        UserId = 1,
+                        Operation = $"Product:{product.ProductName} is upodated in the system"
+                    };
+
+                    await _dbContext.Audits.AddAsync(auditEntity);
                     await _dbContext.SaveChangesAsync();
 
                     return await Task.FromResult(new ProductDto
@@ -138,6 +160,8 @@ namespace Louman.Repositories
                 enquirySize.isDeleted = true;
                 _dbContext.ProductSizes.Update(enquirySize);
                 await _dbContext.SaveChangesAsync();
+
+
                 return true;
             }
             return false;
@@ -278,6 +302,7 @@ namespace Louman.Repositories
 
             return await (from p in _dbContext.Products
                           join ps in _dbContext.ProductSizes on p.ProductSizeId equals ps.ProductSizeId
+                          join pt in _dbContext.ProductTypes on p.ProductSizeId equals pt.ProductTypeId
                           join s in _dbContext.Stocks on p.ProductId equals s.ProductId
                           where s.Date.Date.Month == date.Month && s.Date.Date.Year == date.Year
                           select new GetProductDto
@@ -285,6 +310,11 @@ namespace Louman.Repositories
                               ProductId = p.ProductId,
                               ProductSizeDescription = ps.ProductSizeDescription,
                               ProductName = p.ProductName,
+                               Price=p.Price,
+                                ProductSizeId=p.ProductSizeId,
+                             ProductTypeId=p.ProductTypeId,
+                             ProductTypeName=pt.ProductTypeName,
+                             Quantity=s.ProductQuantity
                           }).ToListAsync();
 
 
@@ -293,21 +323,39 @@ namespace Louman.Repositories
         public async Task<bool> DeleteProduct(int productId)
         {
             var product = _dbContext.Products.Find(productId);
-            if (product != null)
+
+           var productsInActiveOrders=(from p in _dbContext.Products
+            join ol in _dbContext.OrderLines on p.ProductId equals ol.ProductId
+            join o in _dbContext.Orders on ol.OrderId equals o.OrderId
+            where o.OrderStatus == "Pending" && o.isDeleted==false select new { productId=p.ProductId}).ToList();
+
+            if (product != null && !productsInActiveOrders.Any(p=>p.productId==productId))
             {
                 product.isDeleted = true;
                 _dbContext.Products.Update(product);
                 await _dbContext.SaveChangesAsync();
+
+
+
+                var auditEntity = new AuditEntity
+                {
+                    Date = DateTime.Now,
+                    UserId = 1,
+                    Operation = $"Product:{product.ProductName} is deleted From the system"
+                };
+
+                await _dbContext.Audits.AddAsync(auditEntity);
+                await _dbContext.SaveChangesAsync();
+
                 return true;
             }
             return false;
         }
-
         public async Task<GetStockProductDto> WireOffStock(StockDto stock)
         {
-
+            
             var stockEntity = await _dbContext.Stocks.FindAsync(stock.StockId);
-            stockEntity.ProductQuantity = stock.ProductQuantity;
+            stockEntity.ProductQuantity = stockEntity.ProductQuantity - stock.ProductQuantity;
             _dbContext.Stocks.Update(stockEntity);
             await _dbContext.SaveChangesAsync();
 
@@ -337,6 +385,42 @@ namespace Louman.Repositories
 
 
         }
+
+        public async Task<GetStockProductDto> CompleteStock(StockDto stock)
+        {
+
+            var stockEntity = await _dbContext.Stocks.FindAsync(stock.StockId);
+            stockEntity.ProductQuantity = stockEntity.ProductQuantity + stock.ProductQuantity;
+            _dbContext.Stocks.Update(stockEntity);
+            await _dbContext.SaveChangesAsync();
+
+
+
+            return await (from p in _dbContext.Products
+                          join pt in _dbContext.ProductTypes on p.ProductTypeId equals pt.ProductTypeId
+                          join ps in _dbContext.ProductSizes on p.ProductSizeId equals ps.ProductSizeId
+                          join s in _dbContext.Stocks on p.ProductId equals s.ProductId
+                          where p.isDeleted == false && s.StockId == stock.StockId
+                          orderby p.ProductName
+                          select new GetStockProductDto
+                          {
+                              ProductName = p.ProductName,
+                              Price = p.Price,
+                              ProductSizeId = p.ProductSizeId,
+                              ProductTypeId = p.ProductTypeId,
+                              ProductId = p.ProductId,
+                              ProductSizeDescription = ps.ProductSizeDescription,
+                              ProductTypeName = pt.ProductTypeName,
+                              ProductQuantity = s.ProductQuantity,
+                              StockId = s.StockId,
+                              ProductImage = p.ProductImage
+
+                          }).SingleOrDefaultAsync();
+
+
+
+        }
+
 
         public async Task<GetStockProductDto> GetStockProductById(int stockId)
         {

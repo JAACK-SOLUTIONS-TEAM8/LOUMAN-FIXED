@@ -16,7 +16,7 @@ namespace Louman.Models.Entities
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public DateTime Date { get; set; }
-        public bool isBooked { get; set; }
-        public bool isDeleted { get; set; }
+        public bool isBooked{get;set;}
+        public bool isDeleted{get;set;}
     }
 }

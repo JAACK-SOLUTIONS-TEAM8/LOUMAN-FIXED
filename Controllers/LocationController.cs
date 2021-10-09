@@ -30,12 +30,12 @@ namespace Louman.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<IActionResult> AddLocation(LocationDto newLocation)
+        public async Task<IActionResult> AddLocation(UserLocation newLocation)
         {
             var location = await _locationRepository.AddAsync(newLocation);
             if (location != null)
                 return Ok(new { Location = location, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Location = location, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Location = location, StatusCode = StatusCodes.Status404NotFound });
         }
 
         [HttpGet("{id}")]
@@ -44,16 +44,16 @@ namespace Louman.Controllers
             var location = await _locationRepository.GetByIdAsync(id);
             if (location != null)
                 return Ok(new { Location = location, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Location = location, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Location = location, StatusCode = StatusCodes.Status404NotFound });
         }
 
-        [HttpGet("Delete/{id}")]
-        public async Task<IActionResult> Delete([FromRoute] int id)
+        [HttpPost("Delete")]
+        public async Task<IActionResult> Delete(LocationDeletionDto location)
         {
-            var response = await _locationRepository.DeleteAsync(id);
-            if (response != false)
+            var response = await _locationRepository.DeleteAsync(location);
+            if (response == true)
                 return Ok(new { Response = true, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Response = false, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Response = false, StatusCode = StatusCodes.Status404NotFound });
         }
 
         [HttpGet("Search")]
@@ -62,11 +62,18 @@ namespace Louman.Controllers
             var response = await _locationRepository.SearchByNameAsync(location);
             if (response != null)
                 return Ok(new { Locations = response, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Locations = response, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Locations = response, StatusCode = StatusCodes.Status404NotFound });
         }
 
 
-
+        [HttpGet("Provinces")]
+        public async Task<IActionResult> GetAllProvinces()
+        {
+            var response = await _locationRepository.GetAllProvinces();
+            if (response != null)
+                return Ok(new { Provinces = response, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Provinces = response, StatusCode = StatusCodes.Status404NotFound });
+        }
 
 
 

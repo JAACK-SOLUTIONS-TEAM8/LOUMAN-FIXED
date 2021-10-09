@@ -31,7 +31,7 @@ namespace Louman.Controllers
         }
 
         [HttpPost("Upsert")]
-        public async Task<IActionResult> Add([FromBody] EmployeeDto employee)
+        public async Task<IActionResult> Add([FromBody] UserEmployee employee)
         {
             var emp = await _employeeRepository.Add(employee);
             if (emp != null)

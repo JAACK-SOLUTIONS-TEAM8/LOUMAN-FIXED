@@ -22,9 +22,9 @@ namespace Louman.Controllers
 
 
         [HttpPost("Add")]
-        public async Task<IActionResult> AddNewProductType(UserTypeDto productType)
+        public async Task<IActionResult> AddNewUserType(UserTypeDto userType)
         {
-            var newUserType = await _userRepository.AddUserType(productType);
+            var newUserType = await _userRepository.AddUserType(userType);
             if (newUserType != null)
                 return Ok(new { UserType = newUserType, StatusCode = StatusCodes.Status200OK });
             return NotFound(new { UserType = newUserType, StatusCode = StatusCodes.Status404NotFound });

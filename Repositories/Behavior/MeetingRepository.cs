@@ -198,11 +198,12 @@ namespace Louman.Repositories.Behavior
             _dbContext.Slots.Update(slotEntity);
             _dbContext.SaveChanges();
 
+
             var auditEntity = new AuditEntity
             {
                 Date = DateTime.Now,
                 UserId = clientUserId,
-                Operation = $"Slot was Booked"
+                Operation = $"Slot is Booked!"
             };
 
             await _dbContext.Audits.AddAsync(auditEntity);
@@ -216,9 +217,9 @@ namespace Louman.Repositories.Behavior
                           select new BookedSlotDto
                           {
                               AdminUserId = bs.AdminUserId,
-                              AdminName = $"{au.Initials} {au.Surname}",
+                              AdminName = $"{au.Name} {au.Surname}",
                               BookedSlotId = bs.BookedSlotId,
-                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              ClientName = $"{cu.Name} {cu.Surname}",
                               ClientUserId = bs.ClientUserId,
                               Date = s.Date,
                               StartTime = s.StartTime,
@@ -238,14 +239,15 @@ namespace Louman.Repositories.Behavior
                           select new BookedSlotDto
                           {
                               AdminUserId = bs.AdminUserId,
-                              AdminName = $"{au.Initials} {au.Surname}",
+                              AdminName = $"{au.Name} {au.Surname}",
                               BookedSlotId = bs.BookedSlotId,
-                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              ClientName = $"{cu.Name} {cu.Surname}",
                               ClientUserId = bs.ClientUserId,
                               Date = s.Date,
                               StartTime = s.StartTime,
                               EndTime = s.EndTime,
-                              SlotId = s.SlotId
+                              SlotId = s.SlotId,
+                              ClientPhone=cu.CellNumber
                           }).ToListAsync();
         }
 
@@ -260,9 +262,9 @@ namespace Louman.Repositories.Behavior
                           select new BookedSlotDto
                           {
                               AdminUserId = bs.AdminUserId,
-                              AdminName = $"{au.Initials} {au.Surname}",
+                              AdminName = $"{au.Name} {au.Surname}",
                               BookedSlotId = bs.BookedSlotId,
-                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              ClientName = $"{cu.Name} {cu.Surname}",
                               ClientUserId = bs.ClientUserId,
                               Date = s.Date,
                               StartTime = s.StartTime,
@@ -325,9 +327,9 @@ namespace Louman.Repositories.Behavior
                           select new BookedSlotDto
                           {
                               AdminUserId = bs.AdminUserId,
-                              AdminName = $"{au.Initials} {au.Surname}",
+                              AdminName = $"{au.Name} {au.Surname}",
                               BookedSlotId = bs.BookedSlotId,
-                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              ClientName = $"{cu.Name} {cu.Surname}",
                               ClientUserId = bs.ClientUserId,
                               Date = s.Date,
                               StartTime = s.StartTime,
@@ -345,9 +347,9 @@ namespace Louman.Repositories.Behavior
                           select new BookedSlotDto
                           {
                               AdminUserId = bs.AdminUserId,
-                              AdminName = $"{au.Initials} {au.Surname}",
+                              AdminName = $"{au.Name} {au.Surname}",
                               BookedSlotId = bs.BookedSlotId,
-                              ClientName = $"{cu.Initials} {cu.Surname}",
+                              ClientName = $"{cu.Name} {cu.Surname}",
                               ClientUserId = bs.ClientUserId,
                               Date = s.Date,
                               StartTime = s.StartTime,
