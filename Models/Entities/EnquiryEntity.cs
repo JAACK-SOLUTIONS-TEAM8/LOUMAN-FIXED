@@ -15,7 +15,7 @@ namespace Louman.Models.Entities
       public int EnquiryId {get;set;}
       public int EnquiryTypeId {get;set;}
       public int ClientUserId {get;set;}
-      public int AdminUserId {get;set;}
+      //public int AdminUserId {get;set;}
       public string EnquiryMessage {get;set;}
       public string EnquiryStatus { get; set; }
       public bool isDeleted { get; set; }
