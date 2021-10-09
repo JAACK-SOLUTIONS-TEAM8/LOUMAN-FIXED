@@ -171,21 +171,8 @@ namespace Louman.Repositories
                 Operation = $"New Order Created!"
             };
 
-<<<<<<< HEAD
             await _dbContext.Audits.AddAsync(auditEntity);
             await _dbContext.SaveChangesAsync();
-=======
-            var auditEntity = new AuditEntity
-            {
-                Date = DateTime.Now,
-                UserId = order.ClientUserId,
-                Operation = $"New Order Created!"
-            };
-
-            await _dbContext.Audits.AddAsync(auditEntity);
-            await _dbContext.SaveChangesAsync();
-
->>>>>>> 67247325515b88688dc8a62344ededce1f84f255
 
             return await Task.FromResult(
                     (from o in _dbContext.Orders
@@ -195,18 +182,18 @@ namespace Louman.Repositories
                      select
 new GetOrderDto
 {
-OrderId = newOrderEntity.OrderId,
-BillId = billEntity.BillId,
-ClientUserId = order.ClientUserId,
-OrderStatus = newOrderEntity.OrderStatus,
-Total = order.Total,
-Discount = order.Discount,
-DeliveryType = dt.Description,
-CreatedDate = newOrderEntity.CreatedDate,
-PaymentType = o.PaymentType,
-PickupDate = o.PickupDate.Value.ToString("F"),
-PickupTime = o.PickupTime.Value.ToString("F"),
-ClientName = $"{u.Name} {u.Surname}"
+    OrderId = newOrderEntity.OrderId,
+    BillId = billEntity.BillId,
+    ClientUserId = order.ClientUserId,
+    OrderStatus = newOrderEntity.OrderStatus,
+    Total = order.Total,
+    Discount = order.Discount,
+    DeliveryType = dt.Description,
+    CreatedDate = newOrderEntity.CreatedDate,
+    PaymentType = o.PaymentType,
+    PickupDate = o.PickupDate.Value.ToString("F"),
+    PickupTime = o.PickupTime.Value.ToString("F"),
+    ClientName = $"{u.Name} {u.Surname}"
 }).SingleOrDefault());
 
         }

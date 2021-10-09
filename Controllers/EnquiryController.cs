@@ -204,11 +204,7 @@ namespace Louman.Controllers
         [HttpGet("AdminEnquriesById")]
         public async Task<IActionResult> GetAdminEnquiriesByEnquiryTypeId(int enquiryTypeId)
         {
-<<<<<<< HEAD
-            var enquiry = await _enquiryRepository.GetAllAdminEnquiryByEnquiryTypeId( enquiryTypeId);
-=======
             var enquiry = await _enquiryRepository.GetAllAdminEnquiryByEnquiryTypeId(enquiryTypeId);
->>>>>>> 67247325515b88688dc8a62344ededce1f84f255
             if (enquiry != null)
                 return Ok(new { Enquiries = enquiry, StatusCode = StatusCodes.Status200OK });
             return Ok(new { Enquiries = enquiry, StatusCode = StatusCodes.Status404NotFound });

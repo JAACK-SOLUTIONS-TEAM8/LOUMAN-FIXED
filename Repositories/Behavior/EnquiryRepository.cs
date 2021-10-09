@@ -289,11 +289,7 @@ namespace Louman.Repositories.Behavior
                     EnquiryMessage = enquiry.EnquiryMessage,
                     EnquiryTypeId = enquiry.EnquiryTypeId,
                     EnquiryId = newEnquiry.EnquiryId,
-<<<<<<< HEAD
-                   // AdminUserId = enquiry.AdminUserId,
-=======
                     // AdminUserId = enquiry.AdminUserId,
->>>>>>> 67247325515b88688dc8a62344ededce1f84f255
                     EnquiryStatus = newEnquiry.EnquiryStatus
 
                 });
@@ -308,11 +304,7 @@ namespace Louman.Repositories.Behavior
                     existingEnquiry.ClientUserId = enquiry.ClientUserId;
                     existingEnquiry.EnquiryMessage = enquiry.EnquiryMessage;
                     existingEnquiry.EnquiryTypeId = enquiry.EnquiryTypeId;
-<<<<<<< HEAD
-                   // existingEnquiry.AdminUserId = enquiry.AdminUserId;
-=======
                     // existingEnquiry.AdminUserId = enquiry.AdminUserId;
->>>>>>> 67247325515b88688dc8a62344ededce1f84f255
                     _dbContext.Update(existingEnquiry);
                     await _dbContext.SaveChangesAsync();
 
@@ -321,11 +313,7 @@ namespace Louman.Repositories.Behavior
                         ClientUserId = enquiry.ClientUserId,
                         EnquiryMessage = enquiry.EnquiryMessage,
                         EnquiryTypeId = enquiry.EnquiryTypeId,
-<<<<<<< HEAD
-                       // AdminUserId = enquiry.AdminUserId,
-=======
                         // AdminUserId = enquiry.AdminUserId,
->>>>>>> 67247325515b88688dc8a62344ededce1f84f255
                         EnquiryId = existingEnquiry.EnquiryId
                     });
                 }

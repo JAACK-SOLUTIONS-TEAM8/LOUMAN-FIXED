@@ -114,20 +114,6 @@ namespace Louman.Repositories
 
         public async Task<List<AuditDto>> SearchAuditByUserName(string name)
         {
-<<<<<<< HEAD
-            return await(from at in _dbContext.Audits
-                         join u in _dbContext.Users on at.UserId equals u.UserId
-                         where u.Name.StartsWith(name) ||u.Surname.StartsWith(name)|| u.Name.Contains(name) || u.Surname.Contains(name)
-                         orderby at.Date descending
-                         select new AuditDto
-                         {
-                             AuditId = at.AuditId,
-                             Date = at.Date,
-                             Operation = at.Operation,
-                             UserId = at.UserId,
-                             UserName = $"{u.Name} {u.Surname}",
-                         }).ToListAsync();
-=======
             return await (from at in _dbContext.Audits
                           join u in _dbContext.Users on at.UserId equals u.UserId
                           where u.Name.StartsWith(name) || u.Surname.StartsWith(name) || u.Name.Contains(name) || u.Surname.Contains(name)
@@ -140,7 +126,6 @@ namespace Louman.Repositories
                               UserId = at.UserId,
                               UserName = $"{u.Name} {u.Surname}",
                           }).ToListAsync();
->>>>>>> 67247325515b88688dc8a62344ededce1f84f255
         }
     }
 }
