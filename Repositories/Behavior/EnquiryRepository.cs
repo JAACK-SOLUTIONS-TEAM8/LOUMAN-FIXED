@@ -16,7 +16,7 @@ namespace Louman.Repositories.Behavior
 
         public EnquiryRepository(AppDbContext dbContext)
         {
-           _dbContext = dbContext;
+            _dbContext = dbContext;
         }
         public async Task<EnquiryTypeDto> AddEnquiryType(EnquiryTypeDto enquiryType)
         {
@@ -24,7 +24,7 @@ namespace Louman.Repositories.Behavior
             {
                 var newEnquiryType = new EnquiryTypeEntity
                 {
-                   EnquiryTypeDescription= enquiryType.EnquiryTypeDescription,
+                    EnquiryTypeDescription = enquiryType.EnquiryTypeDescription,
                     isDeleted = false
                 };
                 _dbContext.EnquiryTypes.Add(newEnquiryType);
@@ -33,15 +33,15 @@ namespace Louman.Repositories.Behavior
 
                 return await Task.FromResult(new EnquiryTypeDto
                 {
-                    EnquiryTypeId=newEnquiryType.EnquiryTypeId,
-                    EnquiryTypeDescription= enquiryType.EnquiryTypeDescription
+                    EnquiryTypeId = newEnquiryType.EnquiryTypeId,
+                    EnquiryTypeDescription = enquiryType.EnquiryTypeDescription
                 });
 
             }
             else
             {
 
-                var existingEnquiryType = await(from e in _dbContext.EnquiryTypes where e.EnquiryTypeId == enquiryType.EnquiryTypeId && e.isDeleted == false select e).SingleOrDefaultAsync();
+                var existingEnquiryType = await (from e in _dbContext.EnquiryTypes where e.EnquiryTypeId == enquiryType.EnquiryTypeId && e.isDeleted == false select e).SingleOrDefaultAsync();
                 if (existingEnquiryType != null)
                 {
                     existingEnquiryType.EnquiryTypeDescription = enquiryType.EnquiryTypeDescription;
@@ -50,8 +50,8 @@ namespace Louman.Repositories.Behavior
 
                     return await Task.FromResult(new EnquiryTypeDto
                     {
-                        EnquiryTypeDescription= existingEnquiryType.EnquiryTypeDescription,
-                        EnquiryTypeId= existingEnquiryType.EnquiryTypeId
+                        EnquiryTypeDescription = existingEnquiryType.EnquiryTypeDescription,
+                        EnquiryTypeId = existingEnquiryType.EnquiryTypeId
                     });
                 }
             }
@@ -289,7 +289,11 @@ namespace Louman.Repositories.Behavior
                     EnquiryMessage = enquiry.EnquiryMessage,
                     EnquiryTypeId = enquiry.EnquiryTypeId,
                     EnquiryId = newEnquiry.EnquiryId,
+<<<<<<< HEAD
                    // AdminUserId = enquiry.AdminUserId,
+=======
+                    // AdminUserId = enquiry.AdminUserId,
+>>>>>>> 67247325515b88688dc8a62344ededce1f84f255
                     EnquiryStatus = newEnquiry.EnquiryStatus
 
                 });
@@ -304,7 +308,11 @@ namespace Louman.Repositories.Behavior
                     existingEnquiry.ClientUserId = enquiry.ClientUserId;
                     existingEnquiry.EnquiryMessage = enquiry.EnquiryMessage;
                     existingEnquiry.EnquiryTypeId = enquiry.EnquiryTypeId;
+<<<<<<< HEAD
                    // existingEnquiry.AdminUserId = enquiry.AdminUserId;
+=======
+                    // existingEnquiry.AdminUserId = enquiry.AdminUserId;
+>>>>>>> 67247325515b88688dc8a62344ededce1f84f255
                     _dbContext.Update(existingEnquiry);
                     await _dbContext.SaveChangesAsync();
 
@@ -313,15 +321,19 @@ namespace Louman.Repositories.Behavior
                         ClientUserId = enquiry.ClientUserId,
                         EnquiryMessage = enquiry.EnquiryMessage,
                         EnquiryTypeId = enquiry.EnquiryTypeId,
+<<<<<<< HEAD
                        // AdminUserId = enquiry.AdminUserId,
+=======
+                        // AdminUserId = enquiry.AdminUserId,
+>>>>>>> 67247325515b88688dc8a62344ededce1f84f255
                         EnquiryId = existingEnquiry.EnquiryId
                     });
                 }
             }
             return new EnquiryDto();
 
-        
-    }
+
+        }
 
         public async Task<List<GetEnquiryDto>> GetAllEnquiries()
         {
@@ -470,5 +482,5 @@ namespace Louman.Repositories.Behavior
                           }).ToListAsync();
         }
     }
-    
+
 }

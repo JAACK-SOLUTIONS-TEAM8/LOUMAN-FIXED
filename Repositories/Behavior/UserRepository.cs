@@ -25,7 +25,7 @@ namespace Louman.Repositories
             {
                 var newUserType = new UserTypeEntity
                 {
-                   UserTypeDescription=userType.UserTypeDescription,
+                    UserTypeDescription = userType.UserTypeDescription,
                     isDeleted = false
                 };
                 _dbContext.UserTypes.Add(newUserType);
@@ -34,15 +34,15 @@ namespace Louman.Repositories
 
                 return await Task.FromResult(new UserTypeDto
                 {
-                    UserTypeId=newUserType.UserTypeId,
-                    UserTypeDescription=userType.UserTypeDescription
+                    UserTypeId = newUserType.UserTypeId,
+                    UserTypeDescription = userType.UserTypeDescription
                 });
 
             }
             else
             {
 
-                var existingUserType = await(from ut in _dbContext.UserTypes where userType.UserTypeId == userType.UserTypeId && ut.isDeleted == false select ut).SingleOrDefaultAsync();
+                var existingUserType = await (from ut in _dbContext.UserTypes where userType.UserTypeId == userType.UserTypeId && ut.isDeleted == false select ut).SingleOrDefaultAsync();
                 if (existingUserType != null)
                 {
                     existingUserType.UserTypeDescription = userType.UserTypeDescription;
@@ -114,6 +114,7 @@ namespace Louman.Repositories
 
         public async Task<List<AuditDto>> SearchAuditByUserName(string name)
         {
+<<<<<<< HEAD
             return await(from at in _dbContext.Audits
                          join u in _dbContext.Users on at.UserId equals u.UserId
                          where u.Name.StartsWith(name) ||u.Surname.StartsWith(name)|| u.Name.Contains(name) || u.Surname.Contains(name)
@@ -126,6 +127,20 @@ namespace Louman.Repositories
                              UserId = at.UserId,
                              UserName = $"{u.Name} {u.Surname}",
                          }).ToListAsync();
+=======
+            return await (from at in _dbContext.Audits
+                          join u in _dbContext.Users on at.UserId equals u.UserId
+                          where u.Name.StartsWith(name) || u.Surname.StartsWith(name) || u.Name.Contains(name) || u.Surname.Contains(name)
+                          orderby at.Date descending
+                          select new AuditDto
+                          {
+                              AuditId = at.AuditId,
+                              Date = at.Date,
+                              Operation = at.Operation,
+                              UserId = at.UserId,
+                              UserName = $"{u.Name} {u.Surname}",
+                          }).ToListAsync();
+>>>>>>> 67247325515b88688dc8a62344ededce1f84f255
         }
     }
 }
