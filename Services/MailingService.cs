@@ -25,14 +25,14 @@ namespace Louman.Services
         private readonly IConfiguration _configuration;
         private readonly Models.DTOs.Email.MailSettings _mailSettings;
         private readonly IWebHostEnvironment _env;
-        public MailingService(IConfiguration configuration, IOptions<Models.DTOs.Email.MailSettings> mailSettings, IWebHostEnvironment env)
+        public MailingService(IConfiguration configuration, IOptions<Models.DTOs.Email.MailSettings> mailSettings,IWebHostEnvironment env)
         {
             _configuration = configuration;
             _mailSettings = mailSettings.Value;
             _env = env;
 
         }
-
+        
 
         public async Task SendEmailAsync(ClientDto client)
         {
@@ -43,16 +43,15 @@ namespace Louman.Services
             var builder = new BodyBuilder();
 
 
-            var filePath = Path.Combine(_env.ContentRootPath, "wwwroot\\images", "louman.jpeg");
+            var filePath = Path.Combine(_env.ContentRootPath,"wwwroot\\images", "louman.jpeg");
 
-
+           
             var image = builder.LinkedResources.Add(filePath);
             image.ContentId = MimeUtils.GenerateMessageId();
-            builder.HtmlBody = @$"Dear {client.Initials + client.Surname}, <br><br>
+            builder.HtmlBody = @$"Dear {client.Initials}, <br><br>
                                 Welcome to the Louman System! We are so happy you joined us and we hope that our<br>
-                                application will be of great service to you.If you have any questions or queuries regarding products or<br>
-                                any other thing, don't be shy to message us! You can make these queries directly on this email or by booking a meeting via the system
-or making use of the enquiry section that can also be found on our system!<br><br>
+                                application will be of great service to you.If you have anyt question / queuries regarding products or<br>
+                                any other thing, don't be shy to message us!<br><br>
                                 Kind regards,<br> 
                                 The Louman Team.<br><img height=""400px"" width=""400px"" src=""cid:{image.ContentId}"">";
             email.Body = builder.ToMessageBody();
@@ -63,7 +62,7 @@ or making use of the enquiry section that can also be found on our system!<br><b
             smtp.Disconnect(true);
         }
 
-        public async Task SendEmailVerificationCode(UserDto user, string verificationCode)
+        public async Task SendEmailVerificationCode(UserWithRolesDto user,string verificationCode)
         {
             var email = new MimeMessage();
             email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
