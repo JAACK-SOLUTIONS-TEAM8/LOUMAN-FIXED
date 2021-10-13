@@ -55,6 +55,8 @@ namespace Louman.AppDbContexts
         public DbSet<AuditEntity> Audits { get; set; }
         public DbSet<TeamDaysEntity> TeamDays { get; set; }
         public DbSet<MonthEntity> Months { get; set; }
+        public DbSet<RoleEntity> Roles { get; set; }
+        public DbSet<UserRoleEntity> UserRoles { get; set; }
 
         public DbSet<TimerConfigEntity> Timer { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
