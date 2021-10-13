@@ -420,9 +420,6 @@ namespace Louman.Repositories
 
 
         }
-        
-
-
 
 
         public async Task<GetStockProductDto> GetStockProductById(int stockId)

@@ -301,9 +301,13 @@ namespace Louman.Repositories.Behavior
 
             var timeDiff = bookedSlot.BookingTime.Subtract(DateTime.Now);
 
-            if (bookedSlot.BookingTime.Subtract(DateTime.Now).TotalHours < 24)
+            if (timeDiff.TotalHours > 24)
             {
                 var slot = _dbContext.Slots.Find(slotId);
+                if(slot.Date< DateTime.Now.Date)
+                {
+                    slot.isDeleted = true;
+                }
                 slot.isBooked = false;
                 _dbContext.Slots.Update(slot);
                 await _dbContext.SaveChangesAsync();

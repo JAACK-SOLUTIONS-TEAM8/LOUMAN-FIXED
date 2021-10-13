@@ -1,7 +1,7 @@
-
 ﻿using Louman.AppDbContexts;
 using Louman.Models.DTOs;
 using Louman.Models.DTOs.Timer;
+using Louman.Models.DTOs.User;
 using Louman.Models.Entities;
 using Louman.Repositories.Abstraction;
 using Louman.Utilities;
@@ -201,5 +201,69 @@ namespace Louman.Repositories
             _dbContext.SaveChanges();
             return true;
         }
+
+        public async Task<RoleDto> AddRole(RoleDto role)
+        {
+            if (role.RoleId == 0)
+            {
+                var newRole = new RoleEntity
+                {
+                    RoleName = role.RoleName
+                };
+                _dbContext.Roles.Add(newRole);
+                await _dbContext.SaveChangesAsync();
+
+
+                return await Task.FromResult(new RoleDto
+                {
+                    RoleId = newRole.RoleId,
+                    RoleName = newRole.RoleName
+                });
+
+            }
+            else
+            {
+
+                var roleEntity = _dbContext.Roles.Find(role.RoleId);
+                if (roleEntity != null)
+                {
+                    roleEntity.RoleName = role.RoleName;
+                    _dbContext.Roles.Update(roleEntity);
+                    await _dbContext.SaveChangesAsync();
+
+                    return await Task.FromResult(new RoleDto
+                    {
+                        RoleId = role.RoleId,
+                        RoleName = role.RoleName
+                    });
+                }
+            }
+            return new RoleDto();
+
+        }
+        public async Task<List<RoleDto>> GetAllRoles()
+        {
+            return await (from r in _dbContext.Roles
+                          orderby r.RoleName
+                          select new RoleDto
+                          {
+                              RoleId = r.RoleId,
+                              RoleName = r.RoleName
+                          }).ToListAsync();
+        }
+        public async Task<RoleDto> GetRoleById(int id)
+        {
+            return await (from r in _dbContext.Roles
+                    where r.RoleId==id
+                    orderby r.RoleName
+                    select new RoleDto
+                    {
+                        RoleId=r.RoleId,
+                        RoleName=r.RoleName
+
+                    }).SingleOrDefaultAsync();
+        }
+
+
     }
 }

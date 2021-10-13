@@ -1,4 +1,5 @@
-﻿using Louman.Models.DTOs.Admin;
+﻿using Louman.Models.DTOs;
+using Louman.Models.DTOs.Admin;
 using Louman.Models.DTOs.User;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace Louman.Repositories.Abstraction
         Task<bool> DeleteUserType(int userTypeId);
         Task<List<AuditDto>> GetAuditDetail();
         Task<List<AuditDto>> SearchAuditByUserName(string name);
-
+        Task<List<UserRoleDto>> GetUserRole(int userId);
+        Task<bool> AddUserRole(AddRoleDto roleData);
     }
 }

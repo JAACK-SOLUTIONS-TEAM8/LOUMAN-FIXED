@@ -179,7 +179,7 @@ namespace Louman.Controllers
 
         }
 
-
+        
 
         [HttpGet("Delete/{id}")]
         public async Task<IActionResult> DelteEnquiry([FromRoute] int id)
@@ -204,7 +204,7 @@ namespace Louman.Controllers
         [HttpGet("AdminEnquriesById")]
         public async Task<IActionResult> GetAdminEnquiriesByEnquiryTypeId(int enquiryTypeId)
         {
-            var enquiry = await _enquiryRepository.GetAllAdminEnquiryByEnquiryTypeId(enquiryTypeId);
+            var enquiry = await _enquiryRepository.GetAllAdminEnquiryByEnquiryTypeId( enquiryTypeId);
             if (enquiry != null)
                 return Ok(new { Enquiries = enquiry, StatusCode = StatusCodes.Status200OK });
             return Ok(new { Enquiries = enquiry, StatusCode = StatusCodes.Status404NotFound });

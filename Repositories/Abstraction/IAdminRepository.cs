@@ -1,5 +1,6 @@
 ﻿using Louman.Models.DTOs;
 using Louman.Models.DTOs.Timer;
+using Louman.Models.DTOs.User;
 using Louman.Models.Entities;
 using System;
 using System.Collections.Generic;
@@ -19,5 +20,9 @@ namespace Louman.Repositories.Abstraction
         TimerConfigEntity GetTimerCongif();
 
         bool SetTimerConfig(TimerConfigDto config);
+        Task<List<RoleDto>> GetAllRoles();
+        Task<RoleDto> AddRole(RoleDto role);
+        Task<RoleDto> GetRoleById(int id);
+
     }
 }

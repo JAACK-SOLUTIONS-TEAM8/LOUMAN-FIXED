@@ -157,14 +157,13 @@ namespace Louman.Repositories.Behavior
 
         public bool CanMarkAttendance(int teamId)
         {
-            var teamWorkingDays = (from d in _dbContext.Days
-                                   join td in _dbContext.TeamDays on d.DayId equals td.DayId
-                                   where td.TeamId == teamId
-                                   select new DayDto
-                                   {
-                                       DayId = d.DayId,
-                                       DayName = d.DayName
-                                   }).ToList();
+            var teamWorkingDays= (from d in _dbContext.Days
+                                 join td in _dbContext.TeamDays on d.DayId equals td.DayId
+                                 where td.TeamId==teamId select new DayDto
+                                 {
+                                     DayId=d.DayId,
+                                     DayName=d.DayName
+                                 }).ToList();
 
             return teamWorkingDays.Any(day => day.DayName.ToLower() == DateTime.Now.DayOfWeek.ToString().ToLower());
         }
@@ -213,7 +212,7 @@ namespace Louman.Repositories.Behavior
                                               where u.isDeleted == false && ah.TeamId == teamId
                                               select new AttendanceDto
                                               {
-                                                  UserId = u.UserId,
+                                                  UserId=u.UserId,
                                                   AttendanceId = a.AttendanceId,
                                                   AttendanceHistoryId = ah.AttendanceHistoryId,
                                                   Absent = a.Absent,
@@ -253,7 +252,7 @@ namespace Louman.Repositories.Behavior
 
             }
         }
-        public async Task<bool> MarkAttendance(List<AttendanceDto> attendances)
+        public async Task<bool> MarkAttendance(List<AttendanceDto> attendances) 
         {
             foreach (var attendance in attendances)
             {
@@ -270,7 +269,7 @@ namespace Louman.Repositories.Behavior
 
             return true;
         }
-        public async Task<TeamDto> GetByIdAsync(int teamId)
+        public async Task<TeamDto> GetByIdAsync(int teamId)  
         {
             var team = await (from t in _dbContext.Teams
                               join l in _dbContext.Locations on t.LocationId equals l.LocationId
@@ -301,7 +300,7 @@ namespace Louman.Repositories.Behavior
             return await Task.FromResult(team);
         }
 
-        public async Task<List<EmployeeDto>> GetTeamEmployees(int teamId)
+        public async Task<List<EmployeeDto>> GetTeamEmployees(int teamId)  
         {
             return await (from u in _dbContext.Users
                           join e in _dbContext.Employees on u.UserId equals e.UserId
@@ -392,13 +391,12 @@ namespace Louman.Repositories.Behavior
 
         public async Task<List<DayDto>> GetWeekDays()
         {
-            return await (from d in _dbContext.Days
-                          select
-new DayDto
-{
-   DayId = d.DayId,
-   DayName = d.DayName
-}).ToListAsync();
+            return await (from d in _dbContext.Days select 
+                         new DayDto 
+                         { 
+                             DayId=d.DayId,
+                             DayName=d.DayName
+                         }).ToListAsync();
 
         }
         public async Task<List<AttendanceDto>> GetAttendanceDataForReport(int teamId, string date)
@@ -466,7 +464,7 @@ new DayDto
                                     where t.isDeleted == false
                                     select new { EmployeeId = e.EmployeeId }).ToList();
 
-            if ((existingTeam.NumberOfEmployees < existingTeam.MaxEmployees) && !employeesInTeams.Any(e => e.EmployeeId == employee.EmployeeId))
+            if ((existingTeam.NumberOfEmployees < existingTeam.MaxEmployees) && !employeesInTeams.Any(e=>e.EmployeeId==employee.EmployeeId))
             {
 
                 var employeeTeamEntity = new EmployeeTeamEntity
@@ -511,7 +509,7 @@ new DayDto
 
             return null;
 
-
+            
         }
 
         public bool CheckTeamValidity(CheckTeamDto team)
@@ -521,8 +519,8 @@ new DayDto
             foreach (var t in teams)
             {
                 var teamDays = (from td in _dbContext.TeamDays
-                                where td.TeamId == t.TeamId
-                                select td.DayId).ToList();
+                               where td.TeamId == t.TeamId
+                               select td.DayId).ToList();
 
 
 
@@ -530,7 +528,7 @@ new DayDto
                 var endTime = DateTime.Parse(team.EndTime);
 
                 if (
-                     (teamDays.Contains(team.TeamDay)) &&
+                     (teamDays.Contains(team.TeamDay))&&
                     (team.LocationId == t.LocationId) &&
                     ((t.StartTime.TimeOfDay < startTime.TimeOfDay) && (t.EndTime.TimeOfDay >= startTime.TimeOfDay) ||
                     (t.StartTime.TimeOfDay >= startTime.TimeOfDay) && (t.EndTime.TimeOfDay <= endTime.TimeOfDay) ||

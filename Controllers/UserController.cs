@@ -81,7 +81,27 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("Roles/{id}")]
+        public async Task<IActionResult> GetUserRoles([FromRoute] int id)
+        {
+            var reponse = await _userRepository.GetUserRole(id);
+            if (reponse != null)
+                return Ok(new { Roles = reponse, statusCode = StatusCodes.Status200OK });
+            else
+                return Ok(new { Roles = reponse, statusCode = StatusCodes.Status400BadRequest });
 
+        }
+
+        [HttpPost("Roles/Add")]
+        public async Task<IActionResult> AddUserRoles([FromBody] AddRoleDto roleData)
+        {
+            var reponse = await _userRepository.AddUserRole(roleData);
+            if (reponse == true)
+                return Ok(new { Roles = reponse, statusCode = StatusCodes.Status200OK });
+            else
+                return Ok(new { Roles = reponse, statusCode = StatusCodes.Status400BadRequest });
+
+        }
 
     }
 }

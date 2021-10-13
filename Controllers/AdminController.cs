@@ -1,4 +1,3 @@
-
 ﻿using Louman.Models.DTOs;
 using Louman.Models.DTOs.Timer;
 using Louman.Repositories.Abstraction;
@@ -97,5 +96,41 @@ namespace Louman.Controllers
                 return Ok(new { Config = reponse, statusCode = StatusCodes.Status400BadRequest });
 
         }
+
+
+        [HttpPost("Roles/Add")]
+        public IActionResult AddRole(RoleDto role)
+        {
+            var reponse = _adminRepository.AddRole(role);
+            if (reponse != null)
+                return Ok(new { Role = reponse, statusCode = StatusCodes.Status200OK });
+            else
+                return Ok(new { Role = reponse, statusCode = StatusCodes.Status400BadRequest });
+
+        }
+
+        [HttpGet("Roles")]
+        public async Task<IActionResult> GetRoles()
+        {
+            var reponse = await _adminRepository.GetAllRoles();
+            if (reponse != null)
+                return Ok(new { Roles = reponse, statusCode = StatusCodes.Status200OK });
+            else
+                return Ok(new { Roles = reponse, statusCode = StatusCodes.Status400BadRequest });
+
+        }
+
+        [HttpGet("Roles/{id}")]
+        public async Task<IActionResult> GetRoleById([FromRoute] int id)
+        {
+            var reponse = await _adminRepository.GetRoleById(id);
+            if (reponse != null)
+                return Ok(new { Role = reponse, statusCode = StatusCodes.Status200OK });
+            else
+                return Ok(new { Role = reponse, statusCode = StatusCodes.Status400BadRequest });
+
+        }
+
+       
     }
 }

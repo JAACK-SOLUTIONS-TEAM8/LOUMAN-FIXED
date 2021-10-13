@@ -1,4 +1,4 @@
-using Louman.AppDbContexts;
+﻿using Louman.AppDbContexts;
 using Louman.Models.DTOs.Auth;
 using Louman.Models.DTOs.User;
 using Louman.Models.Entities;
@@ -22,7 +22,7 @@ namespace Louman.Repositories.Behavior
             _dbContext = dbContext;
             _mailingService = mailingService;
         }
-        public async Task<bool> isEmailExist(string email)
+        public async  Task<bool> isEmailExist(string email)
         {
             var user = await (from u in _dbContext.Users where u.Email == email select u).FirstOrDefaultAsync();
             if (user != null)
@@ -65,7 +65,7 @@ namespace Louman.Repositories.Behavior
 
                 await _dbContext.Audits.AddAsync(auditEntity);
                 await _dbContext.SaveChangesAsync();
-                var usr = (from u in _dbContext.Users where u.UserName == loginDto.UserName && u.Password == Hashing.GenerateSha512String(loginDto.Password) && u.isDeleted == false select u).SingleOrDefault();
+                var usr = (from u in _dbContext.Users where u.UserName == loginDto.UserName &&  u.Password == Hashing.GenerateSha512String(loginDto.Password) && u.isDeleted == false select u).SingleOrDefault();
 
                 Random r = new Random();
                 var code = r.Next(1000, 999999).ToString();
@@ -78,7 +78,7 @@ namespace Louman.Repositories.Behavior
 
                 await _mailingService.SendEmailVerificationCode(user, code);
 
-                return await Task.FromResult(new AuthenticationResponse { ResponseType = UserLoginResponseType.Authenticated, User = user });
+                return await Task.FromResult(new AuthenticationResponse { ResponseType=UserLoginResponseType.Authenticated,User= user } );
             }
             return await Task.FromResult(new AuthenticationResponse { ResponseType = UserLoginResponseType.UsernameOrPasswordNotMatched, User = null });
         }
@@ -122,16 +122,16 @@ namespace Louman.Repositories.Behavior
             return true;
         }
 
-        public async Task<AuthenticationResponse> VerifyCode(CodeDto code)
+        public async  Task<AuthenticationResponse> VerifyCode(CodeDto code)
         {
-            var user = await (from u in _dbContext.Users where u.Email == code.User.Email && u.UserName == code.User.UserName select u).FirstOrDefaultAsync();
+           var user = await(from u in _dbContext.Users where  u.Email == code.User.Email && u.UserName==code.User.UserName select u).FirstOrDefaultAsync();
 
-            if (user != null)
+            if(user!=null)
             {
-                if (user.TokenExpirationTime.Value.Subtract(DateTime.Now).Minutes <= 5)
+                if(user.TokenExpirationTime.Value.Subtract(DateTime.Now).Minutes <=5 )
                 {
-
-                    if (user.EmailConfirmationCode == code.Code)
+                    
+                    if(user.EmailConfirmationCode == code.Code)
                     {
                         var usr = await (
                         from u in _dbContext.Users
@@ -152,13 +152,13 @@ namespace Louman.Repositories.Behavior
                             UserType = ut.UserTypeDescription
                         }).FirstOrDefaultAsync();
 
-                        if (usr != null)
+                        if(usr!=null)
                         {
                             var userRoles = await (from ur in _dbContext.UserRoles
-                                                   join r in _dbContext.Roles on ur.RoleId equals r.RoleId
-                                                   where ur.UserId == usr.UserId
+                                             join r in _dbContext.Roles on ur.RoleId equals r.RoleId
+                                             where ur.UserId == usr.UserId
 
-                                                   select r.RoleName.ToLower()
+                                             select r.RoleName.ToLower()
                                            ).ToListAsync();
 
                             usr.UserRoles = userRoles;
@@ -192,10 +192,9 @@ namespace Louman.Repositories.Behavior
                     });
                 }
             }
-            return await Task.FromResult(new AuthenticationResponse
-            {
-                ResponseType = UserLoginResponseType.TimeOver,
-                User = new UserWithRolesDto
+            return await Task.FromResult( new AuthenticationResponse { 
+                ResponseType=UserLoginResponseType.TimeOver,
+                User=new UserWithRolesDto
                 {
                     UserId = user.UserId,
                     UserName = user.UserName,
@@ -209,8 +208,7 @@ namespace Louman.Repositories.Behavior
                     UserTypeId = user.UserTypeId,
                     UserType = ""
                 },
-                VerificationCode = ""
-            });
+                VerificationCode=""});
 
         }
     }

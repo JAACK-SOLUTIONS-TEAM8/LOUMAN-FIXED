@@ -182,18 +182,18 @@ namespace Louman.Repositories
                      select
 new GetOrderDto
 {
-    OrderId = newOrderEntity.OrderId,
-    BillId = billEntity.BillId,
-    ClientUserId = order.ClientUserId,
-    OrderStatus = newOrderEntity.OrderStatus,
-    Total = order.Total,
-    Discount = order.Discount,
-    DeliveryType = dt.Description,
-    CreatedDate = newOrderEntity.CreatedDate,
-    PaymentType = o.PaymentType,
-    PickupDate = o.PickupDate.Value.ToString("F"),
-    PickupTime = o.PickupTime.Value.ToString("F"),
-    ClientName = $"{u.Name} {u.Surname}"
+OrderId = newOrderEntity.OrderId,
+BillId = billEntity.BillId,
+ClientUserId = order.ClientUserId,
+OrderStatus = newOrderEntity.OrderStatus,
+Total = order.Total,
+Discount = order.Discount,
+DeliveryType = dt.Description,
+CreatedDate = newOrderEntity.CreatedDate,
+PaymentType = o.PaymentType,
+PickupDate = o.PickupDate.Value.ToString("F"),
+PickupTime = o.PickupTime.Value.ToString("F"),
+ClientName = $"{u.Name} {u.Surname}"
 }).SingleOrDefault());
 
         }

@@ -1,4 +1,5 @@
 ﻿using Louman.AppDbContexts;
+using Louman.Models.DTOs;
 using Louman.Models.DTOs.Admin;
 using Louman.Models.DTOs.User;
 using Louman.Models.Entities;
@@ -25,7 +26,7 @@ namespace Louman.Repositories
             {
                 var newUserType = new UserTypeEntity
                 {
-                    UserTypeDescription = userType.UserTypeDescription,
+                   UserTypeDescription=userType.UserTypeDescription,
                     isDeleted = false
                 };
                 _dbContext.UserTypes.Add(newUserType);
@@ -34,15 +35,15 @@ namespace Louman.Repositories
 
                 return await Task.FromResult(new UserTypeDto
                 {
-                    UserTypeId = newUserType.UserTypeId,
-                    UserTypeDescription = userType.UserTypeDescription
+                    UserTypeId=newUserType.UserTypeId,
+                    UserTypeDescription=userType.UserTypeDescription
                 });
 
             }
             else
             {
 
-                var existingUserType = await (from ut in _dbContext.UserTypes where userType.UserTypeId == userType.UserTypeId && ut.isDeleted == false select ut).SingleOrDefaultAsync();
+                var existingUserType = await(from ut in _dbContext.UserTypes where userType.UserTypeId == userType.UserTypeId && ut.isDeleted == false select ut).SingleOrDefaultAsync();
                 if (existingUserType != null)
                 {
                     existingUserType.UserTypeDescription = userType.UserTypeDescription;
@@ -114,18 +115,60 @@ namespace Louman.Repositories
 
         public async Task<List<AuditDto>> SearchAuditByUserName(string name)
         {
-            return await (from at in _dbContext.Audits
-                          join u in _dbContext.Users on at.UserId equals u.UserId
-                          where u.Name.StartsWith(name) || u.Surname.StartsWith(name) || u.Name.Contains(name) || u.Surname.Contains(name)
-                          orderby at.Date descending
-                          select new AuditDto
+            return await(from at in _dbContext.Audits
+                         join u in _dbContext.Users on at.UserId equals u.UserId
+                         where u.Name.StartsWith(name) ||u.Surname.StartsWith(name)|| u.Name.Contains(name) || u.Surname.Contains(name)
+                         orderby at.Date descending
+                         select new AuditDto
+                         {
+                             AuditId = at.AuditId,
+                             Date = at.Date,
+                             Operation = at.Operation,
+                             UserId = at.UserId,
+                             UserName = $"{u.Name} {u.Surname}",
+                         }).ToListAsync();
+        }
+
+        public async Task<List<UserRoleDto>> GetUserRole(int userId)
+        {
+            return await (from ur in _dbContext.UserRoles
+                          where ur.UserId == userId
+                          select new UserRoleDto
                           {
-                              AuditId = at.AuditId,
-                              Date = at.Date,
-                              Operation = at.Operation,
-                              UserId = at.UserId,
-                              UserName = $"{u.Name} {u.Surname}",
-                          }).ToListAsync();
+                              UserRoleId = ur.UserRoleId,
+                              UserId = ur.UserId,
+                              RoleId = ur.RoleId,
+                              isActive=ur.isActive
+                          }
+                ).ToListAsync();
+        }
+
+        public async Task<bool> AddUserRole(AddRoleDto roleData)
+        {
+            var userRoleEntity =await (from ur in _dbContext.UserRoles
+                                 where ur.UserId == roleData.UserId && ur.RoleId == roleData.RoleId
+                                 select ur).SingleOrDefaultAsync();
+            if (userRoleEntity != null)
+            {
+                userRoleEntity.isActive = roleData.isActive;
+                _dbContext.UserRoles.Update(userRoleEntity);
+               await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            else
+            {
+                var newUserRole = new UserRoleEntity
+                {
+                    RoleId = roleData.RoleId,
+                    UserId = roleData.UserId,
+                    isActive = roleData.isActive
+                };
+
+                _dbContext.UserRoles.Add(newUserRole);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
     }
 }

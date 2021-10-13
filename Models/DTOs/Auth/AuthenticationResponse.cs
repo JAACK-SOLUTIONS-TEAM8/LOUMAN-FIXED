@@ -9,7 +9,7 @@ namespace Louman.Models.DTOs.Auth
     public class AuthenticationResponse
     {
         public UserLoginResponseType ResponseType { get; set; }
-        public UserDto User { get; set; }
+        public UserWithRolesDto User { get; set; }
         public string VerificationCode { get; set; }
     }
 }
