@@ -8,15 +8,17 @@ using System.Threading.Tasks;
 
 namespace Louman.AppDbContexts
 {
-    public class AppDbContext:DbContext
+    public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options):base(options)
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
             Database.EnsureCreated();
         }
 
         public DbSet<AddressEntity> Addresses { get; set; }
         public DbSet<AdminEntity> Admins { get; set; }
+        public DbSet<FeatureEntity> Features { get; set; }
+        public DbSet<RoleFeatureEntity> RoleFeatures { get; set; }
         public DbSet<AttendanceEntity> AttendanceEntities { get; set; }
         public DbSet<AttendanceHistoryEntity> AttendanceHistoryEntities { get; set; }
         public DbSet<ClientEntity> Clients { get; set; }
@@ -26,23 +28,23 @@ namespace Louman.AppDbContexts
         public DbSet<EmployeeTeamEntity> EmployeeTeams { get; set; }
         public DbSet<EnquiryEntity> Enquiries { get; set; }
         public DbSet<EnquiryResponseEntity> EnquiryResponses { get; set; }
-        public DbSet<EnquiryResponseStatusEntity> EnquiryResponseStatus{ get; set; }
+        public DbSet<EnquiryResponseStatusEntity> EnquiryResponseStatus { get; set; }
         public DbSet<EnquiryTypeEntity> EnquiryTypes { get; set; }
-        public DbSet<InvoiceEntity> Invoices{ get; set; }
+        public DbSet<InvoiceEntity> Invoices { get; set; }
         public DbSet<LocationEntity> Locations { get; set; }
         public DbSet<ProvinceEntity> Provinces { get; set; }
-        public DbSet<MeetingEntity> Meetings{ get; set; }
+        public DbSet<MeetingEntity> Meetings { get; set; }
         public DbSet<MeetingStatusEntity> MeetingStatus { get; set; }
-        public DbSet<OrderEntity> Orders{ get; set; }
-        public DbSet<OrderLineEntity> OrderLines{ get; set; }
+        public DbSet<OrderEntity> Orders { get; set; }
+        public DbSet<OrderLineEntity> OrderLines { get; set; }
         public DbSet<OrderStatusEntity> OrderStatus { get; set; }
         public DbSet<PaymentEntity> Payments { get; set; }
         public DbSet<PaymentStatusEntity> PaymentStatus { get; set; }
         public DbSet<PaymentTypeEntity> PaymentTypes { get; set; }
         public DbSet<ProductEntity> Products { get; set; }
         public DbSet<ProductSizeEntity> ProductSizes { get; set; }
-        public DbSet<ProductTypeEntity> ProductTypes{ get; set; }
-        public DbSet<SlotEntity> Slots{ get; set; }
+        public DbSet<ProductTypeEntity> ProductTypes { get; set; }
+        public DbSet<SlotEntity> Slots { get; set; }
         public DbSet<StockEntity> Stocks { get; set; }
         public DbSet<TeamEntity> Teams { get; set; }
         public DbSet<UserEntity> Users { get; set; }
