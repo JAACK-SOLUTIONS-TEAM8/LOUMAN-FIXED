@@ -204,8 +204,23 @@ namespace Louman.Controllers
 
         }
 
+        [HttpGet("TransactionalReport")]
+        public async Task<IActionResult> GetMonthlyTransactionalReport([FromQuery] string dateInfo)
+        {
+            var products = await _productReposiroty.GetSaleAmountForEachProduct(DateTime.Parse(dateInfo));
 
+            return Ok(new { Products = products, StatusCode = StatusCodes.Status200OK });
 
+        }
+
+        [HttpGet("ManagementReport")]
+        public async Task<IActionResult> GetManagementReportReport()
+        {
+            var products = await _productReposiroty.GetSixMonthSaleAmountForEachProduct();
+
+            return Ok(new { Products = products, StatusCode = StatusCodes.Status200OK });
+
+        }
 
 
     }

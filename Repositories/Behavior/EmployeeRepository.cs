@@ -54,8 +54,8 @@ namespace Louman.Repositories
                     CommencementDate = employee.CommenceDate.HasValue ? employee.CommenceDate.Value : null,
                     TerminationDate = employee.TerminationDate.HasValue ? employee.TerminationDate.Value : null,
                     TerminationReason = employee.TerminationReason ?? null,
-                    Image = employee.Image,
-                    EmployeeDocument = employee.Document
+                    Image = employee.Image!=null?employee.Image.Split(",")[1]: employee.Image,
+                    EmployeeDocument = employee.Document!=null?employee.Document.Split(",")[1]:employee.Document
                 };
 
                 _dbContext.Employees.Add(newEmployee);
@@ -63,7 +63,7 @@ namespace Louman.Repositories
                 var auditEntity = new AuditEntity
                 {
                     Date = DateTime.Now,
-                    UserId = ep.UserId,
+                    UserId = user.UserId,
                     Operation = $"Employee :{employee.Initials} ${employee.Surname} is added to the system"
                 };
 
@@ -86,8 +86,8 @@ namespace Louman.Repositories
                     CommenceDate = newEmployee.CommencementDate ?? null,
                     TerminationReason = newEmployee.TerminationReason ?? null,
                     TerminationDate = newEmployee.TerminationDate ?? null,
-                    Image = employee.Image,
-                    Document = employee.Document
+                    Image = $"data:image/jpeg;base64,"+employee.Image,
+                    Document = $"data:application/pdf;base64,"+employee.Document
                 });
 
             }
@@ -100,7 +100,7 @@ namespace Louman.Repositories
                     user.UserName = employee.UserName;
                     user.CellNumber = employee.CellNumber;
                     user.Email = employee.Email;
-                    user.Password = Hashing.GenerateSha512String(employee.Password);
+                    //user.Password = Hashing.GenerateSha512String(employee.Password);
                     user.Surname = employee.Surname;
                     user.UserTypeId = employee.UserTypeId;
                     user.Name = employee.Initials;
@@ -115,8 +115,8 @@ namespace Louman.Repositories
                     emp.CommencementDate = employee.CommenceDate.HasValue ? employee.CommenceDate.Value : null;
                     emp.TerminationDate = employee.TerminationDate.HasValue ? employee.TerminationDate.Value : null;
                     emp.TerminationReason = employee.TerminationReason ?? null;
-                    emp.Image = employee.Image;
-                    emp.EmployeeDocument = employee.Document;
+                    emp.Image = employee.Image != null ? employee.Image.Split(",")[1] : employee.Image;
+                    emp.EmployeeDocument = employee.Document != null ? employee.Document.Split(",")[1] : employee.Document;
 
 
                     _dbContext.Update(emp);
@@ -125,7 +125,7 @@ namespace Louman.Repositories
                     var auditEntity = new AuditEntity
                     {
                         Date = DateTime.Now,
-                        UserId = ep.UserId,
+                        UserId = user.UserId,
                         Operation = $"Employee :{employee.Initials} ${employee.Surname} is added to the system"
                     };
 
@@ -148,8 +148,8 @@ namespace Louman.Repositories
                         CommenceDate = employee.CommenceDate,
                         TerminationDate = employee.TerminationDate,
                         TerminationReason = employee.TerminationReason,
-                        Image = employee.Image,
-                        Document = employee.Document
+                        Image = $"data:image/jpeg;base64," + employee.Image,
+                        Document = $"data:application/pdf;base64," + employee.Document
 
                     });
                 }
@@ -192,8 +192,8 @@ namespace Louman.Repositories
                               CommenceDate = e.CommencementDate,
                               TerminationDate = e.TerminationDate,
                               TerminationReason = e.TerminationReason,
-                              Image = e.Image,
-                              Document = e.EmployeeDocument
+                              Image = $"data:image/jpeg;base64," + e.Image,
+                              Document = $"data:application/pdf;base64," + e.EmployeeDocument
 
                           }).ToList();
             return Task.FromResult(employees);
@@ -210,7 +210,7 @@ new
 {
  TeamId = t.TeamId,
  TeamName = t.TeamName
-}).SingleOrDefaultAsync();
+}).FirstOrDefaultAsync();
 
             return await (from u in _dbContext.Users
                           join e in _dbContext.Employees on u.UserId equals e.UserId
@@ -232,8 +232,8 @@ new
                               CommenceDate = e.CommencementDate,
                               TerminationDate = e.TerminationDate,
                               TerminationReason = e.TerminationReason,
-                              Image = e.Image,
-                              Document = e.EmployeeDocument
+                              Image = $"data:image/jpeg;base64," + e.Image,
+                              Document = $"data:application/pdf;base64," + e.EmployeeDocument
                           }).SingleOrDefaultAsync();
         }
 
@@ -259,8 +259,8 @@ new
                               CommenceDate = e.CommencementDate,
                               TerminationDate = e.TerminationDate,
                               TerminationReason = e.TerminationReason,
-                              Image = e.Image,
-                              Document = e.EmployeeDocument
+                              Image = $"data:image/jpeg;base64," + e.Image,
+                              Document = $"data:application/pdf;base64," + e.EmployeeDocument
                           }).ToListAsync();
         }
 
@@ -364,7 +364,7 @@ new
             _dbContext.Update(user);
             _dbContext.SaveChanges();
 
-            emp.Image = employee.Image;
+            emp.Image = employee.Image != null ? employee.Image.Split(",")[1] : employee.Image;
             _dbContext.Update(emp);
             _dbContext.SaveChanges();
 
@@ -404,8 +404,8 @@ new
                               CommenceDate = e.CommencementDate,
                               TerminationDate = e.TerminationDate,
                               TerminationReason = e.TerminationReason,
-                              Image = e.Image,
-                              Document = e.EmployeeDocument,
+                              Image = $"data:image/jpeg;base64," + e.Image,
+                              Document = $"data:application/pdf;base64," + e.EmployeeDocument,
                               TeamId = team != null ? team.TeamId : 0,
                               TeamName = team != null ? team.TeamName : null
                           }).SingleOrDefaultAsync();

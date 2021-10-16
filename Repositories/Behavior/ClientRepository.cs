@@ -97,7 +97,7 @@ namespace Louman.Repositories
                     user.UserName = client.UserName;
                     user.CellNumber = client.CellNumber;
                     user.Email = client.Email;
-                    user.Password = Hashing.GenerateSha512String(client.Password);
+                    //user.Password = Hashing.GenerateSha512String(client.Password);
                     user.Surname = client.Surname;
                     user.UserTypeId = client.UserTypeId;
                     user.Name = client.Initials;

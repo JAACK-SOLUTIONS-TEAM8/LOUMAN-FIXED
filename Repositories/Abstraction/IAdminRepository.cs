@@ -24,5 +24,9 @@ namespace Louman.Repositories.Abstraction
         Task<RoleDto> AddRole(RoleDto role);
         Task<RoleDto> GetRoleById(int id);
 
+        Task<List<FeatureDto>> GetAllFeatures();
+        Task<FeatureDto> AddFeature(FeatureDto feature);
+        Task<FeatureDto> GetFeatureById(int id);
+
     }
 }

@@ -170,5 +170,46 @@ namespace Louman.Repositories
             }
             return false;
         }
+        public async Task<List<RoleFeatureDto>> GetRoleFeatures(int roleId)
+        {
+            return await (from rf in _dbContext.RoleFeatures
+                          where rf.RoleId == roleId
+                          select new RoleFeatureDto
+                          {
+                              RoleFeatureId=rf.RoleFeatureId,
+                              FeatureId=rf.FeatureId,
+                              RoleId = rf.RoleId,
+                              isActive=rf.isActive
+                          }
+                ).ToListAsync();
+        }
+
+        public async Task<bool> AddRoleFeature(AddFeatureDto featureData)
+        {
+            var roleFeatureEntity =await (from rf in _dbContext.RoleFeatures
+                                 where rf.RoleId == featureData.RoleId && rf.FeatureId == featureData.FeatureId
+                                 select rf).SingleOrDefaultAsync();
+            if (roleFeatureEntity != null)
+            {
+                roleFeatureEntity.isActive = featureData.isActive;
+                _dbContext.RoleFeatures.Update(roleFeatureEntity);
+               await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            else
+            {
+                var newRoleFeature = new RoleFeatureEntity
+                {
+                    RoleId = featureData.RoleId,
+                    FeatureId = featureData.FeatureId,
+                    isActive = featureData.isActive
+                };
+
+                _dbContext.RoleFeatures.Add(newRoleFeature);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
     }
 }

@@ -495,5 +495,93 @@ namespace Louman.Repositories
 
                          }).ToListAsync();
         }
+        public async Task<List<SoldProductDto>> GetSaleAmountForEachProduct(DateTime date)
+        {
+            var productsInStock = await(from sp in _dbContext.Stocks
+                                  join p in _dbContext.Products on sp.ProductId equals p.ProductId
+                                  where sp.isDeleted==false && p.isDeleted==false
+                                 select new ProductInStock
+                                 {
+                                     ProductId=p.ProductId,
+                                     ProductName=p.ProductName,
+                                     Price=p.Price
+                                 }).ToListAsync();
+
+            var productsSold = await (from o in _dbContext.Orders
+                               join ol in _dbContext.OrderLines on o.OrderId equals ol.OrderId
+                               where o.isDeleted == false && o.OrderStatus == "Delivered" && o.CreatedDate.Value.Month==date.Month && o.CreatedDate.Value.Year == date.Year
+                                      select new
+                               {
+                                   ProductId=ol.ProductId,
+                                   SoldQuantity=ol.Quantity
+                               }).ToListAsync();
+
+            var soldProductDetail = new List<SoldProductDto>();
+
+            foreach (var product in productsInStock)
+            {
+
+                var totalSold = productsSold.Where(p => p.ProductId == product.ProductId).Sum(p => p.SoldQuantity * product.Price);
+                var quantitySold=productsSold.Where(p=>p.ProductId==product.ProductId).Sum(p => p.SoldQuantity);
+                soldProductDetail.Add(new SoldProductDto { ProductId = product.ProductId, ProductName = product.ProductName, TotalSoldPrice = totalSold.HasValue ?totalSold.Value:0,QuantitySold= quantitySold.HasValue?quantitySold.Value:0 });
+            }
+
+            return await Task.FromResult(soldProductDetail);
+        }
+        public async Task<List<MonthlySoldProductDto>> GetSixMonthSaleAmountForEachProduct()
+        {
+
+            var mons = new Dictionary<int, int>();
+            for (int i = 0; i < 6; i++)
+            {
+                if ((DateTime.Now.Date.Month - i) >= 0)
+                    mons.Add(DateTime.Now.Date.Month - i, DateTime.Now.Date.Year);
+                else
+                    mons.Add(12 - i, DateTime.Now.Date.Year - 1);
+
+            }
+
+            var productsInStock = await(from sp in _dbContext.Stocks
+                                  join p in _dbContext.Products on sp.ProductId equals p.ProductId
+                                  where sp.isDeleted==false && p.isDeleted==false
+                                 select new ProductInStock
+                                 {
+                                     ProductId=p.ProductId,
+                                     ProductName=p.ProductName,
+                                     Price=p.Price
+                                 }).ToListAsync();
+
+            var months = await _dbContext.Months.Where(month => mons.Keys.Contains(month.MonthId)).ToListAsync();
+
+            var monthlySoldProducts = new List<MonthlySoldProductDto>();
+            
+            foreach (var month in months)
+            {
+              var  productsSold = await (from o in _dbContext.Orders
+                                          join ol in _dbContext.OrderLines on o.OrderId equals ol.OrderId
+                                          where o.isDeleted == false && o.OrderStatus == "Delivered" && o.CreatedDate.Value.Month == month.MonthId
+                                          select new SoldProductQuantityDto
+                                          {
+                                              ProductId = ol.ProductId,
+                                              SoldQuantity = ol.Quantity.HasValue ? ol.Quantity.Value : 0
+                                          }).ToListAsync();
+                var soldProductDetail = new List<SoldProductDto>();
+
+                foreach (var product in productsInStock)
+                {
+
+                    var totalSold = productsSold.Where(p => p.ProductId == product.ProductId).Sum(p => p.SoldQuantity * product.Price);
+                    var quantitySold = productsSold.Where(p => p.ProductId == product.ProductId).Sum(p => p.SoldQuantity);
+                    soldProductDetail.Add(new SoldProductDto { ProductId = product.ProductId, ProductName = product.ProductName, TotalSoldPrice = totalSold, QuantitySold = quantitySold });
+                }
+
+                monthlySoldProducts.Add(new MonthlySoldProductDto { MonthId = month.MonthId, MonthName = month.MonthName, SoldProducts = soldProductDetail });
+            }
+           
+
+            
+
+            return await Task.FromResult(monthlySoldProducts);
+        }
     }
 }

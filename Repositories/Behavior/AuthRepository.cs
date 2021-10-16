@@ -1,4 +1,5 @@
 ﻿using Louman.AppDbContexts;
+using Louman.Models.DTOs;
 using Louman.Models.DTOs.Auth;
 using Louman.Models.DTOs.User;
 using Louman.Models.Entities;
@@ -158,10 +159,22 @@ namespace Louman.Repositories.Behavior
                                              join r in _dbContext.Roles on ur.RoleId equals r.RoleId
                                              where ur.UserId == usr.UserId
 
-                                             select r.RoleName.ToLower()
+                                             select r
                                            ).ToListAsync();
 
-                            usr.UserRoles = userRoles;
+                            var roleFeatures = new List<string>();
+
+                            foreach (var role in userRoles)
+                            {
+                                var features=(from rf in _dbContext.RoleFeatures
+                                join f in _dbContext.Features on rf.FeatureId equals f.FeatureId
+                                where rf.RoleId == role.RoleId select 
+                                   f.FeatureName.ToLower()).ToList();
+
+                                roleFeatures.AddRange(features);
+                            }
+
+                            usr.UserRoles = roleFeatures;
 
                             return await Task.FromResult(new AuthenticationResponse
                             {

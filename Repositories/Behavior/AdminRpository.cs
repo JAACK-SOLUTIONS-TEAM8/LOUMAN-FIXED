@@ -264,6 +264,62 @@ namespace Louman.Repositories
                     }).SingleOrDefaultAsync();
         }
 
+        public async Task<List<FeatureDto>> GetAllFeatures()
+        {
+            return await (from f in _dbContext.Features select new FeatureDto { FeatureId=f.FeatureId,FeatureName=f.FeatureName}).ToListAsync();
+        }
 
+        public async Task<FeatureDto> AddFeature(FeatureDto feature)
+        {
+            if (feature.FeatureId == 0)
+            {
+                var newfeature = new FeatureEntity
+                {
+                    FeatureName=feature.FeatureName
+                };
+                _dbContext.Features.Add(newfeature);
+                await _dbContext.SaveChangesAsync();
+
+
+                return await Task.FromResult(new FeatureDto
+                {
+                    FeatureId=newfeature.FeatureId,
+                     FeatureName=newfeature.FeatureName
+                });
+
+            }
+            else
+            {
+
+                var featureEntity = _dbContext.Features.Find(feature.FeatureId);
+                if (featureEntity != null)
+                {
+                    featureEntity.FeatureName = feature.FeatureName;
+                    _dbContext.Features.Update(featureEntity);
+                    await _dbContext.SaveChangesAsync();
+
+                    return await Task.FromResult(new FeatureDto
+                    {
+                        FeatureId = featureEntity.FeatureId,
+                        FeatureName = featureEntity.FeatureName
+                    });
+                }
+            }
+            return new FeatureDto();
+        }
+
+        public async Task<FeatureDto> GetFeatureById(int id)
+        {
+
+            return await(from f in _dbContext.Features
+                         where f.FeatureId == id
+                         orderby f.FeatureName
+                         select new FeatureDto
+                         {
+                             FeatureId = f.FeatureId,
+                             FeatureName = f.FeatureName
+
+                         }).SingleOrDefaultAsync();
+        }
     }
 }

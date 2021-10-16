@@ -102,6 +102,29 @@ namespace Louman.Controllers
                 return Ok(new { Roles = reponse, statusCode = StatusCodes.Status400BadRequest });
 
         }
+        
+        [HttpGet("Features/{id}")]
+        public async Task<IActionResult> GetRoleFeatures([FromRoute] int id)
+        {
+            var reponse = await _userRepository.GetRoleFeatures(id);
+            if (reponse != null)
+                return Ok(new { Features = reponse, statusCode = StatusCodes.Status200OK });
+            else
+                return Ok(new { Features = reponse, statusCode = StatusCodes.Status400BadRequest });
+
+        }
+
+        [HttpPost("Features/Add")]
+        public async Task<IActionResult> AddRoleFeatures([FromBody] AddFeatureDto featureData)
+        {
+            var reponse = await _userRepository.AddRoleFeature(featureData);
+            if (reponse == true)
+                return Ok(new { Features = reponse, statusCode = StatusCodes.Status200OK });
+            else
+                return Ok(new { Features = reponse, statusCode = StatusCodes.Status400BadRequest });
+
+        }
+
 
     }
 }

@@ -18,5 +18,7 @@ namespace Louman.Repositories.Abstraction
         Task<List<AuditDto>> SearchAuditByUserName(string name);
         Task<List<UserRoleDto>> GetUserRole(int userId);
         Task<bool> AddUserRole(AddRoleDto roleData);
+        Task<List<RoleFeatureDto>> GetRoleFeatures(int roleId);
+        Task<bool> AddRoleFeature(AddFeatureDto featureData);
     }
 }

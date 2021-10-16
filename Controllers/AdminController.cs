@@ -130,7 +130,37 @@ namespace Louman.Controllers
                 return Ok(new { Role = reponse, statusCode = StatusCodes.Status400BadRequest });
 
         }
+         [HttpGet("Features")]
+        public async Task<IActionResult> GetFeatures()
+        {
+            var reponse = await _adminRepository.GetAllFeatures();
+            if (reponse != null)
+                return Ok(new { Features = reponse, statusCode = StatusCodes.Status200OK });
+            else
+                return Ok(new { Features = reponse, statusCode = StatusCodes.Status400BadRequest });
 
-       
+        }
+
+        [HttpGet("Features/{id}")]
+        public async Task<IActionResult> GetFeatureById([FromRoute] int id)
+        {
+            var reponse = await _adminRepository.GetFeatureById(id);
+            if (reponse != null)
+                return Ok(new { Feature = reponse, statusCode = StatusCodes.Status200OK });
+            else
+                return Ok(new { Feature = reponse, statusCode = StatusCodes.Status400BadRequest });
+
+        }
+        [HttpPost("Features/Add")]
+        public async Task<IActionResult> AddFeature(FeatureDto feature)
+        {
+            var reponse = await _adminRepository.AddFeature(feature);
+            if (reponse != null)
+                return Ok(new { Feature = reponse, statusCode = StatusCodes.Status200OK });
+            else
+                return Ok(new { Feature = reponse, statusCode = StatusCodes.Status400BadRequest });
+
+        }
+
     }
 }

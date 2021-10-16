@@ -80,7 +80,7 @@ namespace Louman.Repositories.Behavior
         {
             return await (from s in _dbContext.Slots
                           join u in _dbContext.Users on s.AdminUserId equals u.UserId
-                          where s.isDeleted == false && s.isBooked == false
+                          where s.isDeleted == false && s.isBooked == false && s.Date<=DateTime.Now
                           select new SlotDto
                           {
                               Date = s.Date,
@@ -148,7 +148,7 @@ namespace Louman.Repositories.Behavior
         {
             return await (from s in _dbContext.Slots
                           join u in _dbContext.Users on s.AdminUserId equals u.UserId
-                          where s.isDeleted == false && (string.IsNullOrEmpty(date) || (s.Date.Date == Convert.ToDateTime(date).Date) && s.AdminUserId == adminUserId)
+                          where s.isDeleted == false && (string.IsNullOrEmpty(date) || (s.Date.Date == Convert.ToDateTime(date).Date) && s.AdminUserId == adminUserId)&& s.Date <= DateTime.Now
                           select new SlotDto
                           {
                               Date = s.Date,
@@ -177,6 +177,12 @@ namespace Louman.Repositories.Behavior
             EndTime = s.EndTime.ToString("F"),
             StartTime = s.StartTime.ToString("F")
         }).SingleOrDefaultAsync();
+
+            var slt = await (from s in _dbContext.Slots
+                              join u in _dbContext.Users on s.AdminUserId equals u.UserId
+                              where s.SlotId == slotId
+                              select s).SingleOrDefaultAsync();
+            
 
             var bookedSlotEntity = new BookedSlotEntity
             {
@@ -235,7 +241,7 @@ namespace Louman.Repositories.Behavior
                           join s in _dbContext.Slots on bs.SlotId equals s.SlotId
                           join au in _dbContext.Users on bs.AdminUserId equals au.UserId
                           join cu in _dbContext.Users on bs.ClientUserId equals cu.UserId
-                          where s.isDeleted == false && bs.AdminUserId == adminUserId && s.isBooked == true && bs.isDeleted == false
+                          where s.isDeleted == false && bs.AdminUserId == adminUserId && s.isBooked == true && bs.isDeleted == false && s.Date<= DateTime.Now
                           select new BookedSlotDto
                           {
                               AdminUserId = bs.AdminUserId,
@@ -258,7 +264,7 @@ namespace Louman.Repositories.Behavior
                           join s in _dbContext.Slots on bs.SlotId equals s.SlotId
                           join au in _dbContext.Users on bs.AdminUserId equals au.UserId
                           join cu in _dbContext.Users on bs.ClientUserId equals cu.UserId
-                          where s.isDeleted == false && bs.ClientUserId == clientUserId && s.isBooked == true && bs.isDeleted == false
+                          where s.isDeleted == false && bs.ClientUserId == clientUserId && s.isBooked == true && bs.isDeleted == false && s.Date <= DateTime.Now
                           select new BookedSlotDto
                           {
                               AdminUserId = bs.AdminUserId,
@@ -327,7 +333,7 @@ namespace Louman.Repositories.Behavior
                           join s in _dbContext.Slots on bs.SlotId equals s.SlotId
                           join au in _dbContext.Users on bs.AdminUserId equals au.UserId
                           join cu in _dbContext.Users on bs.ClientUserId equals cu.UserId
-                          where s.isDeleted == false && (string.IsNullOrEmpty(date) || (s.Date.Date == Convert.ToDateTime(date).Date) && s.AdminUserId == userId) && bs.isDeleted == false
+                          where s.isDeleted == false && (string.IsNullOrEmpty(date) || (s.Date.Date == Convert.ToDateTime(date).Date) && s.AdminUserId == userId) && bs.isDeleted == false && s.Date <= DateTime.Now
                           select new BookedSlotDto
                           {
                               AdminUserId = bs.AdminUserId,
@@ -347,7 +353,7 @@ namespace Louman.Repositories.Behavior
                           join s in _dbContext.Slots on bs.SlotId equals s.SlotId
                           join au in _dbContext.Users on bs.AdminUserId equals au.UserId
                           join cu in _dbContext.Users on bs.ClientUserId equals cu.UserId
-                          where s.isDeleted == false && (string.IsNullOrEmpty(date) || (s.Date.Date == Convert.ToDateTime(date).Date) && bs.ClientUserId == userId) && bs.isDeleted == false
+                          where s.isDeleted == false && (string.IsNullOrEmpty(date) || (s.Date.Date == Convert.ToDateTime(date).Date) && bs.ClientUserId == userId) && bs.isDeleted == false && s.Date <= DateTime.Now
                           select new BookedSlotDto
                           {
                               AdminUserId = bs.AdminUserId,
