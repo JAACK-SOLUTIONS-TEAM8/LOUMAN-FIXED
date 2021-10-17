@@ -365,6 +365,7 @@ new
             _dbContext.SaveChanges();
 
             emp.Image = employee.Image != null ? employee.Image.Split(",")[1] : employee.Image;
+            emp.EmployeeDocument = employee.Document != null ? employee.Document.Split(",")[1] : employee.Document;
             _dbContext.Update(emp);
             _dbContext.SaveChanges();
 

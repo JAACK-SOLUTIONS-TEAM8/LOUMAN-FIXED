@@ -9,6 +9,7 @@ namespace Louman.Models.DTOs.Product
     {
         public int MonthId { get; set; }
         public string MonthName { get; set; }
+        public decimal MonthAverage { get; set; }
         public List<SoldProductDto> SoldProducts { get; set; }
     }
 }

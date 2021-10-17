@@ -127,6 +127,12 @@ namespace Louman.Repositories
                 await _dbContext.OrderLines.AddAsync(orderLineEntity);
                 await _dbContext.SaveChangesAsync();
 
+                var stockEntity =await  (from s in _dbContext.Stocks where s.ProductId == product.Product.ProductId && s.isDeleted==false
+                                         select s).FirstOrDefaultAsync();
+                stockEntity.ProductQuantity = stockEntity.ProductQuantity - product.Quantity;
+                _dbContext.Stocks.Update(stockEntity);
+                await _dbContext.SaveChangesAsync();
+
             }
 
             var billEntity = new OrderBillEntity
@@ -229,7 +235,7 @@ ClientName = $"{u.Name} {u.Surname}"
                                   join p in _dbContext.Products on ol.ProductId equals p.ProductId
                                   join ps in _dbContext.ProductSizes on p.ProductSizeId equals ps.ProductSizeId
                                   join pt in _dbContext.ProductTypes on p.ProductTypeId equals pt.ProductTypeId
-                                  where ol.OrderId == orderId
+                                  where ol.OrderId == orderId && p.isDeleted==false && o.isDeleted==false
                                   select
       new GetStockProductDto
       {
@@ -251,8 +257,8 @@ ClientName = $"{u.Name} {u.Surname}"
             {
                 var quantity = await (from ol in _dbContext.OrderLines
                                       join o in _dbContext.Orders on ol.OrderId equals o.OrderId
-                                      where ol.ProductId == product.ProductId && ol.OrderId == orderId
-                                      select ol.Quantity).SingleOrDefaultAsync();
+                                      where ol.ProductId == product.ProductId && ol.OrderId == orderId && o.isDeleted==false
+                                      select ol.Quantity).FirstOrDefaultAsync();
                 productInfo.Add(new ProductInfo { Product = product, Quantity = quantity.Value });
             }
 
@@ -263,7 +269,7 @@ ClientName = $"{u.Name} {u.Surname}"
                           join u in _dbContext.Users on o.ClientUserId equals u.UserId
                           join cd in _dbContext.CardDetails on o.ClientUserId equals cd.ClientUserId
                           join a in _dbContext.Addresses on u.AddressId equals a.AddressId
-                          where o.OrderId == orderId
+                          where o.OrderId == orderId &&o.isDeleted==false
                           select new ClientOrderDto
                           {
                               OrderId = o.OrderId,
@@ -287,7 +293,7 @@ ClientName = $"{u.Name} {u.Surname}"
                               PickupDate = o.PickupDate.Value.ToString("F"),
                               PickupTime = o.PickupTime.Value.ToString("F"),
                               CardDetail = new CardDetailDto { CardNumber = cd.CardNumber, HolderName = cd.HolderName, SecurityNumber = cd.SecurityNumber }
-                          }).SingleOrDefaultAsync();
+                          }).FirstOrDefaultAsync();
         }
 
         public async Task<bool> CompleteOrder(int orderId)

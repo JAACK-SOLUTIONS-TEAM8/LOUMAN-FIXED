@@ -13,5 +13,6 @@ namespace Louman.Models.DTOs.Employee
         public string Surname { get; set; }
         public string Email { get; set; }
         public string Image { get; set; }
+        public string Document { get; set; }
     }
 }

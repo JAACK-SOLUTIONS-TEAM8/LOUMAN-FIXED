@@ -28,7 +28,7 @@ namespace Louman.Repositories.Abstraction
         Task<List<ProductSizeDto>> GetAllProductSize();
         Task<ProductSizeDto> GetProductSizeById(int productSizeId);
         Task<List<GetProductDto>> GetStockMonthlyReport(string dateInfo);
-        Task<List<SoldProductDto>> GetSaleAmountForEachProduct(DateTime date);
+        Task<MonthlySoldProductDto> GetSaleAmountForEachProduct(DateTime date);
         Task<List<MonthlySoldProductDto>> GetSixMonthSaleAmountForEachProduct();
     }
 }

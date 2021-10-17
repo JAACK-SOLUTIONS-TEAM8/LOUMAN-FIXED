@@ -495,7 +495,7 @@ namespace Louman.Repositories
 
                          }).ToListAsync();
         }
-        public async Task<List<SoldProductDto>> GetSaleAmountForEachProduct(DateTime date)
+        public async Task<MonthlySoldProductDto> GetSaleAmountForEachProduct(DateTime date)
         {
             var productsInStock = await(from sp in _dbContext.Stocks
                                   join p in _dbContext.Products on sp.ProductId equals p.ProductId
@@ -507,26 +507,28 @@ namespace Louman.Repositories
                                      Price=p.Price
                                  }).ToListAsync();
 
+            var months = await _dbContext.Months.Where(month =>month.MonthId== date.Month).FirstOrDefaultAsync();
             var productsSold = await (from o in _dbContext.Orders
                                join ol in _dbContext.OrderLines on o.OrderId equals ol.OrderId
                                where o.isDeleted == false && o.OrderStatus == "Delivered" && o.CreatedDate.Value.Month==date.Month && o.CreatedDate.Value.Year == date.Year
                                       select new
                                {
                                    ProductId=ol.ProductId,
-                                   SoldQuantity=ol.Quantity
+                                   SoldQuantity=ol.Quantity??0
                                }).ToListAsync();
 
             var soldProductDetail = new List<SoldProductDto>();
-
+            decimal sum = 0;
             foreach (var product in productsInStock)
             {
 
                 var totalSold = productsSold.Where(p => p.ProductId == product.ProductId).Sum(p => p.SoldQuantity * product.Price);
+                sum += totalSold;
                 var quantitySold=productsSold.Where(p=>p.ProductId==product.ProductId).Sum(p => p.SoldQuantity);
-                soldProductDetail.Add(new SoldProductDto { ProductId = product.ProductId, ProductName = product.ProductName, TotalSoldPrice = totalSold.HasValue ?totalSold.Value:0,QuantitySold= quantitySold.HasValue?quantitySold.Value:0 });
+                soldProductDetail.Add(new SoldProductDto { ProductId = product.ProductId, ProductName = product.ProductName, TotalSoldPrice = totalSold,QuantitySold= quantitySold });
             }
 
-            return await Task.FromResult(soldProductDetail);
+            return await Task.FromResult(new MonthlySoldProductDto { SoldProducts=soldProductDetail,MonthId=months.MonthId,MonthName=months.MonthName,MonthAverage=sum/productsInStock.Count() });
         }
         public async Task<List<MonthlySoldProductDto>> GetSixMonthSaleAmountForEachProduct()
         {
@@ -566,16 +568,19 @@ namespace Louman.Repositories
                                               SoldQuantity = ol.Quantity.HasValue ? ol.Quantity.Value : 0
                                           }).ToListAsync();
                 var soldProductDetail = new List<SoldProductDto>();
+                decimal sum = 0;
 
                 foreach (var product in productsInStock)
                 {
-
+                    
                     var totalSold = productsSold.Where(p => p.ProductId == product.ProductId).Sum(p => p.SoldQuantity * product.Price);
-                    var quantitySold = productsSold.Where(p => p.ProductId == product.ProductId).Sum(p => p.SoldQuantity);
-                    soldProductDetail.Add(new SoldProductDto { ProductId = product.ProductId, ProductName = product.ProductName, TotalSoldPrice = totalSold, QuantitySold = quantitySold });
-                }
+                    sum += totalSold;
 
-                monthlySoldProducts.Add(new MonthlySoldProductDto { MonthId = month.MonthId, MonthName = month.MonthName, SoldProducts = soldProductDetail });
+                    var quantitySold = productsSold.Where(p => p.ProductId == product.ProductId).Sum(p => p.SoldQuantity);
+                    soldProductDetail.Add(new SoldProductDto { ProductId = product.ProductId, ProductName = product.ProductName, TotalSoldPrice = totalSold, QuantitySold = quantitySold, });
+                }
+                var average = sum / soldProductDetail.Count();
+                monthlySoldProducts.Add(new MonthlySoldProductDto { MonthId = month.MonthId, MonthName = month.MonthName, SoldProducts = soldProductDetail,MonthAverage=average });
             }
            
 
