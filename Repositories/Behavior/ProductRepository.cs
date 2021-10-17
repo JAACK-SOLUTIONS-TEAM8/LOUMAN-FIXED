@@ -90,7 +90,7 @@ namespace Louman.Repositories
                     {
                         Date = DateTime.Now,
                         UserId = 1,
-                        Operation = $"Product:{product.ProductName} is upodated in the system"
+                        Operation = $"Product:{product.ProductName} is updated in the system"
                     };
 
                     await _dbContext.Audits.AddAsync(auditEntity);
