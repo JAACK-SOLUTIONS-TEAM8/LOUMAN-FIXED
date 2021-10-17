@@ -51,7 +51,7 @@ namespace Louman.Services
             builder.HtmlBody = @$"Dear {client.Initials +" "+ client.Surname}, <br><br>
                                 Welcome to the Louman System! We are so happy you joined us and we hope that our<br>
                                 application will be of great service to you.If you have any question / queuries regarding products or<br>
-                                any other thing, don't be shy to message us! You can make contact with us via the enquiry and meeting features on our system or directly using this emailing service!<br><br>
+                                any other thing, don't be shy to message us! You can make contact with us via the enquiry and meeting features on our system or by directly sending us an email!<br><br>
                                 Kind regards,<br> 
                                 The Louman Team.<br><img height=""400px"" width=""400px"" src=""cid:{image.ContentId}"">";
             email.Body = builder.ToMessageBody();
