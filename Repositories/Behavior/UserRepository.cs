@@ -117,7 +117,7 @@ namespace Louman.Repositories
         {
             return await(from at in _dbContext.Audits
                          join u in _dbContext.Users on at.UserId equals u.UserId
-                         where u.Name.StartsWith(name) ||u.Surname.StartsWith(name)|| u.Name.Contains(name) || u.Surname.Contains(name)
+                         where u.Name.StartsWith(name) ||u.Surname.StartsWith(name)|| u.Name.Contains(name) || u.Surname.Contains(name) || at.Operation.Contains(name) || at.Operation.StartsWith(name)
                          orderby at.Date descending
                          select new AuditDto
                          {

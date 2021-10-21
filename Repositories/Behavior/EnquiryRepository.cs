@@ -386,7 +386,7 @@ namespace Louman.Repositories.Behavior
                           join au in _dbContext.Users on e.ClientUserId equals au.UserId
                           join et in _dbContext.EnquiryTypes on e.EnquiryTypeId equals et.EnquiryTypeId
                           where e.isDeleted == false //&& e.AdminUserId == adminUserId
-                          orderby e.EnquiryMessage
+                          orderby cu.Name
                           select new GetEnquiryDto
                           {
                               ClientUserId = e.ClientUserId,
