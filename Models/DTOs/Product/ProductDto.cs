@@ -13,5 +13,6 @@ namespace Louman.Models.DTOs.Product
         public string ProductName { get; set; }
         public decimal Price { get; set; }
         public string ProductImage { get; set; }
+        public bool? IsVatIncluded { get; set; }
     }
 }

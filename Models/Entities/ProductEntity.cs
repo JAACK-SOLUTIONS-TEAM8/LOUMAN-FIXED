@@ -11,13 +11,15 @@ namespace Louman.Models.Entities
     public class ProductEntity
     {
         [Key]
-        public int ProductId {get;set;}
+        public int ProductId { get; set; }
         public int ProductTypeId { get; set; }
         public int ProductSizeId { get; set; }
         public string ProductName { get; set; }
         public string ProductImage { get; set; }
         public decimal Price { get; set; }
         public bool isDeleted { get; set; }
+        public bool? isVatIncluded { get; set; }
+        public decimal? VatAmount { get; set; }
         public DateTime? Date { get; set; }
 
     }

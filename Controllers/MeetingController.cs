@@ -47,7 +47,7 @@ namespace Louman.Controllers
             var newSlot = await _meetingRepository.AddNewSlot(slot);
             if (newSlot != null)
                 return Ok(new { Slot = newSlot, StatusCode = StatusCodes.Status200OK });
-            return NotFound(new { Slot = newSlot, StatusCode = StatusCodes.Status404NotFound });
+            return Ok(new { Slot = newSlot, StatusCode = StatusCodes.Status404NotFound });
         }
 
         [HttpGet("Slot/Delete/{id}")]

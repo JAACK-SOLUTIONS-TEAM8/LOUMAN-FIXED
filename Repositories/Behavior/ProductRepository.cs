@@ -18,7 +18,7 @@ namespace Louman.Repositories
         {
             _dbContext = dbContext;
         }
-       
+
 
         public async Task<ProductDto> AddProduct(UserProduct userProduct)
         {
@@ -28,22 +28,24 @@ namespace Louman.Repositories
                 var newProduct = new ProductEntity
                 {
                     ProductName = product.ProductName,
-                    Price=product.Price,
-                    ProductSizeId=product.ProductSizeId,
-                    ProductTypeId=product.ProductTypeId,
-                    ProductImage=product.ProductImage,
+                    Price = product.Price,
+                    ProductSizeId = product.ProductSizeId,
+                    ProductTypeId = product.ProductTypeId,
+                    ProductImage = product.ProductImage,
+                    isVatIncluded = product.IsVatIncluded,
+                    VatAmount = product.IsVatIncluded.Value ? product.Price * 0.15M : 0,
                     isDeleted = false,
-                    Date=DateTime.Now
+                    Date = DateTime.Now
                 };
                 _dbContext.Products.Add(newProduct);
                 await _dbContext.SaveChangesAsync();
 
                 var stockEntity = new StockEntity
                 {
-                    ProductId=newProduct.ProductId,
-                    ProductQuantity=0,
-                    Date=DateTime.Now,
-                    isDeleted=false
+                    ProductId = newProduct.ProductId,
+                    ProductQuantity = 0,
+                    Date = DateTime.Now,
+                    isDeleted = false
                 };
 
                 await _dbContext.Stocks.AddAsync(stockEntity);
@@ -66,23 +68,26 @@ namespace Louman.Repositories
                     ProductSizeId = product.ProductSizeId,
                     ProductTypeId = product.ProductTypeId,
                     ProductImage = product.ProductImage,
-                    ProductId = newProduct.ProductId
+                    ProductId = newProduct.ProductId,
+                    IsVatIncluded = newProduct.isVatIncluded
+
                 });
 
             }
             else
             {
 
-                var existingProduct = await(from p in _dbContext.Products where p.ProductId == product.ProductId && p.isDeleted == false select p).SingleOrDefaultAsync();
+                var existingProduct = await (from p in _dbContext.Products where p.ProductId == product.ProductId && p.isDeleted == false select p).SingleOrDefaultAsync();
                 if (existingProduct != null)
                 {
                     existingProduct.ProductName = product.ProductName;
                     existingProduct.Price = product.Price;
                     existingProduct.ProductSizeId = product.ProductSizeId;
                     existingProduct.ProductImage = product.ProductImage;
-
+                    existingProduct.isVatIncluded = product.IsVatIncluded;
+                    existingProduct.VatAmount = product.IsVatIncluded.Value ? product.Price * 0.15M : 0;
                     existingProduct.ProductTypeId = product.ProductTypeId;
-                    
+
                     _dbContext.Update(existingProduct);
                     await _dbContext.SaveChangesAsync();
 
@@ -103,7 +108,8 @@ namespace Louman.Repositories
                         ProductSizeId = product.ProductSizeId,
                         ProductTypeId = product.ProductTypeId,
                         ProductId = product.ProductId,
-                        ProductImage=product.ProductImage
+                        IsVatIncluded = product.IsVatIncluded,
+                        ProductImage = product.ProductImage
                     });
                 }
             }
@@ -186,7 +192,9 @@ namespace Louman.Repositories
                               ProductTypeName = pt.ProductTypeName,
                               ProductQuantity = s.ProductQuantity,
                               ProductImage = p.ProductImage,
-                              StockId = s.StockId
+                              StockId = s.StockId,
+                              IsVatIncluded = p.isVatIncluded,
+                              VatAmount = p.VatAmount
 
                           }).ToListAsync();
         }
@@ -285,7 +293,9 @@ namespace Louman.Repositories
                               ProductTypeName = pt.ProductTypeName,
                               ProductQuantity = s.ProductQuantity,
                               ProductImage = p.ProductImage,
-                              StockId = s.StockId
+                              StockId = s.StockId,
+                              IsVatIncluded = p.isVatIncluded,
+                              VatAmount = p.VatAmount
 
                           }).SingleOrDefaultAsync();
         }
@@ -310,11 +320,11 @@ namespace Louman.Repositories
                               ProductId = p.ProductId,
                               ProductSizeDescription = ps.ProductSizeDescription,
                               ProductName = p.ProductName,
-                               Price=p.Price,
-                                ProductSizeId=p.ProductSizeId,
-                             ProductTypeId=p.ProductTypeId,
-                             ProductTypeName=pt.ProductTypeName,
-                             Quantity=s.ProductQuantity
+                              Price = p.Price,
+                              ProductSizeId = p.ProductSizeId,
+                              ProductTypeId = p.ProductTypeId,
+                              ProductTypeName = pt.ProductTypeName,
+                              Quantity = s.ProductQuantity
                           }).ToListAsync();
 
 
@@ -324,12 +334,13 @@ namespace Louman.Repositories
         {
             var product = _dbContext.Products.Find(productId);
 
-           var productsInActiveOrders=(from p in _dbContext.Products
-            join ol in _dbContext.OrderLines on p.ProductId equals ol.ProductId
-            join o in _dbContext.Orders on ol.OrderId equals o.OrderId
-            where o.OrderStatus == "Pending" && o.isDeleted==false select new { productId=p.ProductId}).ToList();
+            var productsInActiveOrders = (from p in _dbContext.Products
+                                          join ol in _dbContext.OrderLines on p.ProductId equals ol.ProductId
+                                          join o in _dbContext.Orders on ol.OrderId equals o.OrderId
+                                          where o.OrderStatus == "Pending" && o.isDeleted == false
+                                          select new { productId = p.ProductId }).ToList();
 
-            if (product != null && !productsInActiveOrders.Any(p=>p.productId==productId))
+            if (product != null && !productsInActiveOrders.Any(p => p.productId == productId))
             {
                 product.isDeleted = true;
                 _dbContext.Products.Update(product);
@@ -353,7 +364,7 @@ namespace Louman.Repositories
         }
         public async Task<GetStockProductDto> WireOffStock(StockDto stock)
         {
-            
+
             var stockEntity = await _dbContext.Stocks.FindAsync(stock.StockId);
             stockEntity.ProductQuantity = stockEntity.ProductQuantity - stock.ProductQuantity;
             _dbContext.Stocks.Update(stockEntity);
@@ -378,7 +389,10 @@ namespace Louman.Repositories
                               ProductTypeName = pt.ProductTypeName,
                               ProductQuantity = s.ProductQuantity,
                               StockId = s.StockId,
-                              ProductImage = p.ProductImage
+                              ProductImage = p.ProductImage,
+                              IsVatIncluded = p.isVatIncluded,
+                              VatAmount = p.VatAmount
+
 
                           }).SingleOrDefaultAsync();
 
@@ -413,12 +427,46 @@ namespace Louman.Repositories
                               ProductTypeName = pt.ProductTypeName,
                               ProductQuantity = s.ProductQuantity,
                               StockId = s.StockId,
-                              ProductImage = p.ProductImage
+                              ProductImage = p.ProductImage,
+                              IsVatIncluded = p.isVatIncluded,
+                              VatAmount = p.VatAmount
 
                           }).SingleOrDefaultAsync();
 
 
 
+        }
+        public async Task<GetStockProductDto> CapturefStock(StockDto stock)
+        {
+            var stockEntity = await _dbContext.Stocks.FindAsync(stock.StockId);
+            stockEntity.ProductQuantity = stock.ProductQuantity;
+            _dbContext.Stocks.Update(stockEntity);
+            await _dbContext.SaveChangesAsync();
+
+
+
+            return await (from p in _dbContext.Products
+                          join pt in _dbContext.ProductTypes on p.ProductTypeId equals pt.ProductTypeId
+                          join ps in _dbContext.ProductSizes on p.ProductSizeId equals ps.ProductSizeId
+                          join s in _dbContext.Stocks on p.ProductId equals s.ProductId
+                          where p.isDeleted == false && s.StockId == stock.StockId
+                          orderby p.ProductName
+                          select new GetStockProductDto
+                          {
+                              ProductName = p.ProductName,
+                              Price = p.Price,
+                              ProductSizeId = p.ProductSizeId,
+                              ProductTypeId = p.ProductTypeId,
+                              ProductId = p.ProductId,
+                              ProductSizeDescription = ps.ProductSizeDescription,
+                              ProductTypeName = pt.ProductTypeName,
+                              ProductQuantity = s.ProductQuantity,
+                              StockId = s.StockId,
+                              ProductImage = p.ProductImage,
+                              IsVatIncluded = p.isVatIncluded,
+                              VatAmount = p.VatAmount
+
+                          }).SingleOrDefaultAsync();
         }
 
 
@@ -474,48 +522,48 @@ namespace Louman.Repositories
 
         public async Task<List<GetStockProductDto>> SearchProductByName(string name)
         {
-            return await(from p in _dbContext.Products
-                         join pt in _dbContext.ProductTypes on p.ProductTypeId equals pt.ProductTypeId
-                         join ps in _dbContext.ProductSizes on p.ProductSizeId equals ps.ProductSizeId
-                         join s in _dbContext.Stocks on p.ProductId equals s.ProductId
-                         where p.isDeleted == false && (p.ProductName.StartsWith(name) || p.ProductName.Contains(name) )
-                         orderby p.ProductName
-                         select new GetStockProductDto
-                         {
-                             ProductName = p.ProductName,
-                             Price = p.Price,
-                             ProductSizeId = p.ProductSizeId,
-                             ProductTypeId = p.ProductTypeId,
-                             ProductId = p.ProductId,
-                             ProductSizeDescription = ps.ProductSizeDescription,
-                             ProductTypeName = pt.ProductTypeName,
-                             ProductQuantity = s.ProductQuantity,
-                             ProductImage = p.ProductImage,
-                             StockId = s.StockId
+            return await (from p in _dbContext.Products
+                          join pt in _dbContext.ProductTypes on p.ProductTypeId equals pt.ProductTypeId
+                          join ps in _dbContext.ProductSizes on p.ProductSizeId equals ps.ProductSizeId
+                          join s in _dbContext.Stocks on p.ProductId equals s.ProductId
+                          where p.isDeleted == false && (p.ProductName.StartsWith(name) || p.ProductName.Contains(name))
+                          orderby p.ProductName
+                          select new GetStockProductDto
+                          {
+                              ProductName = p.ProductName,
+                              Price = p.Price,
+                              ProductSizeId = p.ProductSizeId,
+                              ProductTypeId = p.ProductTypeId,
+                              ProductId = p.ProductId,
+                              ProductSizeDescription = ps.ProductSizeDescription,
+                              ProductTypeName = pt.ProductTypeName,
+                              ProductQuantity = s.ProductQuantity,
+                              ProductImage = p.ProductImage,
+                              StockId = s.StockId
 
-                         }).ToListAsync();
+                          }).ToListAsync();
         }
         public async Task<MonthlySoldProductDto> GetSaleAmountForEachProduct(DateTime date)
         {
-            var productsInStock = await(from sp in _dbContext.Stocks
-                                  join p in _dbContext.Products on sp.ProductId equals p.ProductId
-                                  where sp.isDeleted==false && p.isDeleted==false
-                                 select new ProductInStock
-                                 {
-                                     ProductId=p.ProductId,
-                                     ProductName=p.ProductName,
-                                     Price=p.Price
-                                 }).ToListAsync();
+            var productsInStock = await (from sp in _dbContext.Stocks
+                                         join p in _dbContext.Products on sp.ProductId equals p.ProductId
+                                         where sp.isDeleted == false && p.isDeleted == false
+                                         select new ProductInStock
+                                         {
+                                             ProductId = p.ProductId,
+                                             ProductName = p.ProductName,
+                                             Price = p.Price
+                                         }).ToListAsync();
 
-            var months = await _dbContext.Months.Where(month =>month.MonthId== date.Month).FirstOrDefaultAsync();
+            var months = await _dbContext.Months.Where(month => month.MonthId == date.Month).FirstOrDefaultAsync();
             var productsSold = await (from o in _dbContext.Orders
-                               join ol in _dbContext.OrderLines on o.OrderId equals ol.OrderId
-                               where o.isDeleted == false && o.OrderStatus == "Delivered" && o.CreatedDate.Value.Month==date.Month && o.CreatedDate.Value.Year == date.Year
+                                      join ol in _dbContext.OrderLines on o.OrderId equals ol.OrderId
+                                      where o.isDeleted == false && o.OrderStatus == "Delivered" && o.CreatedDate.Value.Month == date.Month && o.CreatedDate.Value.Year == date.Year
                                       select new
-                               {
-                                   ProductId=ol.ProductId,
-                                   SoldQuantity=ol.Quantity??0
-                               }).ToListAsync();
+                                      {
+                                          ProductId = ol.ProductId,
+                                          SoldQuantity = ol.Quantity ?? 0
+                                      }).ToListAsync();
 
             var soldProductDetail = new List<SoldProductDto>();
             decimal sum = 0;
@@ -524,11 +572,11 @@ namespace Louman.Repositories
 
                 var totalSold = productsSold.Where(p => p.ProductId == product.ProductId).Sum(p => p.SoldQuantity * product.Price);
                 sum += totalSold;
-                var quantitySold=productsSold.Where(p=>p.ProductId==product.ProductId).Sum(p => p.SoldQuantity);
-                soldProductDetail.Add(new SoldProductDto { ProductId = product.ProductId, ProductName = product.ProductName, TotalSoldPrice = totalSold,QuantitySold= quantitySold });
+                var quantitySold = productsSold.Where(p => p.ProductId == product.ProductId).Sum(p => p.SoldQuantity);
+                soldProductDetail.Add(new SoldProductDto { ProductId = product.ProductId, ProductName = product.ProductName, TotalSoldPrice = totalSold, QuantitySold = quantitySold });
             }
 
-            return await Task.FromResult(new MonthlySoldProductDto { SoldProducts=soldProductDetail,MonthId=months.MonthId,MonthName=months.MonthName,MonthAverage=sum/productsInStock.Count() });
+            return await Task.FromResult(new MonthlySoldProductDto { SoldProducts = soldProductDetail, MonthId = months.MonthId, MonthName = months.MonthName, MonthAverage = sum / productsInStock.Count() });
         }
         public async Task<List<MonthlySoldProductDto>> GetSixMonthSaleAmountForEachProduct()
         {
@@ -543,23 +591,23 @@ namespace Louman.Repositories
 
             }
 
-            var productsInStock = await(from sp in _dbContext.Stocks
-                                  join p in _dbContext.Products on sp.ProductId equals p.ProductId
-                                  where sp.isDeleted==false && p.isDeleted==false
-                                 select new ProductInStock
-                                 {
-                                     ProductId=p.ProductId,
-                                     ProductName=p.ProductName,
-                                     Price=p.Price
-                                 }).ToListAsync();
+            var productsInStock = await (from sp in _dbContext.Stocks
+                                         join p in _dbContext.Products on sp.ProductId equals p.ProductId
+                                         where sp.isDeleted == false && p.isDeleted == false
+                                         select new ProductInStock
+                                         {
+                                             ProductId = p.ProductId,
+                                             ProductName = p.ProductName,
+                                             Price = p.Price
+                                         }).ToListAsync();
 
             var months = await _dbContext.Months.Where(month => mons.Keys.Contains(month.MonthId)).ToListAsync();
 
             var monthlySoldProducts = new List<MonthlySoldProductDto>();
-            
+
             foreach (var month in months)
             {
-              var  productsSold = await (from o in _dbContext.Orders
+                var productsSold = await (from o in _dbContext.Orders
                                           join ol in _dbContext.OrderLines on o.OrderId equals ol.OrderId
                                           where o.isDeleted == false && o.OrderStatus == "Delivered" && o.CreatedDate.Value.Month == month.MonthId
                                           select new SoldProductQuantityDto
@@ -572,7 +620,7 @@ namespace Louman.Repositories
 
                 foreach (var product in productsInStock)
                 {
-                    
+
                     var totalSold = productsSold.Where(p => p.ProductId == product.ProductId).Sum(p => p.SoldQuantity * product.Price);
                     sum += totalSold;
 
@@ -580,13 +628,14 @@ namespace Louman.Repositories
                     soldProductDetail.Add(new SoldProductDto { ProductId = product.ProductId, ProductName = product.ProductName, TotalSoldPrice = totalSold, QuantitySold = quantitySold, });
                 }
                 var average = sum / soldProductDetail.Count();
-                monthlySoldProducts.Add(new MonthlySoldProductDto { MonthId = month.MonthId, MonthName = month.MonthName, SoldProducts = soldProductDetail,MonthAverage=average });
+                monthlySoldProducts.Add(new MonthlySoldProductDto { MonthId = month.MonthId, MonthName = month.MonthName, SoldProducts = soldProductDetail, MonthAverage = average });
             }
-           
 
-            
+
+
 
             return await Task.FromResult(monthlySoldProducts);
         }
+
     }
 }

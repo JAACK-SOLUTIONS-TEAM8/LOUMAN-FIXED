@@ -20,13 +20,13 @@ namespace Louman.Controllers
             _productReposiroty = productReposiroty;
         }
 
-        
 
-      
+
+
         [HttpPost("Add")]
         public async Task<IActionResult> AddNewProduct(UserProduct userProduct)
         {
-            var newProduct =await  _productReposiroty.AddProduct(userProduct);
+            var newProduct = await _productReposiroty.AddProduct(userProduct);
             if (newProduct != null)
                 return Ok(new { Product = newProduct, StatusCode = StatusCodes.Status200OK });
             return Ok(new { Product = newProduct, StatusCode = StatusCodes.Status404NotFound });
@@ -148,6 +148,18 @@ namespace Louman.Controllers
 
         }
 
+
+        [HttpPost("Stock/Capture")]
+        public async Task<IActionResult> CaptureStock(StockDto stock)
+        {
+            var stockProduct = await _productReposiroty.CapturefStock(stock);
+            if (stockProduct != null)
+                return Ok(new { Product = stockProduct, StatusCode = StatusCodes.Status200OK });
+            return Ok(new { Product = stockProduct, StatusCode = StatusCodes.Status404NotFound });
+
+        }
+
+
         [HttpGet("Stock/{id}")]
         public async Task<IActionResult> GetStockProductById([FromRoute] int id)
         {
@@ -195,7 +207,7 @@ namespace Louman.Controllers
         public async Task<IActionResult> SearhProductByName([FromQuery] string name)
         {
             var products = await _productReposiroty.SearchProductByName(name);
-            if(products!=null)
+            if (products != null)
             {
                 return Ok(new { Products = products, StatusCode = StatusCodes.Status200OK });
 

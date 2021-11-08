@@ -23,6 +23,24 @@ namespace Louman.Repositories.Behavior
         }
         public async Task<SlotDto> AddNewSlot(SlotDto slot)
         {
+            var dateSlotes = await (from s in _dbContext.Slots
+                                    where s.isDeleted == false &&
+                                          s.Date.Date == slot.Date.Date &&
+                                          ((DateTime.Parse(slot.StartTime).TimeOfDay <= s.StartTime.TimeOfDay && (DateTime.Parse(slot.EndTime).TimeOfDay <= s.EndTime.TimeOfDay) && DateTime.Parse(slot.EndTime).TimeOfDay >= s.StartTime.TimeOfDay) ||
+                                          (DateTime.Parse(slot.StartTime).TimeOfDay >= s.StartTime.TimeOfDay && (DateTime.Parse(slot.StartTime).TimeOfDay <= s.EndTime.TimeOfDay) && DateTime.Parse(slot.EndTime).TimeOfDay >= s.EndTime.TimeOfDay) ||
+                                          (DateTime.Parse(slot.StartTime).TimeOfDay >= s.StartTime.TimeOfDay && DateTime.Parse(slot.StartTime).TimeOfDay <= s.EndTime.TimeOfDay) ||
+                                          (DateTime.Parse(slot.StartTime).TimeOfDay >= s.StartTime.TimeOfDay && DateTime.Parse(slot.EndTime).TimeOfDay <= s.EndTime.TimeOfDay) ||
+                                          (DateTime.Parse(slot.StartTime).TimeOfDay == s.StartTime.TimeOfDay && DateTime.Parse(slot.EndTime).TimeOfDay == s.EndTime.TimeOfDay))
+
+                                    select s).ToListAsync();
+
+            var time = DateTime.Parse(slot.StartTime).TimeOfDay;
+
+            if (dateSlotes.Count > 0)
+            {
+                return null;
+            }
+
             if (slot.SlotId == 0)
             {
                 var newSlot = new SlotEntity
@@ -80,7 +98,7 @@ namespace Louman.Repositories.Behavior
         {
             return await (from s in _dbContext.Slots
                           join u in _dbContext.Users on s.AdminUserId equals u.UserId
-                          where s.isDeleted == false && s.isBooked == false && s.Date<=DateTime.Now
+                          where s.isDeleted == false && s.isBooked == false
                           select new SlotDto
                           {
                               Date = s.Date,
@@ -178,11 +196,17 @@ namespace Louman.Repositories.Behavior
             StartTime = s.StartTime.ToString("F")
         }).SingleOrDefaultAsync();
 
+            if(slot.Date.Date<DateTime.Now.Date || (DateTime.Parse(slot.StartTime).TimeOfDay < DateTime.Now.TimeOfDay || DateTime.Parse(slot.EndTime).TimeOfDay < DateTime.Now.TimeOfDay)&& slot.Date.Date == DateTime.Now.Date)
+            {
+                return null;
+            }
+
             var slt = await (from s in _dbContext.Slots
                               join u in _dbContext.Users on s.AdminUserId equals u.UserId
                               where s.SlotId == slotId
                               select s).SingleOrDefaultAsync();
             
+
 
             var bookedSlotEntity = new BookedSlotEntity
             {
@@ -264,7 +288,7 @@ namespace Louman.Repositories.Behavior
                           join s in _dbContext.Slots on bs.SlotId equals s.SlotId
                           join au in _dbContext.Users on bs.AdminUserId equals au.UserId
                           join cu in _dbContext.Users on bs.ClientUserId equals cu.UserId
-                          where s.isDeleted == false && bs.ClientUserId == clientUserId && s.isBooked == true && bs.isDeleted == false && s.Date <= DateTime.Now
+                          where s.isDeleted == false && bs.ClientUserId == clientUserId && s.isBooked == true && bs.isDeleted == false
                           select new BookedSlotDto
                           {
                               AdminUserId = bs.AdminUserId,
