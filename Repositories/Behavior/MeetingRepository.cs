@@ -122,8 +122,8 @@ namespace Louman.Repositories.Behavior
                               SlotId = s.SlotId,
                               isBooked = s.isBooked,
                               AdminUserId = u.UserId,
-                              EndTime = s.StartTime.ToString("F"),
-                              StartTime = s.EndTime.ToString("F")
+                              StartTime = s.StartTime.ToString("F"),
+                              EndTime = s.EndTime.ToString("F")
 
                           }).SingleOrDefaultAsync();
 
@@ -155,8 +155,8 @@ namespace Louman.Repositories.Behavior
                               SlotId = s.SlotId,
                               AdminUserId = u.UserId,
                               isBooked = s.isBooked,
-                              EndTime = s.StartTime.ToString("F"),
-                              StartTime = s.EndTime.ToString("F")
+                              StartTime = s.StartTime.ToString("F"),
+                              EndTime = s.EndTime.ToString("F")
 
                           }).ToListAsync();
         }
@@ -173,8 +173,8 @@ namespace Louman.Repositories.Behavior
                               SlotId = s.SlotId,
                               isBooked = s.isBooked,
                               AdminUserId = u.UserId,
-                              EndTime = s.StartTime.ToString("F"),
-                              StartTime = s.EndTime.ToString("F")
+                              StartTime = s.StartTime.ToString("F"),
+                              EndTime = s.EndTime.ToString("F")
 
                           }).ToListAsync();
         }
