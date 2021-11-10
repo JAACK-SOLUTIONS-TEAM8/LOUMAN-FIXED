@@ -175,7 +175,7 @@ namespace Louman.Repositories
 
         public async Task<List<GetStockProductDto>> GetAllProduct()
         {
-            return await (from p in _dbContext.Products
+            return  (from p in _dbContext.Products
                           join pt in _dbContext.ProductTypes on p.ProductTypeId equals pt.ProductTypeId
                           join ps in _dbContext.ProductSizes on p.ProductSizeId equals ps.ProductSizeId
                           join s in _dbContext.Stocks on p.ProductId equals s.ProductId
@@ -196,7 +196,7 @@ namespace Louman.Repositories
                               IsVatIncluded = p.isVatIncluded,
                               VatAmount = p.VatAmount
 
-                          }).ToListAsync();
+                          }).ToList();
         }
 
         public async Task<ProductTypeDto> AddProductType(ProductTypeDto productType)
@@ -576,7 +576,7 @@ namespace Louman.Repositories
                 soldProductDetail.Add(new SoldProductDto { ProductId = product.ProductId, ProductName = product.ProductName, TotalSoldPrice = totalSold, QuantitySold = quantitySold });
             }
 
-            return await Task.FromResult(new MonthlySoldProductDto { SoldProducts = soldProductDetail, MonthId = months.MonthId, MonthName = months.MonthName, MonthAverage = sum / productsInStock.Count() });
+            return await Task.FromResult(new MonthlySoldProductDto { SoldProducts = soldProductDetail, MonthId = months.MonthId, MonthName = months.MonthName, MonthAverage =productsInStock.Count()==0?0: sum / productsInStock.Count() });
         }
         public async Task<List<MonthlySoldProductDto>> GetSixMonthSaleAmountForEachProduct()
         {
@@ -627,7 +627,7 @@ namespace Louman.Repositories
                     var quantitySold = productsSold.Where(p => p.ProductId == product.ProductId).Sum(p => p.SoldQuantity);
                     soldProductDetail.Add(new SoldProductDto { ProductId = product.ProductId, ProductName = product.ProductName, TotalSoldPrice = totalSold, QuantitySold = quantitySold, });
                 }
-                var average = sum / soldProductDetail.Count();
+                var average = soldProductDetail.Count()==0?0: sum / soldProductDetail.Count();
                 monthlySoldProducts.Add(new MonthlySoldProductDto { MonthId = month.MonthId, MonthName = month.MonthName, SoldProducts = soldProductDetail, MonthAverage = average });
             }
 
